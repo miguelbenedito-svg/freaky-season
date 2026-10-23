@@ -20,6 +20,9 @@
   <!-- Ícones Font Awesome -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
+  <!-- SDK do EmailJS para envio de e-mails reais -->
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+
   <style>
     /* ==========================================
        FREAKY SEASON - ESTILOS E DESIGN (CSS)
@@ -467,7 +470,7 @@
 </head>
 <body>
 
-  <!-- TELA DE AUTENTICAÇÃO (LOGIN PRIMEIRO + LINK PARA CADASTRO) -->
+  <!-- TELA DE AUTENTICAÇÃO -->
   <div id="auth-overlay" class="auth-overlay">
     <div class="auth-card">
       <div class="text-center mb-15">
@@ -476,7 +479,7 @@
         <p class="text-xs text-muted mt-5">Acesso Pessoal do Atleta</p>
       </div>
 
-      <!-- VISÃO DE LOGIN (PADRÃO AO ABRIR O APP) -->
+      <!-- VISÃO DE LOGIN -->
       <div id="auth-login-view">
         <div class="form-group">
           <label>Seu E-mail</label>
@@ -496,7 +499,7 @@
         </p>
       </div>
 
-      <!-- VISÃO DE CADASTRO (ACESSADA PELO LINK) -->
+      <!-- VISÃO DE CADASTRO -->
       <div id="auth-register-view" style="display:none;">
         <h3 class="text-sm text-red mb-10 text-center"><i class="fa-solid fa-user-plus"></i> Criar Nova Conta</h3>
         <div class="form-group">
@@ -511,7 +514,7 @@
           <label>Criar Senha / PIN</label>
           <input type="password" id="reg-pin" class="form-input" placeholder="Digite uma senha" maxlength="20">
         </div>
-        <button class="btn btn-primary btn-block mt-15" onclick="registerUser()">
+        <button class="btn btn-primary btn-block mt-15" id="btn-register-submit" onclick="registerUser()">
           <i class="fa-solid fa-check"></i> CADASTRAR PERFIL
         </button>
 
@@ -531,8 +534,8 @@
       <h2 style="font-size: 1.3rem; font-weight: 900;" class="mb-10">
         PARABÉNS POR ESTAR TREINANDO!
       </h2>
-      <p class="text-sm style="color: #DDD; line-height: 1.5;" class="mb-15" id="welcome-motivation-text">
-        Você é forte demais e vai alcançar todos os seus objetivos! Sua conta foi criada e enviamos uma confirmação para o seu e-mail.
+      <p class="text-sm" style="color: #DDD; line-height: 1.5;" class="mb-15" id="welcome-motivation-text">
+        Você é forte demais e vai alcançar todos os seus objetivos!
       </p>
       <button class="btn btn-primary btn-block" onclick="closeWelcomeMotivation()">
         <i class="fa-solid fa-dumbbell"></i> BORA PRO TREINO 💪
@@ -924,6 +927,14 @@
        FREAKY SEASON - LÓGICA E SCRIPTS (JAVASCRIPT)
        ========================================== -->
   <script>
+    // ----------------------------------------------------
+    // AS TUAS CHAVES CONFIGURADAS DO EMAILJS:
+    // ----------------------------------------------------
+    const EMAILJS_PUBLIC_KEY = "SUA_PUBLIC_KEY_AQUI";  // Substitui pela tua Public Key da página "Conta"
+    const EMAILJS_SERVICE_ID = "service_pwukxda";     // O teu Service ID do Gmail
+    const EMAILJS_TEMPLATE_ID = "template_fvbdu3a";   // O teu Template ID
+    // ----------------------------------------------------
+
     const DEFAULT_GOAL_WATER = 3000;
 
     let db = {
@@ -1002,10 +1013,30 @@
         return;
       }
 
+      const btn = document.getElementById('btn-register-submit');
+      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> A registar...';
+      btn.disabled = true;
+
       db.user = { name, email, pin, registered: true };
       saveToLocalStorage();
       sessionStorage.setItem('FS_LOGGED_IN', 'true');
-      
+
+      // ENVIAR E-MAIL REAL VIA EMAILJS
+      if (typeof emailjs !== 'undefined' && EMAILJS_PUBLIC_KEY !== "SUA_PUBLIC_KEY_AQUI") {
+        emailjs.init(EMAILJS_PUBLIC_KEY);
+        emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
+          user_name: name,
+          user_email: email
+        }).then(() => {
+          console.log("E-mail de confirmação enviado com sucesso!");
+        }).catch(err => {
+          console.error("Erro ao enviar e-mail via EmailJS:", err);
+        });
+      }
+
+      btn.innerHTML = '<i class="fa-solid fa-check"></i> CADASTRAR PERFIL';
+      btn.disabled = false;
+
       document.getElementById('auth-overlay').style.display = 'none';
       renderHomeScreen();
       updateUserSettingsUI();
@@ -1013,7 +1044,7 @@
       // EXIBIR MENSAGEM MOTIVACIONAL DE BOAS-VINDAS
       document.getElementById('welcome-motivation-text').innerHTML = `
         Parabéns por dar o primeiro passo, <strong style="color:#FFF;">${name}</strong>!<br><br>
-        Você é forte demais e vai alcançar todos os seus objetivos! Sua conta foi criada para o e-mail <span style="color:var(--accent-red);">${email}</span>. A temporada bizarra começou!
+        Você é forte demais e vai alcançar todos os seus objetivos! Enviamos uma mensagem de confirmação para o e-mail <span style="color:var(--accent-red);">${email}</span>. A temporada bizarra começou!
       `;
       openModal('modal-welcome-motivation');
     }
@@ -1027,14 +1058,12 @@
       const pinInput = document.getElementById('login-pin').value.trim();
       const errorEl = document.getElementById('login-error');
 
-      // Se não houver nenhum utilizador registado ainda
       if (!db.user || !db.user.registered) {
-        alert("Nenhum perfil encontrado! Por favor, clique em 'Criar conta' abaixo para se cadastrar.");
+        alert("Nenhum perfil encontrado! Por favor, clique em 'Criar conta' para se cadastrar.");
         toggleAuthMode('register');
         return;
       }
 
-      // Validação de E-mail e Senha
       if (emailInput === db.user.email.toLowerCase() && pinInput === db.user.pin) {
         errorEl.style.display = 'none';
         sessionStorage.setItem('FS_LOGGED_IN', 'true');
@@ -1095,7 +1124,6 @@
       const daysOfWeek = ['Domingo', 'Segunda-feira', 'Terça-feira', 'Quarta-feira', 'Quinta-feira', 'Sexta-feira', 'Sábado'];
       const todayName = daysOfWeek[new Date().getDay()];
 
-      // Boas-vindas personalizadas
       const userName = (db.user && db.user.name) ? db.user.name : 'Atleta';
       document.getElementById('home-user-greeting').innerHTML = `Massa, <span>${userName}</span>! Hora do treino`;
 
@@ -1754,3 +1782,4 @@
   </script>
 </body>
 </html>
+
