@@ -7,9 +7,15 @@
   <meta name="theme-color" content="#000000">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="FreakySeason">
+
+  <!-- ÍCONES PARA O ECRÃ PRINCIPAL DO TELEMÓVEL -->
+  <link rel="icon" type="image/jpeg" href="logo.jpg?v=2">
+  <link rel="apple-touch-icon" href="logo.jpg?v=2">
+  <link rel="apple-touch-icon" sizes="180x180" href="logo.jpg?v=2">
   
   <!-- Manifest PWA embutido -->
-  <link rel="manifest" href='data:application/manifest+json,{"name":"FREAKY SEASON","short_name":"FreakySeason","start_url":"./index.html","display":"standalone","background_color":"#000000","theme_color":"#000000","icons":[{"src":"logo.jpg","sizes":"192x192","type":"image/jpeg"}]}'>
+  <link rel="manifest" href='data:application/manifest+json,{"name":"FREAKY SEASON","short_name":"FreakySeason","start_url":"./index.html","display":"standalone","background_color":"#000000","theme_color":"#000000","icons":[{"src":"logo.jpg","sizes":"192x192","type":"image/jpeg"},{"src":"logo.jpg","sizes":"512x512","type":"image/jpeg"}]}'>
   
   <!-- Ícones Font Awesome -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -83,6 +89,34 @@
     .header-actions {
       display: flex;
       gap: 10px;
+    }
+
+    /* TELA DE AUTENTICAÇÃO / LOGIN / CADASTRO */
+    .auth-overlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: #000000;
+      z-index: 500;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .auth-card {
+      background: #121212;
+      border: 1px solid #222222;
+      border-radius: 16px;
+      padding: 24px 20px;
+      width: 100%;
+      max-width: 400px;
+      box-shadow: 0 10px 30px rgba(255, 26, 26, 0.15);
+    }
+
+    .auth-toggle-link {
+      color: var(--accent-red);
+      cursor: pointer;
+      font-weight: 700;
+      text-decoration: underline;
     }
 
     /* CONTAINERS & TABS */
@@ -204,9 +238,17 @@
       font-size: 0.8rem;
       color: var(--accent-red);
       font-weight: 700;
-      margin-bottom: 10px;
+      margin-bottom: 6px;
       text-transform: uppercase;
     }
+
+    .greeting-title {
+      font-size: 1.3rem;
+      font-weight: 900;
+      margin-bottom: 12px;
+      color: var(--text-main);
+    }
+    .greeting-title span { color: var(--accent-red); }
 
     /* BARRA DE PROGRESSO */
     .progress-bar-bg {
@@ -425,10 +467,83 @@
 </head>
 <body>
 
+  <!-- TELA DE AUTENTICAÇÃO (LOGIN PRIMEIRO + LINK PARA CADASTRO) -->
+  <div id="auth-overlay" class="auth-overlay">
+    <div class="auth-card">
+      <div class="text-center mb-15">
+        <img src="logo.jpg?v=2" alt="FREAKY SEASON" style="max-height: 45px; margin-bottom: 8px;" onerror="this.style.display='none';">
+        <h2 style="font-size:1.4rem; font-weight:900;">FREAKY <span class="text-red">SEASON</span></h2>
+        <p class="text-xs text-muted mt-5">Acesso Pessoal do Atleta</p>
+      </div>
+
+      <!-- VISÃO DE LOGIN (PADRÃO AO ABRIR O APP) -->
+      <div id="auth-login-view">
+        <div class="form-group">
+          <label>Seu E-mail</label>
+          <input type="email" id="login-email" class="form-input" placeholder="seu@email.com">
+        </div>
+        <div class="form-group">
+          <label>Sua Senha / PIN</label>
+          <input type="password" id="login-pin" class="form-input" placeholder="Digite sua senha" maxlength="20" onkeyup="if(event.key==='Enter') loginUser()">
+        </div>
+        <p id="login-error" class="text-xs text-red mt-5 text-center" style="display:none;">E-mail ou Senha incorretos. Tente novamente.</p>
+        <button class="btn btn-primary btn-block mt-15" onclick="loginUser()">
+          <i class="fa-solid fa-lock-open"></i> ENTRAR
+        </button>
+
+        <p class="text-xs text-center text-muted mt-15">
+          Ainda não tem conta? <span class="auth-toggle-link" onclick="toggleAuthMode('register')">Criar conta</span>
+        </p>
+      </div>
+
+      <!-- VISÃO DE CADASTRO (ACESSADA PELO LINK) -->
+      <div id="auth-register-view" style="display:none;">
+        <h3 class="text-sm text-red mb-10 text-center"><i class="fa-solid fa-user-plus"></i> Criar Nova Conta</h3>
+        <div class="form-group">
+          <label>Seu Nome</label>
+          <input type="text" id="reg-name" class="form-input" placeholder="Ex: Miguel">
+        </div>
+        <div class="form-group">
+          <label>Seu E-mail</label>
+          <input type="email" id="reg-email" class="form-input" placeholder="Ex: miguel@email.com">
+        </div>
+        <div class="form-group">
+          <label>Criar Senha / PIN</label>
+          <input type="password" id="reg-pin" class="form-input" placeholder="Digite uma senha" maxlength="20">
+        </div>
+        <button class="btn btn-primary btn-block mt-15" onclick="registerUser()">
+          <i class="fa-solid fa-check"></i> CADASTRAR PERFIL
+        </button>
+
+        <p class="text-xs text-center text-muted mt-15">
+          Já tem uma conta? <span class="auth-toggle-link" onclick="toggleAuthMode('login')">Fazer Login</span>
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL MENSAGEM MOTIVACIONAL DE BOAS-VINDAS -->
+  <div id="modal-welcome-motivation" class="modal">
+    <div class="modal-content text-center" style="padding: 24px 16px; border: 2px solid var(--accent-red);">
+      <div style="font-size: 3rem; color: var(--accent-red);" class="mb-10">
+        <i class="fa-solid fa-fire-flame-curved"></i>
+      </div>
+      <h2 style="font-size: 1.3rem; font-weight: 900;" class="mb-10">
+        PARABÉNS POR ESTAR TREINANDO!
+      </h2>
+      <p class="text-sm style="color: #DDD; line-height: 1.5;" class="mb-15" id="welcome-motivation-text">
+        Você é forte demais e vai alcançar todos os seus objetivos! Sua conta foi criada e enviamos uma confirmação para o seu e-mail.
+      </p>
+      <button class="btn btn-primary btn-block" onclick="closeWelcomeMotivation()">
+        <i class="fa-solid fa-dumbbell"></i> BORA PRO TREINO 💪
+      </button>
+    </div>
+  </div>
+
   <!-- CABEÇALHO / LOGO -->
   <header class="app-header">
     <div class="header-content">
-      <img src="logo.jpg" alt="FREAKY SEASON" class="app-logo" onerror="this.style.display='none'; document.getElementById('logo-text').style.display='block';">
+      <img src="logo.jpg?v=2" alt="FREAKY SEASON" class="app-logo" onerror="this.style.display='none'; document.getElementById('logo-text').style.display='block';">
       <h1 id="logo-text" class="logo-fallback" style="display:none;">FREAKY <span>SEASON</span></h1>
       <div class="header-actions">
         <button class="icon-btn" onclick="openModal('modal-prs')" title="Recordes Pessoais"><i class="fa-solid fa-trophy"></i></button>
@@ -444,6 +559,7 @@
     <!-- SEPARADOR 1: INÍCIO -->
     <section id="tab-home" class="tab-content active">
       <div class="date-badge" id="current-date">A carregar data...</div>
+      <h2 class="greeting-title" id="home-user-greeting">Massa, <span>Atleta</span>! Hora do treino</h2>
       
       <div class="card card-highlight">
         <span class="card-subtitle">TREINO DO DIA</span>
@@ -764,10 +880,17 @@
   <div id="modal-settings" class="modal">
     <div class="modal-content">
       <div class="modal-header">
-        <h3><i class="fa-solid fa-gear text-red"></i> Configurações & Dados</h3>
+        <h3><i class="fa-solid fa-gear text-red"></i> Configurações & Perfil</h3>
         <button class="btn-close" onclick="closeModal('modal-settings')">&times;</button>
       </div>
       <div class="modal-body">
+        <div class="card mb-15">
+          <span class="card-subtitle">PERFIL CONECTADO</span>
+          <h3 id="settings-user-name" class="mt-5">--</h3>
+          <p id="settings-user-email" class="text-xs text-muted">--</p>
+          <button class="btn btn-xs btn-outline-danger mt-10" onclick="lockApp()"><i class="fa-solid fa-lock"></i> Bloquear App</button>
+        </div>
+
         <p class="text-sm text-muted mb-15">Todos os teus dados são guardados exclusivamente no navegador do teu telemóvel.</p>
         
         <button class="btn btn-block btn-secondary mb-10" onclick="exportDataBackup()">
@@ -803,8 +926,8 @@
   <script>
     const DEFAULT_GOAL_WATER = 3000;
 
-    // BANCO DE DADOS LOCAL TOTALMENTE LIMPO
     let db = {
+      user: null, // { name, email, pin, registered: true }
       workouts: [],
       history: [],
       water: {},
@@ -820,6 +943,7 @@
     // INICIALIZAÇÃO
     document.addEventListener('DOMContentLoaded', () => {
       loadFromLocalStorage();
+      checkAuthStatus();
       updateCurrentDate();
       renderHomeScreen();
       renderWorkoutsList();
@@ -837,6 +961,103 @@
       const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
       const dateStr = new Date().toLocaleDateString('pt-PT', options);
       document.getElementById('current-date').innerText = dateStr.toUpperCase();
+    }
+
+    // ALTERNAR ENTRE TELA DE LOGIN E CADASTRO
+    function toggleAuthMode(mode) {
+      const loginView = document.getElementById('auth-login-view');
+      const regView = document.getElementById('auth-register-view');
+      const errorEl = document.getElementById('login-error');
+      if (errorEl) errorEl.style.display = 'none';
+
+      if (mode === 'register') {
+        loginView.style.display = 'none';
+        regView.style.display = 'block';
+      } else {
+        loginView.style.display = 'block';
+        regView.style.display = 'none';
+      }
+    }
+
+    // AUTENTICAÇÃO E PERFIL LOCAL
+    function checkAuthStatus() {
+      const overlay = document.getElementById('auth-overlay');
+
+      if (!sessionStorage.getItem('FS_LOGGED_IN')) {
+        overlay.style.display = 'flex';
+        toggleAuthMode('login'); // Abre sempre em Login por padrão
+      } else {
+        overlay.style.display = 'none';
+        updateUserSettingsUI();
+      }
+    }
+
+    function registerUser() {
+      const name = document.getElementById('reg-name').value.trim();
+      const email = document.getElementById('reg-email').value.trim();
+      const pin = document.getElementById('reg-pin').value.trim();
+
+      if (!name || !pin || !email) {
+        alert("Por favor, preencha Nome, E-mail e crie uma Senha/PIN.");
+        return;
+      }
+
+      db.user = { name, email, pin, registered: true };
+      saveToLocalStorage();
+      sessionStorage.setItem('FS_LOGGED_IN', 'true');
+      
+      document.getElementById('auth-overlay').style.display = 'none';
+      renderHomeScreen();
+      updateUserSettingsUI();
+
+      // EXIBIR MENSAGEM MOTIVACIONAL DE BOAS-VINDAS
+      document.getElementById('welcome-motivation-text').innerHTML = `
+        Parabéns por dar o primeiro passo, <strong style="color:#FFF;">${name}</strong>!<br><br>
+        Você é forte demais e vai alcançar todos os seus objetivos! Sua conta foi criada para o e-mail <span style="color:var(--accent-red);">${email}</span>. A temporada bizarra começou!
+      `;
+      openModal('modal-welcome-motivation');
+    }
+
+    function closeWelcomeMotivation() {
+      closeModal('modal-welcome-motivation');
+    }
+
+    function loginUser() {
+      const emailInput = document.getElementById('login-email').value.trim().toLowerCase();
+      const pinInput = document.getElementById('login-pin').value.trim();
+      const errorEl = document.getElementById('login-error');
+
+      // Se não houver nenhum utilizador registado ainda
+      if (!db.user || !db.user.registered) {
+        alert("Nenhum perfil encontrado! Por favor, clique em 'Criar conta' abaixo para se cadastrar.");
+        toggleAuthMode('register');
+        return;
+      }
+
+      // Validação de E-mail e Senha
+      if (emailInput === db.user.email.toLowerCase() && pinInput === db.user.pin) {
+        errorEl.style.display = 'none';
+        sessionStorage.setItem('FS_LOGGED_IN', 'true');
+        document.getElementById('auth-overlay').style.display = 'none';
+        renderHomeScreen();
+        updateUserSettingsUI();
+      } else {
+        errorEl.style.display = 'block';
+      }
+    }
+
+    function lockApp() {
+      sessionStorage.removeItem('FS_LOGGED_IN');
+      closeModal('modal-settings');
+      document.getElementById('login-pin').value = '';
+      checkAuthStatus();
+    }
+
+    function updateUserSettingsUI() {
+      if (db.user) {
+        document.getElementById('settings-user-name').innerText = db.user.name;
+        document.getElementById('settings-user-email').innerText = db.user.email || 'Sem e-mail registado';
+      }
     }
 
     // ARMAZENAMENTO LOCAL (LOCALSTORAGE)
@@ -873,6 +1094,10 @@
     function renderHomeScreen() {
       const daysOfWeek = ['Domingo', 'Segunda-feira', 'Terça-feira', 'Quarta-feira', 'Quinta-feira', 'Sexta-feira', 'Sábado'];
       const todayName = daysOfWeek[new Date().getDay()];
+
+      // Boas-vindas personalizadas
+      const userName = (db.user && db.user.name) ? db.user.name : 'Atleta';
+      document.getElementById('home-user-greeting').innerHTML = `Massa, <span>${userName}</span>! Hora do treino`;
 
       const todayWorkout = db.workouts.find(w => w.day === todayName);
       const titleEl = document.getElementById('home-scheduled-workout-title');
@@ -1506,6 +1731,7 @@
     function resetAllData() {
       if (confirm("ATENÇÃO: Desejas apagar permanentemente todos os teus treinos e históricos?")) {
         localStorage.removeItem('FS_FITNESS_DB');
+        sessionStorage.removeItem('FS_LOGGED_IN');
         location.reload();
       }
     }
@@ -1526,3 +1752,5 @@
       }
     }
   </script>
+</body>
+</html>
