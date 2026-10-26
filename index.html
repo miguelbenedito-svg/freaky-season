@@ -2,2211 +2,739 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>FREAKY SEASON - Personal Gym App</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#000000">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="FreakySeason">
-
-  <!-- ÍCONES PARA O ECRÃ PRINCIPAL DO TELEMÓVEL -->
-  <link rel="icon" type="image/jpeg" href="logo.jpg?v=2">
-  <link rel="apple-touch-icon" href="logo.jpg?v=2">
-  <link rel="apple-touch-icon" sizes="180x180" href="logo.jpg?v=2">
-  
-  <!-- Manifest PWA embutido -->
-  <link rel="manifest" href='data:application/manifest+json,{"name":"FREAKY SEASON","short_name":"FreakySeason","start_url":"./index.html","display":"standalone","background_color":"#000000","theme_color":"#000000","icons":[{"src":"logo.jpg","sizes":"192x192","type":"image/jpeg"},{"src":"logo.jpg","sizes":"512x512","type":"image/jpeg"}]}'>
-  
-  <!-- Ícones Font Awesome -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
-  <!-- SDK do EmailJS para envio de e-mails reais -->
-  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
-
+  <title>FREAKY SEASON</title>
   <style>
-    /* ==========================================
-       FREAKY SEASON - ESTILOS E DESIGN (CSS)
-       ========================================== */
     :root {
-      --bg-color: #000000;
-      --card-bg: #141414;
-      --card-border: #222222;
-      --accent-red: #FF1A1A;
-      --accent-red-hover: #D60000;
-      --text-main: #FFFFFF;
-      --text-muted: #888888;
-      --input-bg: #1C1C1C;
-      --radius: 12px;
-      --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      --bg: #000000;
+      --card: #141414;
+      --border: #292929;
+      --red: #ff1a1a;
+      --red2: #d60000;
+      --muted: #999999;
+      --white: #ffffff;
+      --input: #1d1d1d;
     }
-
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      user-select: none;
-      -webkit-tap-highlight-color: transparent;
-    }
-
+    * { box-sizing: border-box; }
+    html { background: var(--bg); color-scheme: dark; }
     body {
-      background-color: var(--bg-color);
-      color: var(--text-main);
-      font-family: var(--font-family);
-      padding-bottom: 80px;
-      overflow-x: hidden;
+      margin: 0;
+      background: var(--bg);
+      color: var(--white);
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      padding-bottom: calc(88px + env(safe-area-inset-bottom));
       -webkit-font-smoothing: antialiased;
     }
+    button, input, select { font: inherit; }
+    button { cursor: pointer; touch-action: manipulation; }
 
-    /* HEADER & LOGO */
-    .app-header {
-      background: #000000;
-      border-bottom: 1px solid #1A1A1A;
-      padding: 12px 16px;
+    /* Topo Fixo */
+    .top {
       position: sticky;
       top: 0;
-      z-index: 100;
-    }
-
-    .header-content {
+      z-index: 5;
+      background: rgba(0, 0, 0, 0.96);
+      border-bottom: 1px solid #202020;
+      padding: 14px 16px;
       display: flex;
-      justify-content: space-between;
       align-items: center;
-      max-width: 600px;
-      margin: 0 auto;
+      gap: 12px;
     }
-
-    .app-logo {
-      max-height: 38px;
-      width: auto;
-      object-fit: contain;
-    }
-
-    .logo-fallback {
-      font-size: 1.2rem;
-      font-weight: 900;
+    .brand {
+      font-size: 17px;
+      font-weight: 950;
       font-style: italic;
-      letter-spacing: 1px;
+      letter-spacing: 0.3px;
     }
-    .logo-fallback span { color: var(--accent-red); }
-
-    .header-actions {
-      display: flex;
-      gap: 10px;
-    }
-
-    /* TELA DE AUTENTICAÇÃO / LOGIN / CADASTRO */
-    .auth-overlay {
-      position: fixed;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background: #000000;
-      z-index: 500;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
-    }
-    .auth-card {
-      background: #121212;
-      border: 1px solid #222222;
-      border-radius: 16px;
-      padding: 24px 20px;
-      width: 100%;
-      max-width: 400px;
-      box-shadow: 0 10px 30px rgba(255, 26, 26, 0.15);
-    }
-
-    .auth-toggle-link {
-      color: var(--accent-red);
-      cursor: pointer;
-      font-weight: 700;
-      text-decoration: underline;
-    }
-
-    /* CONTAINERS & TABS */
-    .app-container {
-      max-width: 600px;
-      margin: 0 auto;
-      padding: 16px;
-    }
-
-    .tab-content {
-      display: none;
-    }
-
-    .tab-content.active {
+    .brand span { color: var(--red); }
+    .top small {
       display: block;
-      animation: fadeIn 0.2s ease-in-out;
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(4px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    /* CARDS MODERNOS */
-    .card {
-      background-color: var(--card-bg);
-      border: 1px solid var(--card-border);
-      border-radius: var(--radius);
-      padding: 16px;
-      margin-bottom: 12px;
-      position: relative;
-    }
-
-    .card-highlight {
-      border-left: 4px solid var(--accent-red);
-    }
-
-    .card-subtitle {
-      font-size: 0.7rem;
-      font-weight: 800;
-      color: var(--text-muted);
-      letter-spacing: 1px;
+      color: var(--muted);
+      font-size: 10px;
+      letter-spacing: 1.4px;
+      margin-top: 2px;
       text-transform: uppercase;
     }
 
-    .card-header-flex {
+    main {
+      width: 100%;
+      max-width: 560px;
+      margin: 0 auto;
+      padding: 16px 14px 24px;
+    }
+
+    /* Separadores de Conteúdo (Tabs) */
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+
+    /* Estilos Gerais */
+    .eyebrow {
+      font-size: 11px;
+      letter-spacing: 1.5px;
+      font-weight: 800;
+      color: var(--red);
+      text-transform: uppercase;
+      margin: 3px 0 7px;
+    }
+    h1 {
+      font-size: 25px;
+      line-height: 1.1;
+      margin: 0 0 7px;
+      font-weight: 900;
+    }
+    .intro {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.5;
+      margin: 0 0 18px;
+    }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 15px;
+      padding: 15px;
+      margin-bottom: 13px;
+    }
+    .card-title {
+      font-size: 14px;
+      font-weight: 850;
+      margin: 0 0 12px;
       display: flex;
       justify-content: space-between;
       align-items: center;
+      gap: 8px;
     }
-
-    /* BOTÕES GRANDES */
+    .label {
+      display: block;
+      font-size: 11px;
+      color: #bdbdbd;
+      font-weight: 750;
+      margin: 0 0 6px;
+    }
+    .field {
+      width: 100%;
+      min-width: 0;
+      background: var(--input);
+      border: 1px solid #343434;
+      color: white;
+      border-radius: 99px;
+      padding: 12px 14px;
+      font-size: 14px;
+      outline: none;
+    }
+    select.field { border-radius: 9px; }
+    .field:focus { border-color: var(--red); }
+    .grid2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
     .btn {
+      border: 0;
+      border-radius: 10px;
+      padding: 12px 14px;
+      font-size: 13px;
+      font-weight: 850;
       display: inline-flex;
       align-items: center;
       justify-content: center;
       gap: 8px;
-      padding: 12px 18px;
-      border-radius: 8px;
-      font-weight: 700;
-      font-size: 0.9rem;
-      border: none;
-      cursor: pointer;
-      transition: background 0.15s ease, transform 0.1s ease;
+      transition: background 0.15s;
     }
-    .btn:active { transform: scale(0.98); }
-
-    .btn-primary { background: var(--accent-red); color: #FFF; }
-    .btn-primary:hover { background: var(--accent-red-hover); }
-
-    .btn-secondary { background: #262626; color: #FFF; }
-    .btn-outline { background: transparent; border: 1px solid #333; color: #FFF; }
-    .btn-outline-danger { background: transparent; border: 1px solid var(--accent-red); color: var(--accent-red); }
-
-    .btn-block { width: 100%; }
-    .btn-sm { padding: 8px 12px; font-size: 0.8rem; }
-    .btn-xs { padding: 4px 8px; font-size: 0.75rem; }
-
-    .icon-btn {
-      background: #181818;
-      border: 1px solid #282828;
-      color: #FFF;
-      width: 36px;
-      height: 36px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
+    .primary { background: var(--red); color: white; }
+    .primary:active { background: var(--red2); }
+    .secondary {
+      background: #292929;
+      color: #fff;
+      border: 1px solid #383838;
     }
-
-    /* GRID LAYOUTS */
-    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-    .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
-    .grid-4 { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 6px; }
-
-    .mt-5 { margin-top: 5px; }
-    .mt-10 { margin-top: 10px; }
-    .mt-15 { margin-top: 15px; }
-    .mt-20 { margin-top: 20px; }
-    .mb-10 { margin-bottom: 10px; }
-    .mb-15 { margin-bottom: 15px; }
-
-    .text-red { color: var(--accent-red); }
-    .text-muted { color: var(--text-muted); }
-    .text-xs { font-size: 0.75rem; }
-    .text-sm { font-size: 0.85rem; }
-    .text-center { text-align: center; }
-
-    .section-title-bar {
+    .outline {
+      background: transparent;
+      color: #ff5555;
+      border: 1px solid #682222;
+    }
+    .block { width: 100%; }
+    
+    /* Foto */
+    .photo-box {
+      border: 1px dashed #555;
+      border-radius: 12px;
+      padding: 18px 12px;
+      text-align: center;
+      background: #101010;
+    }
+    .photo-icon { font-size: 30px; margin-bottom: 6px; }
+    .photo-box p { font-size: 13px; font-weight: 850; margin: 0 0 5px; }
+    .photo-box small {
+      font-size: 11px;
+      color: var(--muted);
+      line-height: 1.4;
+      display: block;
+    }
+    .photo-preview {
+      width: 100%;
+      max-height: 240px;
+      object-fit: cover;
+      border-radius: 10px;
+      margin-top: 12px;
+      display: none;
+    }
+    .hint {
+      font-size: 11px;
+      color: var(--muted);
+      line-height: 1.5;
+      margin: 9px 0 0;
+    }
+    
+    /* Alimentos */
+    .food-row {
+      border: 1px solid #2c2c2c;
+      background: #101010;
+      border-radius: 12px;
+      padding: 12px;
+      margin-top: 10px;
+    }
+    .food-head {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 12px;
+      gap: 8px;
+      margin-bottom: 10px;
     }
-    .section-title-bar h2, .section-title-bar h3 { font-size: 1.1rem; font-weight: 800; }
-
-    .date-badge {
-      font-size: 0.8rem;
-      color: var(--accent-red);
-      font-weight: 700;
-      margin-bottom: 6px;
-      text-transform: uppercase;
+    .food-name { font-size: 13px; font-weight: 850; line-height: 1.3; }
+    .remove {
+      background: transparent;
+      border: 0;
+      color: #ff6464;
+      font-size: 18px;
+      padding: 2px 5px;
     }
-
-    .greeting-title {
-      font-size: 1.3rem;
-      font-weight: 900;
-      margin-bottom: 12px;
-      color: var(--text-main);
+    
+    /* Macros */
+    .macro-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 7px;
     }
-    .greeting-title span { color: var(--accent-red); }
-
-    /* BARRA DE PROGRESSO */
-    .progress-bar-bg {
-      background: #222;
-      border-radius: 6px;
-      height: 8px;
-      width: 100%;
+    .macro {
+      background: #1d1d1d;
+      border-radius: 10px;
+      padding: 10px 6px;
+      text-align: center;
+      min-width: 0;
+    }
+    .macro span {
+      display: block;
+      color: var(--muted);
+      font-size: 9px;
+      font-weight: 750;
+      margin-bottom: 4px;
+    }
+    .macro strong { font-size: 15px; overflow-wrap: anywhere; }
+    .macro .unit { font-size: 9px; color: #aaa; }
+    
+    /* Meta & Progresso */
+    .goal-head {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 10px;
+    }
+    .kcal { font-size: 29px; font-weight: 950; line-height: 1; }
+    .kcal small { font-size: 12px; color: var(--muted); font-weight: 700; }
+    .progress {
+      height: 9px;
+      border-radius: 20px;
+      background: #303030;
       overflow: hidden;
+      margin: 13px 0 8px;
     }
-    .progress-bar-fill {
-      background: var(--accent-red);
+    .progress-fill {
       height: 100%;
+      width: 0%;
+      background: var(--red);
+      border-radius: 20px;
       transition: width 0.3s ease;
     }
-
-    /* RESUMO SEMANAL */
-    .week-summary-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr 1fr;
-      text-align: center;
-      background: #181818;
-      padding: 12px;
-      border-radius: 8px;
+    .split {
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      font-size: 11px;
+      color: var(--muted);
     }
-    .summary-item span { display: block; font-size: 1.1rem; font-weight: 800; color: var(--accent-red); }
-    .summary-item label { font-size: 0.7rem; color: var(--text-muted); }
+    
+    /* Histórico */
+    .meal { padding: 12px 0; border-bottom: 1px solid #292929; }
+    .meal:last-child { border-bottom: 0; padding-bottom: 0; }
+    .meal-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      align-items: start;
+    }
+    .meal strong { font-size: 13px; }
+    .meal p { font-size: 11px; color: var(--muted); margin: 4px 0 0; }
+    .meal-total {
+      font-size: 13px;
+      font-weight: 900;
+      color: #ff4b4b;
+      white-space: nowrap;
+    }
+    .empty {
+      color: var(--muted);
+      font-size: 12px;
+      text-align: center;
+      padding: 14px 4px;
+    }
 
-    /* NAVEGAÇÃO INFERIOR */
-    .bottom-nav {
+    /* Menu Inferior Fixo */
+    .nav {
       position: fixed;
       bottom: 0;
       left: 0;
       right: 0;
-      background: #080808;
-      border-top: 1px solid #1A1A1A;
+      z-index: 8;
+      background: #090909;
+      border-top: 1px solid #292929;
+      padding: 9px 12px calc(9px + env(safe-area-inset-bottom));
       display: flex;
       justify-content: space-around;
-      padding: 8px 0;
-      z-index: 99;
+      gap: 5px;
     }
-
     .nav-item {
       background: transparent;
-      border: none;
-      color: #666;
+      border: 0;
+      color: #777777;
       display: flex;
       flex-direction: column;
       align-items: center;
       gap: 4px;
-      font-size: 0.7rem;
-      cursor: pointer;
-      width: 25%;
+      font-size: 10px;
+      font-weight: 750;
+      min-width: 56px;
+      transition: color 0.15s;
     }
-    .nav-item i { font-size: 1.2rem; }
-    .nav-item.active { color: var(--accent-red); font-weight: 700; }
+    .nav-item span:first-child { font-size: 18px; }
+    .nav-item.active { color: var(--red); }
 
-    /* EXECUÇÃO DE TREINO (FULLSCREEN) */
-    .fullscreen-session {
+    .toast {
       position: fixed;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background: #000;
-      z-index: 200;
-      display: flex;
-      flex-direction: column;
-      overflow-y: auto;
-    }
-    .fullscreen-session.hidden { display: none; }
-
-    .session-header {
-      padding: 12px 16px;
-      background: #111;
-      border-bottom: 1px solid #222;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      position: sticky;
-      top: 0;
-      z-index: 10;
-    }
-    .session-body { padding: 16px; max-width: 600px; margin: 0 auto; width: 100%; }
-
-    .session-timer-badge {
-      background: rgba(255, 26, 26, 0.15);
-      border: 1px solid var(--accent-red);
-      color: var(--accent-red);
-      font-weight: 800;
-      font-size: 0.85rem;
-      padding: 4px 10px;
-      border-radius: 20px;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .btn-back { background: transparent; border: none; color: #FFF; font-size: 1.2rem; cursor: pointer; }
-
-    /* SÉRIES */
-    .set-row {
-      display: grid;
-      grid-template-columns: 40px 1fr 1fr 45px;
-      gap: 8px;
-      align-items: center;
-      margin-bottom: 8px;
-      background: #181818;
-      padding: 6px 10px;
-      border-radius: 6px;
-    }
-    .set-input {
-      background: #222;
-      border: 1px solid #333;
-      color: #FFF;
-      text-align: center;
-      padding: 8px;
-      border-radius: 6px;
-      font-size: 0.9rem;
-      width: 100%;
-    }
-    .check-btn {
-      height: 36px;
-      border-radius: 6px;
-      border: 1px solid #333;
-      background: #222;
-      color: #555;
-      cursor: pointer;
-    }
-    .check-btn.completed { background: var(--accent-red); color: #FFF; border-color: var(--accent-red); }
-
-    /* TEMPORIZADOR FLUTUANTE DE DESCANSO */
-    .floating-timer {
-      position: fixed;
-      bottom: 65px;
-      right: 16px;
-      z-index: 150;
-    }
-    .floating-timer.hidden { display: none; }
-
-    .timer-minimized {
-      background: #181818;
-      border: 1px solid var(--accent-red);
-      padding: 8px 14px;
-      border-radius: 20px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-weight: 800;
-      cursor: pointer;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.5);
-    }
-
-    .timer-expanded {
-      background: #141414;
-      border: 1px solid #333;
-      border-radius: 12px;
-      padding: 14px;
-      width: 240px;
-      box-shadow: 0 6px 20px rgba(0,0,0,0.8);
-    }
-    .timer-header { display: flex; justify-content: space-between; font-size: 0.75rem; font-weight: 800; margin-bottom: 8px; }
-    .timer-display { font-size: 2rem; font-weight: 900; text-align: center; margin: 10px 0; color: var(--accent-red); }
-    .timer-presets button { background: #222; border: 1px solid #333; color: #FFF; padding: 6px; border-radius: 4px; font-size: 0.75rem; cursor: pointer; }
-
-    /* MODAIS */
-    .modal {
-      display: none;
-      position: fixed;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(0,0,0,0.88);
-      z-index: 300;
-      align-items: center;
-      justify-content: center;
-      padding: 16px;
-    }
-    .modal.active { display: flex; }
-    .modal-content {
-      background: #141414;
-      border: 1px solid #282828;
-      border-radius: var(--radius);
-      width: 100%;
-      max-width: 520px;
-      max-height: 85vh;
-      overflow-y: auto;
-    }
-    .modal-header { padding: 14px 16px; border-bottom: 1px solid #222; display: flex; justify-content: space-between; align-items: center; }
-    .modal-body { padding: 16px; }
-    .modal-footer { padding: 12px 16px; border-top: 1px solid #222; display: flex; justify-content: flex-end; gap: 8px; }
-    .btn-close { background: transparent; border: none; color: #888; font-size: 1.4rem; cursor: pointer; }
-
-    /* TABS DENTRO DE MODAL */
-    .modal-tab-bar {
-      display: flex;
-      border-bottom: 1px solid #222;
-      margin-bottom: 15px;
-    }
-    .modal-tab-btn {
-      flex: 1;
-      padding: 10px;
-      background: transparent;
-      border: none;
-      color: #888;
-      font-weight: 700;
-      font-size: 0.85rem;
-      border-bottom: 2px solid transparent;
-      cursor: pointer;
-    }
-    .modal-tab-btn.active {
-      color: var(--accent-red);
-      border-bottom-color: var(--accent-red);
-    }
-
-    /* FORMULÁRIOS */
-    .form-group { margin-bottom: 12px; }
-    .form-group label { display: block; font-size: 0.75rem; color: var(--text-muted); margin-bottom: 4px; font-weight: 700; }
-    .form-input {
-      width: 100%;
-      background: var(--input-bg);
-      border: 1px solid #2A2A2A;
-      color: #FFF;
-      padding: 10px 12px;
-      border-radius: 6px;
-      font-size: 0.9rem;
-    }
-    .form-group-inline { display: flex; gap: 8px; }
-
-    /* LISTA DETALHADA DE EXERCÍCIOS NO HISTÓRICO */
-    .history-exercise-card {
-      background: #181818;
-      border: 1px solid #262626;
-      border-radius: 8px;
-      padding: 12px;
-      margin-bottom: 10px;
-    }
-    .history-exercise-title {
-      font-size: 0.95rem;
-      font-weight: 800;
-      color: #FFF;
-      margin-bottom: 8px;
-    }
-    .history-set-list {
-      list-style: none;
-      padding-left: 0;
-    }
-    .history-set-item {
-      font-size: 0.85rem;
-      color: #CCC;
-      padding: 4px 0;
-      border-bottom: 1px dashed #282828;
-      display: flex;
-      justify-content: space-between;
-    }
-    .history-set-item:last-child { border-bottom: none; }
-
-    /* TOAST RECORDE */
-    .toast-pr {
-      position: fixed;
-      top: 20px;
+      top: 76px;
       left: 50%;
       transform: translateX(-50%);
-      background: #181818;
-      border: 2px solid var(--accent-red);
-      padding: 12px 20px;
-      border-radius: 30px;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      z-index: 400;
-      box-shadow: 0 4px 20px rgba(255,26,26,0.4);
-      animation: slideDown 0.3s ease;
+      background: #202020;
+      border: 1px solid var(--red);
+      border-radius: 10px;
+      padding: 11px 15px;
+      font-size: 12px;
+      z-index: 20;
+      display: none;
+      max-width: 90%;
+      text-align: center;
     }
-    .toast-pr.hidden { display: none; }
-    .toast-icon { font-size: 1.5rem; color: var(--accent-red); }
-
-    @keyframes slideDown {
-      from { top: -60px; opacity: 0; }
-      to { top: 20px; opacity: 1; }
+    .tiny { font-size: 10px; color: var(--muted); }
+    
+    @media(min-width:600px) {
+      main { padding-top: 22px; }
+      .top {
+        padding-left: max(16px, calc((100% - 560px)/2));
+        padding-right: max(16px, calc((100% - 560px)/2));
+      }
     }
-
-    .divider { border: 0; height: 1px; background: #222; margin: 15px 0; }
   </style>
 </head>
 <body>
 
-  <!-- TELA DE AUTENTICAÇÃO -->
-  <div id="auth-overlay" class="auth-overlay">
-    <div class="auth-card">
-      <div class="text-center mb-15">
-        <img src="logo.jpg?v=2" alt="FREAKY SEASON" style="max-height: 45px; margin-bottom: 8px;" onerror="this.style.display='none';">
-        <h2 style="font-size:1.4rem; font-weight:900;">FREAKY <span class="text-red">SEASON</span></h2>
-        <p class="text-xs text-muted mt-5">Acesso Pessoal do Atleta</p>
-      </div>
-
-      <!-- VISÃO DE LOGIN -->
-      <div id="auth-login-view">
-        <div class="form-group">
-          <label>Seu E-mail</label>
-          <input type="email" id="login-email" class="form-input" placeholder="seu@email.com">
-        </div>
-        <div class="form-group">
-          <label>Sua Senha / PIN</label>
-          <input type="password" id="login-pin" class="form-input" placeholder="Digite sua senha" maxlength="20" onkeyup="if(event.key==='Enter') loginUser()">
-        </div>
-        <p id="login-error" class="text-xs text-red mt-5 text-center" style="display:none;">E-mail ou Senha incorretos. Tente novamente.</p>
-        <button class="btn btn-primary btn-block mt-15" onclick="loginUser()">
-          <i class="fa-solid fa-lock-open"></i> ENTRAR
-        </button>
-
-        <p class="text-xs text-center text-muted mt-15">
-          Ainda não tem conta? <span class="auth-toggle-link" onclick="toggleAuthMode('register')">Criar conta</span>
-        </p>
-      </div>
-
-      <!-- VISÃO DE CADASTRO -->
-      <div id="auth-register-view" style="display:none;">
-        <h3 class="text-sm text-red mb-10 text-center"><i class="fa-solid fa-user-plus"></i> Criar Nova Conta</h3>
-        <div class="form-group">
-          <label>Seu Nome</label>
-          <input type="text" id="reg-name" class="form-input" placeholder="Ex: Miguel">
-        </div>
-        <div class="form-group">
-          <label>Seu E-mail</label>
-          <input type="email" id="reg-email" class="form-input" placeholder="Ex: miguel@email.com">
-        </div>
-        <div class="form-group">
-          <label>Criar Senha / PIN</label>
-          <input type="password" id="reg-pin" class="form-input" placeholder="Digite uma senha" maxlength="20">
-        </div>
-        <button class="btn btn-primary btn-block mt-15" id="btn-register-submit" onclick="registerUser()">
-          <i class="fa-solid fa-check"></i> CADASTRAR PERFIL
-        </button>
-
-        <p class="text-xs text-center text-muted mt-15">
-          Já tem uma conta? <span class="auth-toggle-link" onclick="toggleAuthMode('login')">Fazer Login</span>
-        </p>
-      </div>
-    </div>
-  </div>
-
-  <!-- MODAL RETOMAR TREINO EM ANDAMENTO -->
-  <div id="modal-resume-workout" class="modal" style="z-index: 450;">
-    <div class="modal-content text-center" style="padding: 24px 18px; border: 2px solid var(--accent-red);">
-      <div style="font-size: 2.8rem; color: var(--accent-red);" class="mb-10">
-        <i class="fa-solid fa-triangle-exclamation"></i>
-      </div>
-      <h2 style="font-size: 1.2rem; font-weight: 900;" class="mb-10">
-        VOCÊ TEM UM TREINO EM ANDAMENTO
-      </h2>
-      <div class="card card-highlight text-left mb-15 mt-10">
-        <span class="card-subtitle">SESSÃO NÃO CONCLUÍDA</span>
-        <h3 id="resume-workout-title" class="mt-5">Treino A</h3>
-        <p class="text-xs text-muted mt-5" id="resume-workout-time"><i class="fa-regular fa-clock"></i> Tempo decorrido: --</p>
-        <p class="text-xs text-muted mt-5" id="resume-workout-progress"><i class="fa-solid fa-bars-progress"></i> Progresso: --</p>
-      </div>
-
-      <div class="grid-2">
-        <button class="btn btn-primary" onclick="resumeUnfinishedSession()">
-          <i class="fa-solid fa-play"></i> CONTINUAR TREINO
-        </button>
-        <button class="btn btn-outline-danger" onclick="discardUnfinishedSession()">
-          <i class="fa-solid fa-trash"></i> DESCARTAR
-        </button>
-      </div>
-    </div>
-  </div>
-
-  <!-- MODAL MENSAGEM MOTIVACIONAL DE BOAS-VINDAS -->
-  <div id="modal-welcome-motivation" class="modal">
-    <div class="modal-content text-center" style="padding: 24px 16px; border: 2px solid var(--accent-red);">
-      <div style="font-size: 3rem; color: var(--accent-red);" class="mb-10">
-        <i class="fa-solid fa-fire-flame-curved"></i>
-      </div>
-      <h2 style="font-size: 1.3rem; font-weight: 900;" class="mb-10">
-        PARABÉNS POR ESTAR TREINANDO!
-      </h2>
-      <p class="text-sm" style="color: #DDD; line-height: 1.5;" class="mb-15" id="welcome-motivation-text">
-        Você é forte demais e vai alcançar todos os seus objetivos!
-      </p>
-      <button class="btn btn-primary btn-block" onclick="closeWelcomeMotivation()">
-        <i class="fa-solid fa-dumbbell"></i> BORA PRO TREINO 💪
-      </button>
-    </div>
-  </div>
-
-  <!-- CABEÇALHO / LOGO -->
-  <header class="app-header">
-    <div class="header-content">
-      <img src="logo.jpg?v=2" alt="FREAKY SEASON" class="app-logo" onerror="this.style.display='none'; document.getElementById('logo-text').style.display='block';">
-      <h1 id="logo-text" class="logo-fallback" style="display:none;">FREAKY <span>SEASON</span></h1>
-      <div class="header-actions">
-        <button class="icon-btn" onclick="openModal('modal-prs')" title="Recordes Pessoais"><i class="fa-solid fa-trophy"></i></button>
-        <button class="icon-btn" onclick="openModal('modal-evo')" title="Histórico e Evolução"><i class="fa-solid fa-clock-rotate-left"></i></button>
-        <button class="icon-btn" onclick="openModal('modal-settings')" title="Configurações"><i class="fa-solid fa-gear"></i></button>
-      </div>
+  <!-- Topo da Aplicação -->
+  <header class="top">
+    <div>
+      <div class="brand">FREAKY <span>SEASON</span></div>
+      <small id="pageSubTitle">DIÁRIO ALIMENTAR</small>
     </div>
   </header>
 
-  <!-- CONTAINER PRINCIPAL -->
-  <main class="app-container">
-
-    <!-- SEPARADOR 1: INÍCIO -->
-    <section id="tab-home" class="tab-content active">
-      <div class="date-badge" id="current-date">A carregar data...</div>
-      <h2 class="greeting-title" id="home-user-greeting">Massa, <span>Atleta</span>! Hora do treino</h2>
+  <main>
+    <!-- TAB 1: INÍCIO -->
+    <section id="sec-inicio" class="tab-content">
+      <div class="eyebrow">Dashboard • Visão Geral</div>
+      <h1>Bem-vindo ao FREAKY SEASON</h1>
+      <p class="intro">Seu centro de controle para treinos, nutrição e hábitos diários.</p>
       
-      <div class="card card-highlight">
-        <span class="card-subtitle">TREINO DO DIA</span>
-        <h2 id="home-scheduled-workout-title">A carregar...</h2>
-        <p id="home-scheduled-workout-desc" class="text-muted">Nenhum treino agendado para hoje.</p>
-        <button class="btn btn-primary btn-block mt-15" id="home-start-btn" onclick="startScheduledWorkout()">
-          <i class="fa-solid fa-play"></i> INICIAR TREINO
-        </button>
-      </div>
-
-      <div class="grid-2">
-        <div class="card" onclick="switchTab('water')">
-          <div class="card-icon"><i class="fa-solid fa-droplet text-red"></i></div>
-          <span class="card-subtitle">ÁGUA HOJE</span>
-          <h3 id="home-water-val">0 / 3.0 L</h3>
-          <div class="progress-bar-bg mt-10"><div id="home-water-bar" class="progress-bar-fill" style="width: 0%;"></div></div>
-        </div>
-        <div class="card" onclick="switchTab('cardio')">
-          <div class="card-icon"><i class="fa-solid fa-fire text-red"></i></div>
-          <span class="card-subtitle">CARDIO SEMANAL</span>
-          <h3 id="home-cardio-val">0 min</h3>
-          <p class="text-xs text-muted mt-5">Esta semana</p>
-        </div>
-      </div>
-
-      <div class="card mt-15">
-        <div class="card-header-flex">
-          <span class="card-subtitle">ÚLTIMO RECORDE (PR)</span>
-          <i class="fa-solid fa-medal text-red"></i>
-        </div>
-        <div id="home-pr-highlight" class="pr-highlight-box mt-10">
-          <p class="text-muted text-sm">Nenhum recorde registado ainda. Cadastra o teu primeiro treino!</p>
-        </div>
-      </div>
-
-      <div class="card mt-15">
-        <div class="card-header-flex">
-          <span class="card-subtitle">RESUMO DA SEMANA</span>
-          <button class="btn btn-xs btn-outline" onclick="openModal('modal-evo')"><i class="fa-solid fa-list-check"></i> Histórico</button>
-        </div>
-        <div class="week-summary-grid mt-10">
-          <div class="summary-item"><span id="sum-completed-workouts">0</span><label>Treinos</label></div>
-          <div class="summary-item"><span id="sum-water-avg">0.0L</span><label>Média Água</label></div>
-          <div class="summary-item"><span id="sum-cardio-total">0m</span><label>Cardio</label></div>
-        </div>
-      </div>
-    </section>
-
-    <!-- SEPARADOR 2: TREINOS -->
-    <section id="tab-workouts" class="tab-content">
-      <div class="section-title-bar">
-        <h2>DIVISÃO DE TREINOS</h2>
-        <div>
-          <button class="btn btn-sm btn-outline mr-5" onclick="openModal('modal-evo')"><i class="fa-solid fa-clock-rotate-left"></i> Histórico</button>
-          <button class="btn btn-sm btn-primary" onclick="openModal('modal-add-workout')"><i class="fa-solid fa-plus"></i> Novo</button>
-        </div>
-      </div>
-
-      <div id="workouts-list" class="workout-list">
-        <!-- Renderizado via JS -->
-      </div>
-    </section>
-
-    <!-- SEPARADOR 3: CARDIO -->
-    <section id="tab-cardio" class="tab-content">
-      <div class="section-title-bar">
-        <h2>REGISTO DE CARDIO</h2>
-        <button class="btn btn-sm btn-primary" onclick="openModal('modal-add-cardio')"><i class="fa-solid fa-plus"></i> Registar</button>
-      </div>
-
       <div class="card">
-        <span class="card-subtitle">TOTAL NESTA SEMANA</span>
-        <h2 id="cardio-week-total" class="text-red">0 Minutos</h2>
-      </div>
-
-      <div class="section-title-bar mt-20">
-        <h3>Histórico Recente</h3>
-      </div>
-      <div id="cardio-history-list" class="cardio-list">
-        <!-- Renderizado via JS -->
+        <div class="card-title">Resumo do Dia</div>
+        <p class="intro" style="margin:0">Selecione uma das opções no menu inferior para registrar sua alimentação, visualizar treinos ou acompanhar seu consumo de água.</p>
       </div>
     </section>
 
-    <!-- SEPARADOR 4: ÁGUA -->
-    <section id="tab-water" class="tab-content">
-      <div class="section-title-bar">
-        <h2>CONTROLO DE ÁGUA</h2>
-        <button class="btn btn-sm btn-outline" onclick="openModal('modal-water-goal')"><i class="fa-solid fa-bullseye"></i> Meta</button>
-      </div>
-
-      <div class="card text-center">
-        <div class="water-gauge">
-          <div class="water-val" id="water-current-display" style="font-size:1.8rem; font-weight:800; color:var(--accent-red);">0 ml</div>
-          <div class="water-sub text-xs text-muted" id="water-goal-display">Meta: 3000 ml</div>
-        </div>
-        <div class="progress-bar-bg mt-15" style="height: 12px;"><div id="water-progress-fill" class="progress-bar-fill" style="width: 0%;"></div></div>
-      </div>
-
-      <div class="water-quick-buttons grid-3 mt-15">
-        <button class="btn btn-secondary" onclick="addWater(250)"><i class="fa-solid fa-glass-water"></i> +250ml</button>
-        <button class="btn btn-secondary" onclick="addWater(500)"><i class="fa-solid fa-bottle-water"></i> +500ml</button>
-        <button class="btn btn-secondary" onclick="addWater(1000)"><i class="fa-solid fa-whiskey-glass"></i> +1 Litro</button>
-      </div>
-
-      <div class="card mt-15">
-        <div class="form-group-inline">
-          <input type="number" id="custom-water-input" placeholder="Qtd personalizada (ml)" class="form-input">
-          <button class="btn btn-primary" onclick="addCustomWater()">Adicionar</button>
-        </div>
-      </div>
-
-      <div class="section-title-bar mt-20">
-        <h3>Registos de Hoje</h3>
-        <button class="btn btn-xs btn-outline-danger" onclick="clearTodayWater()">Limpar</button>
-      </div>
-      <div id="water-logs-list" class="water-logs">
-        <!-- Renderizado via JS -->
+    <!-- TAB 2: TREINOS -->
+    <section id="sec-treinos" class="tab-content">
+      <div class="eyebrow">Treino • Foco Total</div>
+      <h1>Rotina de Treinos</h1>
+      <p class="intro">Acompanhe e registre seus exercícios e evolução diária.</p>
+      
+      <div class="card">
+        <div class="card-title">Seus Exercícios</div>
+        <div class="empty">Nenhum treino registrado para hoje.</div>
       </div>
     </section>
 
-    <!-- TELA DE EXECUÇÃO DE TREINO (FULLSCREEN) -->
-    <div id="workout-session-view" class="fullscreen-session hidden">
-      <div class="session-header">
-        <button class="btn-back" onclick="confirmExitWorkout()"><i class="fa-solid fa-arrow-left"></i></button>
-        <div class="session-title-wrap text-center">
-          <h2 id="session-workout-name" style="font-size:0.95rem;">Nome do Treino</h2>
-          <span id="session-workout-muscles" class="text-xs text-muted">Músculos</span>
-        </div>
-        <div class="session-timer-badge">
-          <i class="fa-regular fa-clock"></i>
-          <span id="session-duration-timer">00:00</span>
-        </div>
-        <button class="btn btn-sm btn-primary" onclick="finishWorkoutSession()">Concluir</button>
-      </div>
+    <!-- TAB 3: ALIMENTAÇÃO (DIÁRIO ALIMENTAR) -->
+    <section id="sec-alimentacao" class="tab-content active">
+      <div class="eyebrow">Nutrição • Registro diário</div>
+      <h1>O que você comeu hoje?</h1>
+      <p class="intro">Registre suas refeições, informe os pesos e acompanhe calorias e macronutrientes em um só lugar.</p>
 
-      <div id="session-exercises-container" class="session-body">
-        <!-- Exercícios e Séries renderizados aqui -->
-      </div>
-    </div>
-
-  </main>
-
-  <!-- CRONÓMETRO DE DESCANSO FLUTUANTE -->
-  <div id="floating-timer" class="floating-timer hidden">
-    <div class="timer-minimized" id="timer-min" onclick="toggleTimerExpand(true)">
-      <i class="fa-solid fa-stopwatch text-red"></i>
-      <span id="timer-min-display">00:00</span>
-    </div>
-    <div class="timer-expanded hidden" id="timer-max">
-      <div class="timer-header">
-        <span>DESCANSO ENTRE SÉRIES</span>
-        <button class="btn-close" onclick="toggleTimerExpand(false)"><i class="fa-solid fa-xmark"></i></button>
-      </div>
-      <div class="timer-display" id="timer-max-display">01:00</div>
-      <div class="timer-presets grid-4">
-        <button onclick="setTimerPreset(30)">30s</button>
-        <button onclick="setTimerPreset(60)">60s</button>
-        <button onclick="setTimerPreset(90)">90s</button>
-        <button onclick="setTimerPreset(120)">120s</button>
-      </div>
-      <div class="timer-controls grid-3 mt-10">
-        <button class="btn btn-sm btn-secondary" onclick="resetTimer()"><i class="fa-solid fa-rotate-right"></i></button>
-        <button class="btn btn-sm btn-primary" id="timer-play-btn" onclick="toggleTimer()"><i class="fa-solid fa-play"></i></button>
-        <button class="btn btn-sm btn-secondary" onclick="addTimerTime(15)">+15s</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- NAVEGAÇÃO INFERIOR -->
-  <nav class="bottom-nav">
-    <button class="nav-item active" onclick="switchTab('home')" id="nav-home">
-      <i class="fa-solid fa-house"></i>
-      <span>Início</span>
-    </button>
-    <button class="nav-item" onclick="switchTab('workouts')" id="nav-workouts">
-      <i class="fa-solid fa-dumbbell"></i>
-      <span>Treinos</span>
-    </button>
-    <button class="nav-item" onclick="switchTab('cardio')" id="nav-cardio">
-      <i class="fa-solid fa-person-running"></i>
-      <span>Cardio</span>
-    </button>
-    <button class="nav-item" onclick="switchTab('water')" id="nav-water">
-      <i class="fa-solid fa-droplet"></i>
-      <span>Água</span>
-    </button>
-  </nav>
-
-  <!-- MODAIS -->
-
-  <!-- Modal Adicionar/Editar Treino -->
-  <div id="modal-add-workout" class="modal">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h3 id="modal-workout-title">Criar Treino</h3>
-        <button class="btn-close" onclick="closeModal('modal-add-workout')">&times;</button>
-      </div>
-      <div class="modal-body">
-        <input type="hidden" id="edit-workout-id">
-        <div class="form-group">
-          <label>Nome do Treino (ex: Peito & Tríceps)</label>
-          <input type="text" id="workout-input-name" class="form-input" placeholder="Ex: Treino A - Peito Completo">
-        </div>
-        <div class="form-group">
-          <label>Dia da Semana</label>
-          <select id="workout-input-day" class="form-input">
-            <option value="Segunda-feira">Segunda-feira</option>
-            <option value="Terça-feira">Terça-feira</option>
-            <option value="Quarta-feira">Quarta-feira</option>
-            <option value="Quinta-feira">Quinta-feira</option>
-            <option value="Sexta-feira">Sexta-feira</option>
-            <option value="Sábado">Sábado</option>
-            <option value="Domingo">Domingo</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label>Grupo Muscular / Descrição</label>
-          <input type="text" id="workout-input-muscles" class="form-input" placeholder="Ex: Peitoral, Tríceps, Deltoide Anterior">
-        </div>
-
-        <div class="section-title-bar mt-15">
-          <h4>Exercícios</h4>
-          <button class="btn btn-xs btn-outline" onclick="addExerciseField()"><i class="fa-solid fa-plus"></i> Exercício</button>
-        </div>
-        <div id="workout-exercises-fields" class="exercise-fields-list">
-          <!-- Campos dinâmicos de exercício -->
-        </div>
-      </div>
-      <div class="modal-footer">
-        <button class="btn btn-secondary" onclick="closeModal('modal-add-workout')">Cancelar</button>
-        <button class="btn btn-primary" onclick="saveWorkout()">Guardar Treino</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Modal Registar Cardio -->
-  <div id="modal-add-cardio" class="modal">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h3>Registar Cardio</h3>
-        <button class="btn-close" onclick="closeModal('modal-add-cardio')">&times;</button>
-      </div>
-      <div class="modal-body">
-        <div class="form-group">
-          <label>Atividade</label>
-          <select id="cardio-input-type" class="form-input">
-            <option value="Passadeira">Passadeira / Corrida</option>
-            <option value="Bicicleta">Bicicleta</option>
-            <option value="Escada">Escada</option>
-            <option value="Caminhada">Caminhada</option>
-            <option value="Elíptico">Elíptico</option>
-            <option value="Outro">Outro</option>
-          </select>
-        </div>
-        <div class="grid-2">
-          <div class="form-group">
-            <label>Duração (min)</label>
-            <input type="number" id="cardio-input-duration" class="form-input" placeholder="30">
+      <!-- Meta Diária -->
+      <div class="card">
+        <div class="card-title">Sua meta diária <span style="color:var(--red)">● HOJE</span></div>
+        <div class="goal-head">
+          <div>
+            <div class="kcal" id="consumed">0 <small>kcal</small></div>
+            <div class="tiny" style="margin-top:5px">consumidas hoje</div>
           </div>
-          <div class="form-group">
-            <label>Distância (km)</label>
-            <input type="number" step="0.1" id="cardio-input-distance" class="form-input" placeholder="3.5">
+          <div style="width:115px">
+            <label class="label" for="goal">Meta (kcal)</label>
+            <input class="field" id="goal" type="number" min="1" step="50" value="2200" inputmode="numeric">
           </div>
         </div>
-        <div class="form-group">
-          <label>Observações (Opcional)</label>
-          <input type="text" id="cardio-input-notes" class="form-input" placeholder="Ex: Velocidade 9.0, Inclinação 2">
-        </div>
+        <div class="progress"><div class="progress-fill" id="progressFill"></div></div>
+        <div class="split"><span id="progressText">0% da meta</span><span id="remaining">Restam 2.200 kcal</span></div>
       </div>
-      <div class="modal-footer">
-        <button class="btn btn-secondary" onclick="closeModal('modal-add-cardio')">Cancelar</button>
-        <button class="btn btn-primary" onclick="saveCardio()">Registar Cardio</button>
-      </div>
-    </div>
-  </div>
 
-  <!-- Modal Recordes Pessoais -->
-  <div id="modal-prs" class="modal">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h3><i class="fa-solid fa-trophy text-red"></i> Recordes Pessoais (PR)</h3>
-        <button class="btn-close" onclick="closeModal('modal-prs')">&times;</button>
-      </div>
-      <div class="modal-body">
-        <div id="prs-list" class="prs-container">
-          <!-- Renderizado via JS -->
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Modal Histórico Completo & Evolução por Exercício -->
-  <div id="modal-evo" class="modal">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h3><i class="fa-solid fa-clock-rotate-left text-red"></i> Histórico & Evolução</h3>
-        <button class="btn-close" onclick="closeModal('modal-evo')">&times;</button>
-      </div>
-      <div class="modal-body">
-        <div class="modal-tab-bar">
-          <button class="modal-tab-btn active" id="tab-btn-history" onclick="switchHistoryTab('history')">Histórico de Treinos</button>
-          <button class="modal-tab-btn" id="tab-btn-exercise" onclick="switchHistoryTab('exercise')">Evolução por Exercício</button>
-        </div>
-
-        <!-- ABA 1: HISTÓRICO DE TREINOS -->
-        <div id="history-tab-content-list">
-          <div id="history-calendar-list">
-            <!-- Lista de treinos concluídos com detalhes -->
+      <!-- Passo 1: Foto -->
+      <div class="card">
+        <h2 class="card-title">1. Fotografe seu prato</h2>
+        <div class="photo-box">
+          <div class="photo-icon">📷</div>
+          <p>Adicione uma foto da refeição</p>
+          <small>A foto ajuda a identificar a refeição. Você poderá confirmar os itens e informar os pesos.</small>
+          <div class="grid2" style="margin-top:13px">
+            <label class="btn secondary" for="cameraInput">📸 Tirar foto</label>
+            <label class="btn secondary" for="galleryInput">🖼️ Galeria</label>
           </div>
+          <input id="cameraInput" type="file" accept="image/*" capture="environment" hidden>
+          <input id="galleryInput" type="file" accept="image/*" hidden>
+          <img class="photo-preview" id="photoPreview" alt="Prévia da foto selecionada">
         </div>
+        <p class="hint">A prévia da foto funciona neste protótipo. A identificação automática por IA exige conectar um serviço de análise de imagens.</p>
+      </div>
 
-        <!-- ABA 2: EVOLUÇÃO POR EXERCÍCIO -->
-        <div id="history-tab-content-exercise" style="display: none;">
-          <div class="form-group">
-            <label>Selecione um Exercício</label>
-            <select id="exercise-evolution-select" class="form-input" onchange="renderExerciseEvolution()">
-              <option value="">-- Selecionar Exercício --</option>
+      <!-- Passo 2: Alimentos -->
+      <div class="card">
+        <h2 class="card-title">2. Dados da refeição</h2>
+        <div class="grid2">
+          <div>
+            <label class="label" for="mealType">Tipo de refeição</label>
+            <select id="mealType" class="field">
+              <option>Café da manhã</option>
+              <option>Lanche da manhã</option>
+              <option selected>Almoço</option>
+              <option>Lanche da tarde</option>
+              <option>Jantar</option>
+              <option>Ceia</option>
+              <option>Outra</option>
             </select>
           </div>
-          <div id="exercise-evolution-results" class="mt-15">
-            <p class="text-xs text-muted text-center">Selecione um exercício acima para consultar o histórico de cargas e repetições.</p>
+          <div>
+            <label class="label" for="mealDate">Data</label>
+            <input id="mealDate" class="field" type="date">
           </div>
         </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Modal Detalhes do Treino do Histórico -->
-  <div id="modal-workout-detail" class="modal" style="z-index: 350;">
-    <div class="modal-content">
-      <div class="modal-header">
-        <div>
-          <h3 id="detail-workout-title" style="font-size: 1.1rem; font-weight: 900;">Treino A</h3>
-          <p class="text-xs text-muted" id="detail-workout-meta">Data e Duração</p>
-        </div>
-        <button class="btn-close" onclick="closeModal('modal-workout-detail')">&times;</button>
-      </div>
-      <div class="modal-body" id="detail-workout-body">
-        <!-- Lista detalhada dos exercícios renderizada via JS -->
-      </div>
-      <div class="modal-footer">
-        <button class="btn btn-secondary" onclick="closeModal('modal-workout-detail')">Fechar</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Modal Meta de Água -->
-  <div id="modal-water-goal" class="modal">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h3>Meta Diária de Água</h3>
-        <button class="btn-close" onclick="closeModal('modal-water-goal')">&times;</button>
-      </div>
-      <div class="modal-body">
-        <div class="form-group">
-          <label>Meta em ml (Ex: 3000 para 3 Litros)</label>
-          <input type="number" id="water-goal-input" class="form-input" placeholder="3000">
-        </div>
-      </div>
-      <div class="modal-footer">
-        <button class="btn btn-primary" onclick="saveWaterGoal()">Guardar Meta</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Modal Configurações & Backup -->
-  <div id="modal-settings" class="modal">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h3><i class="fa-solid fa-gear text-red"></i> Configurações & Perfil</h3>
-        <button class="btn-close" onclick="closeModal('modal-settings')">&times;</button>
-      </div>
-      <div class="modal-body">
-        <div class="card mb-15">
-          <span class="card-subtitle">PERFIL CONECTADO</span>
-          <h3 id="settings-user-name" class="mt-5">--</h3>
-          <p id="settings-user-email" class="text-xs text-muted">--</p>
-          <button class="btn btn-xs btn-outline-danger mt-10" onclick="lockApp()"><i class="fa-solid fa-lock"></i> Bloquear App</button>
-        </div>
-
-        <p class="text-sm text-muted mb-15">Todos os teus dados são guardados exclusivamente no navegador do teu telemóvel.</p>
         
-        <button class="btn btn-block btn-secondary mb-10" onclick="exportDataBackup()">
-          <i class="fa-solid fa-download"></i> Exportar Backup (JSON)
-        </button>
+        <div id="foodList"></div>
         
-        <label class="btn btn-block btn-outline mb-15" style="display: block; text-align: center; cursor: pointer;">
-          <i class="fa-solid fa-upload"></i> Importar Backup (JSON)
-          <input type="file" id="import-backup-file" accept=".json" onchange="importDataBackup(event)" style="display:none;">
-        </label>
-
-        <hr class="divider">
-
-        <button class="btn btn-block btn-outline-danger mt-15" onclick="resetAllData()">
-          <i class="fa-solid fa-trash"></i> APAGAR TODOS OS DADOS
-        </button>
+        <button class="btn secondary block" id="addFood" style="margin-top:12px">＋ Adicionar alimento</button>
+        <p class="hint">Informe os valores nutricionais por 100 g conforme uma fonte confiável.</p>
       </div>
-    </div>
-  </div>
 
-  <!-- NOTIFICAÇÃO TOAST DE RECORDE -->
-  <div id="toast-pr" class="toast-pr hidden">
-    <i class="fa-solid fa-fire toast-icon"></i>
-    <div>
-      <h4 id="toast-pr-title">NOVO RECORDE PESSOAL!</h4>
-      <p id="toast-pr-desc">100 kg - Supino Inclinado</p>
-    </div>
-  </div>
+      <!-- Resumo da Refeição -->
+      <div class="card">
+        <h2 class="card-title">Resumo desta refeição</h2>
+        <div class="macro-grid">
+          <div class="macro"><span>CALORIAS</span><strong id="mealKcal">0</strong><div class="unit">kcal</div></div>
+          <div class="macro"><span>PROTEÍNAS</span><strong id="mealProtein">0</strong><div class="unit">g</div></div>
+          <div class="macro"><span>CARBOS</span><strong id="mealCarbs">0</strong><div class="unit">g</div></div>
+          <div class="macro"><span>GORDURAS</span><strong id="mealFat">0</strong><div class="unit">g</div></div>
+        </div>
+        <button class="btn primary block" id="saveMeal" style="margin-top:14px">✓ Salvar refeição</button>
+      </div>
 
-  <!-- ==========================================
-       FREAKY SEASON - LÓGICA E SCRIPTS (JAVASCRIPT)
-       ========================================== -->
-  <script>
-    // ----------------------------------------------------
-    // CHAVES DO EMAILJS TOTALMENTE CONFIGURADAS:
-    // ----------------------------------------------------
-    const EMAILJS_PUBLIC_KEY = "xj0fgvmuyuuvlO8S-";
-    const EMAILJS_SERVICE_ID = "service_pwukxda";
-    const EMAILJS_TEMPLATE_ID = "template_fvbdu3a";
-    // ----------------------------------------------------
+      <!-- Resumo do Dia -->
+      <div class="card">
+        <h2 class="card-title">Resumo de hoje</h2>
+        <div class="macro-grid">
+          <div class="macro"><span>CALORIAS</span><strong id="dayKcal">0</strong><div class="unit">kcal</div></div>
+          <div class="macro"><span>PROTEÍNAS</span><strong id="dayProtein">0</strong><div class="unit">g</div></div>
+          <div class="macro"><span>CARBOS</span><strong id="dayCarbs">0</strong><div class="unit">g</div></div>
+          <div class="macro"><span>GORDURAS</span><strong id="dayFat">0</strong><div class="unit">g</div></div>
+        </div>
+      </div>
 
-    const DEFAULT_GOAL_WATER = 3000;
+      <!-- Histórico -->
+      <div class="card">
+        <h2 class="card-title">Histórico alimentar <span class="tiny">mais recentes primeiro</span></h2>
+        <div id="history"><div class="empty">Nenhuma refeição salva ainda.</div></div>
+      </div>
+      
+      <p class="tiny" style="text-align:center;line-height:1.5;padding:0 10px">Os registros são salvos neste navegador via LocalStorage.</p>
+    </section>
 
-    let db = {
-      user: null, // { name, email, pin, registered: true }
-      workouts: [],
-      history: [],
-      water: {},
-      cardio: [],
-      prs: {},
-      activeSession: null // Sessão em andamento persistida
-    };
+    <!-- TAB 4: ÁGUA -->
+    <section id="sec-agua" class="tab-content">
+      <div class="eyebrow">Hidratação • Diário de Água</div>
+      <h1>Consumo de Água</h1>
+      <p class="intro">Registre e monitore sua meta diária de hidratação.</p>
+      
+      <div class="card">
+        <div class="card-title">Meta de Hoje</div>
+        <div class="empty">Em breve: controle de copos e garrafas de água.</div>
+      </div>
+    </section>
+  </main>
 
-    let sessionDurationInterval = null;
-    let timerInterval = null;
-    let timerTimeLeft = 0;
-    let timerRunning = false;
+  <!-- Navegação Inferior -->
+  <nav class="nav">
+    <button class="nav-item" onclick="switchTab('sec-inicio', 'INÍCIO', this)"><span>⌂</span>Início</button>
+    <button class="nav-item" onclick="switchTab('sec-treinos', 'TREINOS', this)"><span>🏋</span>Treinos</button>
+    <button class="nav-item active" onclick="switchTab('sec-alimentacao', 'DIÁRIO ALIMENTAR', this)"><span>◉</span>Alimentação</button>
+    <button class="nav-item" onclick="switchTab('sec-agua', 'ÁGUA', this)"><span>💧</span>Água</button>
+  </nav>
 
-    // INICIALIZAÇÃO
-    document.addEventListener('DOMContentLoaded', () => {
-      loadFromLocalStorage();
-      checkAuthStatus();
-      updateCurrentDate();
-      renderHomeScreen();
-      renderWorkoutsList();
-      renderCardioScreen();
-      renderWaterScreen();
-      checkUnfinishedSession();
-      initSingleFilePWA();
+  <div class="toast" id="toast"></div>
+
+<script>
+  // Controle das Tabs
+  function switchTab(tabId, titleText, element) {
+    document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+    document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+    document.getElementById(tabId).classList.add('active');
+    element.classList.add('active');
+    document.getElementById('pageSubTitle').textContent = titleText;
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  // Lógica do Diário Alimentar
+  const $ = id => document.getElementById(id);
+  const today = () => {
+    const d = new Date();
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+  };
+  
+  $('mealDate').value = today();
+  
+  let foods = []; 
+  let photoData = '';
+  let meals = [];
+  
+  try {
+    meals = JSON.parse(localStorage.getItem('FS_FOOD_MEALS') || '[]');
+  } catch(e) {
+    meals = [];
+  }
+  
+  $('goal').value = localStorage.getItem('FS_FOOD_GOAL') || '2200';
+
+  function toast(msg) {
+    const el = $('toast');
+    el.textContent = msg;
+    el.style.display = 'block';
+    clearTimeout(window.toastTimer);
+    window.toastTimer = setTimeout(() => el.style.display = 'none', 2600);
+  }
+
+  function n(v) {
+    const x = Number(v);
+    return Number.isFinite(x) && x > 0 ? x : 0;
+  }
+  
+  function round(v) {
+    return Math.round(v * 10) / 10;
+  }
+
+  function addFood(name = '', grams = 100, kcal = 0, protein = 0, carbs = 0, fat = 0) {
+    foods.push({ id: Date.now() + Math.random(), name, grams, kcal, protein, carbs, fat });
+    renderFoods();
+  }
+
+  function renderFoods() {
+    const box = $('foodList');
+    box.innerHTML = '';
+    foods.forEach((f, i) => {
+      const row = document.createElement('div');
+      row.className = 'food-row';
+      row.innerHTML = `
+        <div class="food-head">
+          <div class="food-name">Alimento ${i + 1}</div>
+          <button class="remove" aria-label="Remover alimento">×</button>
+        </div>
+        <label class="label">Nome do alimento</label>
+        <input class="field name" value="${esc(f.name)}" placeholder="Ex.: Arroz cozido">
+        <div style="margin-top:10px">
+          <label class="label">Peso consumido (g)</label>
+          <input class="field grams" type="number" min="0" step="1" inputmode="decimal" value="${f.grams}">
+        </div>
+        <div class="grid2" style="margin-top:10px">
+          <div><label class="label">Kcal / 100 g</label><input class="field kcal" type="number" min="0" step="0.1" value="${f.kcal}"></div>
+          <div><label class="label">Proteína / 100 g</label><input class="field protein" type="number" min="0" step="0.1" value="${f.protein}"></div>
+          <div><label class="label">Carbo / 100 g</label><input class="field carbs" type="number" min="0" step="0.1" value="${f.carbs}"></div>
+          <div><label class="label">Gordura / 100 g</label><input class="field fat" type="number" min="0" step="0.1" value="${f.fat}"></div>
+        </div>
+        <div class="hint">Valores por 100 g.</div>`;
+        
+      row.querySelector('.remove').onclick = () => {
+        foods.splice(i, 1);
+        renderFoods();
+      };
+      
+      [['.name','name'],['.grams','grams'],['.kcal','kcal'],['.protein','protein'],['.carbs','carbs'],['.fat','fat']].forEach(([sel, key]) => {
+        row.querySelector(sel).addEventListener('input', e => {
+          f[key] = key === 'name' ? e.target.value : n(e.target.value);
+          updateTotals();
+        });
+      });
+      box.appendChild(row);
     });
+    updateTotals();
+  }
 
-    function getTodayKey() {
-      const now = new Date();
-      return `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
-    }
+  function esc(s) {
+    return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  }
+  
+  function totals(list) {
+    return list.reduce((a, f) => {
+      const factor = n(f.grams) / 100;
+      a.kcal += n(f.kcal) * factor;
+      a.protein += n(f.protein) * factor;
+      a.carbs += n(f.carbs) * factor;
+      a.fat += n(f.fat) * factor;
+      return a;
+    }, { kcal: 0, protein: 0, carbs: 0, fat: 0 });
+  }
 
-    function updateCurrentDate() {
-      const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-      const dateStr = new Date().toLocaleDateString('pt-PT', options);
-      document.getElementById('current-date').innerText = dateStr.toUpperCase();
-    }
+  function updateTotals() {
+    const t = totals(foods);
+    $('mealKcal').textContent = Math.round(t.kcal);
+    $('mealProtein').textContent = round(t.protein);
+    $('mealCarbs').textContent = round(t.carbs);
+    $('mealFat').textContent = round(t.fat);
+    updateDay();
+  }
 
-    // ALTERNAR ENTRE TELA DE LOGIN E CADASTRO
-    function toggleAuthMode(mode) {
-      const loginView = document.getElementById('auth-login-view');
-      const regView = document.getElementById('auth-register-view');
-      const errorEl = document.getElementById('login-error');
-      if (errorEl) errorEl.style.display = 'none';
-
-      if (mode === 'register') {
-        loginView.style.display = 'none';
-        regView.style.display = 'block';
-      } else {
-        loginView.style.display = 'block';
-        regView.style.display = 'none';
-      }
-    }
-
-    // AUTENTICAÇÃO E PERFIL LOCAL
-    function checkAuthStatus() {
-      const overlay = document.getElementById('auth-overlay');
-
-      if (!sessionStorage.getItem('FS_LOGGED_IN')) {
-        overlay.style.display = 'flex';
-        toggleAuthMode('login'); // Abre sempre em Login por padrão
-      } else {
-        overlay.style.display = 'none';
-        updateUserSettingsUI();
-      }
-    }
-
-    function registerUser() {
-      const name = document.getElementById('reg-name').value.trim();
-      const email = document.getElementById('reg-email').value.trim();
-      const pin = document.getElementById('reg-pin').value.trim();
-
-      if (!name || !pin || !email) {
-        alert("Por favor, preencha Nome, E-mail e crie uma Senha/PIN.");
-        return;
-      }
-
-      const btn = document.getElementById('btn-register-submit');
-      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> A registar...';
-      btn.disabled = true;
-
-      db.user = { name, email, pin, registered: true };
-      saveToLocalStorage();
-      sessionStorage.setItem('FS_LOGGED_IN', 'true');
-
-      // ENVIAR E-MAIL REAL VIA EMAILJS
-      if (typeof emailjs !== 'undefined') {
-        emailjs.init(EMAILJS_PUBLIC_KEY);
-        emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
-          user_name: name,
-          user_email: email
-        }).then(() => {
-          console.log("E-mail de confirmação enviado com sucesso!");
-        }).catch(err => {
-          console.error("Erro ao enviar e-mail via EmailJS:", err);
-        });
-      }
-
-      btn.innerHTML = '<i class="fa-solid fa-check"></i> CADASTRAR PERFIL';
-      btn.disabled = false;
-
-      document.getElementById('auth-overlay').style.display = 'none';
-      renderHomeScreen();
-      updateUserSettingsUI();
-
-      // EXIBIR MENSAGEM MOTIVACIONAL DE BOAS-VINDAS
-      document.getElementById('welcome-motivation-text').innerHTML = `
-        Parabéns por dar o primeiro passo, <strong style="color:#FFF;">${name}</strong>!<br><br>
-        Você é forte demais e vai alcançar todos os seus objetivos! Enviamos uma mensagem de confirmação para o e-mail <span style="color:var(--accent-red);">${email}</span>. A temporada bizarra começou!
-      `;
-      openModal('modal-welcome-motivation');
-    }
-
-    function closeWelcomeMotivation() {
-      closeModal('modal-welcome-motivation');
-    }
-
-    function loginUser() {
-      const emailInput = document.getElementById('login-email').value.trim().toLowerCase();
-      const pinInput = document.getElementById('login-pin').value.trim();
-      const errorEl = document.getElementById('login-error');
-
-      if (!db.user || !db.user.registered) {
-        alert("Nenhum perfil encontrado! Por favor, clique em 'Criar conta' para se cadastrar.");
-        toggleAuthMode('register');
-        return;
-      }
-
-      if (emailInput === db.user.email.toLowerCase() && pinInput === db.user.pin) {
-        errorEl.style.display = 'none';
-        sessionStorage.setItem('FS_LOGGED_IN', 'true');
-        document.getElementById('auth-overlay').style.display = 'none';
-        renderHomeScreen();
-        updateUserSettingsUI();
-        checkUnfinishedSession();
-      } else {
-        errorEl.style.display = 'block';
-      }
-    }
-
-    function lockApp() {
-      sessionStorage.removeItem('FS_LOGGED_IN');
-      closeModal('modal-settings');
-      document.getElementById('login-pin').value = '';
-      checkAuthStatus();
-    }
-
-    function updateUserSettingsUI() {
-      if (db.user) {
-        document.getElementById('settings-user-name').innerText = db.user.name;
-        document.getElementById('settings-user-email').innerText = db.user.email || 'Sem e-mail registado';
-      }
-    }
-
-    // ARMAZENAMENTO LOCAL (LOCALSTORAGE)
-    function saveToLocalStorage() {
-      localStorage.setItem('FS_FITNESS_DB', JSON.stringify(db));
-    }
-
-    function loadFromLocalStorage() {
-      const data = localStorage.getItem('FS_FITNESS_DB');
-      if (data) {
-        try {
-          db = JSON.parse(data);
-          if (!db.history) db.history = [];
-          if (!db.workouts) db.workouts = [];
-          if (!db.water) db.water = {};
-          if (!db.cardio) db.cardio = [];
-          if (!db.prs) db.prs = {};
-        } catch (e) {
-          console.error("Erro ao carregar dados:", e);
-        }
-      }
-    }
-
-    // VERIFICAÇÃO E CONTINUIDADE DE TREINO EM ANDAMENTO
-    function checkUnfinishedSession() {
-      if (!sessionStorage.getItem('FS_LOGGED_IN')) return;
-
-      if (db.activeSession) {
-        const elapsedSec = getSessionElapsedSeconds();
-        const completedSetsCount = countCompletedSets(db.activeSession);
-        const totalSetsCount = countTotalSets(db.activeSession);
-
-        document.getElementById('resume-workout-title').innerText = db.activeSession.workoutName;
-        document.getElementById('resume-workout-time').innerHTML = `<i class="fa-regular fa-clock"></i> Tempo decorrido: <strong>${formatDurationShort(elapsedSec)}</strong>`;
-        document.getElementById('resume-workout-progress').innerHTML = `<i class="fa-solid fa-bars-progress"></i> Progresso: <strong>${completedSetsCount} de ${totalSetsCount} séries concluídas</strong>`;
-
-        openModal('modal-resume-workout');
-      }
-    }
-
-    function countCompletedSets(session) {
-      if (!session || !session.exercises) return 0;
-      let count = 0;
-      session.exercises.forEach(ex => {
-        ex.sets.forEach(s => { if (s.completed) count++; });
-      });
-      return count;
-    }
-
-    function countTotalSets(session) {
-      if (!session || !session.exercises) return 0;
-      let count = 0;
-      session.exercises.forEach(ex => { count += ex.sets.length; });
-      return count;
-    }
-
-    function resumeUnfinishedSession() {
-      closeModal('modal-resume-workout');
-      renderSessionView();
-      document.getElementById('workout-session-view').classList.remove('hidden');
-      document.getElementById('floating-timer').classList.remove('hidden');
-      startSessionDurationTimer();
-    }
-
-    function discardUnfinishedSession() {
-      if (confirm("Tens a certeza que desejas descartar este treino em andamento? Todos os dados gravados nesta sessão serão perdidos.")) {
-        db.activeSession = null;
-        saveToLocalStorage();
-        stopSessionDurationTimer();
-        closeModal('modal-resume-workout');
-        renderHomeScreen();
-      }
-    }
-
-    // TROCA DE TELAS
-    function switchTab(tabName) {
-      document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
-      document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
-
-      document.getElementById(`tab-${tabName}`).classList.add('active');
-      document.getElementById(`nav-${tabName}`).classList.add('active');
-
-      if (tabName === 'home') renderHomeScreen();
-      if (tabName === 'workouts') renderWorkoutsList();
-      if (tabName === 'cardio') renderCardioScreen();
-      if (tabName === 'water') renderWaterScreen();
-    }
-
-    // TELA INICIAL
-    function renderHomeScreen() {
-      const daysOfWeek = ['Domingo', 'Segunda-feira', 'Terça-feira', 'Quarta-feira', 'Quinta-feira', 'Sexta-feira', 'Sábado'];
-      const todayName = daysOfWeek[new Date().getDay()];
-
-      const userName = (db.user && db.user.name) ? db.user.name : 'Atleta';
-      document.getElementById('home-user-greeting').innerHTML = `Massa, <span>${userName}</span>! Hora do treino`;
-
-      const todayWorkout = db.workouts.find(w => w.day === todayName);
-      const titleEl = document.getElementById('home-scheduled-workout-title');
-      const descEl = document.getElementById('home-scheduled-workout-desc');
-      const startBtn = document.getElementById('home-start-btn');
-
-      if (todayWorkout) {
-        titleEl.innerText = todayWorkout.name;
-        descEl.innerText = `${todayWorkout.muscles} (${todayWorkout.exercises.length} exercícios)`;
-        startBtn.style.display = 'inline-flex';
-        startBtn.onclick = () => startWorkoutSession(todayWorkout.id);
-      } else {
-        titleEl.innerText = "Descanso / Treino Livre";
-        descEl.innerText = "Nenhum treino agendado para hoje.";
-        startBtn.style.display = 'none';
-      }
-
-      // Água Hoje
-      const todayKey = getTodayKey();
-      const waterData = db.water[todayKey] || { goal: DEFAULT_GOAL_WATER, logs: [] };
-      const totalWater = waterData.logs.reduce((sum, l) => sum + l.amount, 0);
-      document.getElementById('home-water-val').innerText = `${(totalWater/1000).toFixed(1)} / ${(waterData.goal/1000).toFixed(1)} L`;
-      const waterPct = Math.min(100, Math.round((totalWater / waterData.goal) * 100));
-      document.getElementById('home-water-bar').style.width = `${waterPct}%`;
-
-      // Cardio Semanal
-      const weeklyCardioMin = getWeeklyCardioMinutes();
-      document.getElementById('home-cardio-val').innerText = `${weeklyCardioMin} min`;
-
-      // Resumo da Semana
-      document.getElementById('sum-completed-workouts').innerText = getWeeklyCompletedWorkoutsCount();
-      document.getElementById('sum-water-avg').innerText = `${(getWeeklyWaterAvg()/1000).toFixed(1)}L`;
-      document.getElementById('sum-cardio-total').innerText = `${weeklyCardioMin}m`;
-
-      // PR Destaque
-      const prHighlightEl = document.getElementById('home-pr-highlight');
-      const prKeys = Object.keys(db.prs || {});
-      if (prKeys.length > 0) {
-        const lastPRKey = prKeys[prKeys.length - 1];
-        const pr = db.prs[lastPRKey];
-        prHighlightEl.innerHTML = `
-          <div style="display:flex; justify-content:space-between; align-items:center;">
-            <div>
-              <strong style="color:#FFF;">${lastPRKey}</strong>
-              <p class="text-xs text-muted">${pr.weight} kg x ${pr.reps} reps em ${pr.date}</p>
-            </div>
-            <span class="text-red" style="font-size:1.2rem; font-weight:900;"><i class="fa-solid fa-fire"></i></span>
-          </div>
-        `;
-      } else {
-        prHighlightEl.innerHTML = `<p class="text-muted text-sm">Nenhum recorde registado ainda. Cadastra o teu primeiro treino!</p>`;
-      }
-    }
-
-    function startScheduledWorkout() {
-      const daysOfWeek = ['Domingo', 'Segunda-feira', 'Terça-feira', 'Quarta-feira', 'Quinta-feira', 'Sexta-feira', 'Sábado'];
-      const todayName = daysOfWeek[new Date().getDay()];
-      const todayWorkout = db.workouts.find(w => w.day === todayName);
-      if (todayWorkout) startWorkoutSession(todayWorkout.id);
-    }
-
-    // LISTA DE TREINOS
-    function renderWorkoutsList() {
-      const container = document.getElementById('workouts-list');
-      container.innerHTML = '';
-
-      if (db.workouts.length === 0) {
-        container.innerHTML = `
-          <div class="card text-center" style="padding: 30px 15px;">
-            <i class="fa-solid fa-dumbbell text-muted" style="font-size:2.5rem;"></i>
-            <p class="text-muted mt-10">Nenhum treino registado.</p>
-            <button class="btn btn-primary btn-sm mt-15" onclick="openModal('modal-add-workout')">Criar Primeiro Treino</button>
-          </div>
-        `;
-        return;
-      }
-
-      db.workouts.forEach(w => {
-        const card = document.createElement('div');
-        card.className = 'card';
-        card.innerHTML = `
-          <div class="card-header-flex">
-            <span class="card-subtitle">${w.day.toUpperCase()}</span>
-            <div>
-              <button class="icon-btn" style="width:28px; height:28px;" onclick="editWorkout('${w.id}')"><i class="fa-solid fa-pen" style="font-size:0.75rem;"></i></button>
-              <button class="icon-btn" style="width:28px; height:28px;" onclick="deleteWorkout('${w.id}')"><i class="fa-solid fa-trash text-red" style="font-size:0.75rem;"></i></button>
-            </div>
-          </div>
-          <h3 class="mt-5">${w.name}</h3>
-          <p class="text-xs text-muted mt-5">${w.muscles || 'Sem descrição'}</p>
-          <p class="text-xs mt-10"><i class="fa-solid fa-list-check"></i> ${w.exercises.length} Exercícios</p>
-          <button class="btn btn-primary btn-block btn-sm mt-15" onclick="startWorkoutSession('${w.id}')">
-            <i class="fa-solid fa-play"></i> Iniciar Treino
-          </button>
-        `;
-        container.appendChild(card);
-      });
-    }
-
-    function addExerciseField(name = '', sets = 3, reps = 10, weight = '') {
-      const container = document.getElementById('workout-exercises-fields');
-      const fieldId = 'ex-' + Date.now() + Math.random().toString(36).substr(2, 4);
+  function updateDay() {
+    const date = $('mealDate').value || today();
+    const day = meals.filter(m => m.date === date);
+    const t = totals(day.flatMap(m => m.foods || []));
+    
+    $('dayKcal').textContent = Math.round(t.kcal);
+    $('dayProtein').textContent = round(t.protein);
+    $('dayCarbs').textContent = round(t.carbs);
+    $('dayFat').textContent = round(t.fat);
+    
+    const goal = n($('goal').value);
+    const pct = goal ? Math.min(100, (t.kcal / goal) * 100) : 0;
+    
+    $('consumed').innerHTML = `${Math.round(t.kcal).toLocaleString('pt-BR')} <small>kcal</small>`;
+    $('progressFill').style.width = pct + '%';
+    $('progressText').textContent = `${round(pct)}% da meta`;
+    $('remaining').textContent = t.kcal > goal 
+      ? `${Math.round(t.kcal - goal).toLocaleString('pt-BR')} kcal acima da meta` 
+      : `Restam ${Math.round(goal - t.kcal).toLocaleString('pt-BR')} kcal`;
       
-      const div = document.createElement('div');
-      div.className = 'card mt-10';
-      div.id = fieldId;
-      div.innerHTML = `
-        <div class="card-header-flex mb-10">
-          <span class="text-xs text-muted">Exercício</span>
-          <button type="button" class="btn-close" onclick="document.getElementById('${fieldId}').remove()">&times;</button>
+    renderHistory();
+  }
+
+  function renderHistory() {
+    const box = $('history');
+    const sorted = [...meals].sort((a, b) => (b.date + b.time).localeCompare(a.date + a.time));
+    
+    if (!sorted.length) {
+      box.innerHTML = '<div class="empty">Nenhuma refeição salva ainda.</div>';
+      return;
+    }
+    
+    box.innerHTML = '';
+    sorted.forEach(m => {
+      const t = totals(m.foods || []);
+      const el = document.createElement('div');
+      el.className = 'meal';
+      el.innerHTML = `
+        <div class="meal-row">
+          <div><strong>${esc(m.type)}</strong><p>${esc(m.date)} • ${esc(m.time)} • ${(m.foods||[]).length} alimento(s)</p></div>
+          <div class="meal-total">${Math.round(t.kcal)} kcal</div>
         </div>
-        <div class="form-group">
-          <input type="text" class="form-input ex-field-name" placeholder="Nome do Exercício" value="${name}">
-        </div>
-        <div class="grid-3">
-          <div>
-            <label class="text-xs text-muted">Séries</label>
-            <input type="number" class="form-input ex-field-sets" value="${sets}">
-          </div>
-          <div>
-            <label class="text-xs text-muted">Reps Meta</label>
-            <input type="number" class="form-input ex-field-reps" value="${reps}">
-          </div>
-          <div>
-            <label class="text-xs text-muted">Peso Meta (kg)</label>
-            <input type="number" class="form-input ex-field-weight" value="${weight}">
-          </div>
-        </div>
-      `;
-      container.appendChild(div);
-    }
-
-    function saveWorkout() {
-      const id = document.getElementById('edit-workout-id').value || 'w-' + Date.now();
-      const name = document.getElementById('workout-input-name').value.trim();
-      const day = document.getElementById('workout-input-day').value;
-      const muscles = document.getElementById('workout-input-muscles').value.trim();
-
-      if (!name) { alert("Por favor, digite o nome do treino."); return; }
-
-      const exerciseCards = document.querySelectorAll('#workout-exercises-fields .card');
-      const exercises = [];
-
-      exerciseCards.forEach(c => {
-        const exName = c.querySelector('.ex-field-name').value.trim();
-        if (exName) {
-          exercises.push({
-            id: 'ex-' + Date.now() + Math.random().toString(36).substr(2, 4),
-            name: exName,
-            sets: parseInt(c.querySelector('.ex-field-sets').value) || 3,
-            targetReps: parseInt(c.querySelector('.ex-field-reps').value) || 10,
-            targetWeight: parseFloat(c.querySelector('.ex-field-weight').value) || 0
-          });
-        }
-      });
-
-      const workoutObj = { id, name, day, muscles, exercises };
-      const existingIdx = db.workouts.findIndex(w => w.id === id);
-
-      if (existingIdx >= 0) db.workouts[existingIdx] = workoutObj;
-      else db.workouts.push(workoutObj);
-
-      saveToLocalStorage();
-      closeModal('modal-add-workout');
-      renderWorkoutsList();
-      renderHomeScreen();
-    }
-
-    function editWorkout(id) {
-      const w = db.workouts.find(item => item.id === id);
-      if (!w) return;
-
-      document.getElementById('edit-workout-id').value = w.id;
-      document.getElementById('workout-input-name').value = w.name;
-      document.getElementById('workout-input-day').value = w.day;
-      document.getElementById('workout-input-muscles').value = w.muscles;
-
-      const container = document.getElementById('workout-exercises-fields');
-      container.innerHTML = '';
-      w.exercises.forEach(ex => addExerciseField(ex.name, ex.sets, ex.targetReps, ex.targetWeight));
-
-      openModal('modal-add-workout');
-    }
-
-    function deleteWorkout(id) {
-      if (confirm("Tens a certeza que desejas eliminar este treino?")) {
-        db.workouts = db.workouts.filter(w => w.id !== id);
-        saveToLocalStorage();
-        renderWorkoutsList();
-        renderHomeScreen();
-      }
-    }
-
-    // MODO EXECUÇÃO DE TREINO E CRONÔMETRO
-    function startWorkoutSession(workoutId) {
-      const workout = db.workouts.find(w => w.id === workoutId);
-      if (!workout) return;
-
-      const now = Date.now();
-      db.activeSession = {
-        workoutId: workout.id,
-        workoutName: workout.name,
-        muscles: workout.muscles || '',
-        startTimestamp: now,
-        startTimeStr: new Date(now).toLocaleTimeString('pt-PT', { hour: '2-digit', minute: '2-digit' }),
-        dateStr: new Date(now).toLocaleDateString('pt-PT'),
-        exercises: workout.exercises.map(ex => {
-          const lastSession = getLastExerciseData(ex.name);
-          return {
-            name: ex.name,
-            targetSets: ex.sets,
-            lastData: lastSession,
-            sets: Array.from({ length: ex.sets }, (_, i) => ({
-              setNumber: i + 1,
-              weight: lastSession && lastSession.sets[i] ? lastSession.sets[i].weight : ex.targetWeight,
-              reps: lastSession && lastSession.sets[i] ? lastSession.sets[i].reps : ex.targetReps,
-              completed: false
-            }))
-          };
-        })
-      };
-
-      saveToLocalStorage();
-      renderSessionView();
-      document.getElementById('workout-session-view').classList.remove('hidden');
-      document.getElementById('floating-timer').classList.remove('hidden');
-      startSessionDurationTimer();
-    }
-
-    function getSessionElapsedSeconds() {
-      if (!db.activeSession || !db.activeSession.startTimestamp) return 0;
-      return Math.max(0, Math.floor((Date.now() - db.activeSession.startTimestamp) / 1000));
-    }
-
-    function startSessionDurationTimer() {
-      stopSessionDurationTimer();
-      updateSessionDurationDisplay();
-      sessionDurationInterval = setInterval(updateSessionDurationDisplay, 1000);
-    }
-
-    function stopSessionDurationTimer() {
-      if (sessionDurationInterval) {
-        clearInterval(sessionDurationInterval);
-        sessionDurationInterval = null;
-      }
-    }
-
-    function updateSessionDurationDisplay() {
-      const el = document.getElementById('session-duration-timer');
-      if (el && db.activeSession) {
-        const sec = getSessionElapsedSeconds();
-        el.innerText = formatDuration(sec);
-      }
-    }
-
-    function formatDuration(seconds) {
-      const hrs = Math.floor(seconds / 3600);
-      const mins = Math.floor((seconds % 3600) / 60);
-      const secs = seconds % 60;
-      if (hrs > 0) {
-        return `${hrs}:${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
-      }
-      return `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
-    }
-
-    function formatDurationShort(seconds) {
-      const hrs = Math.floor(seconds / 3600);
-      const mins = Math.floor((seconds % 3600) / 60);
-      const secs = seconds % 60;
-      if (hrs > 0) return `${hrs}h ${mins}min`;
-      if (mins === 0) return `${secs}s`;
-      return `${mins} min`;
-    }
-
-    function renderSessionView() {
-      if (!db.activeSession) return;
-
-      document.getElementById('session-workout-name').innerText = db.activeSession.workoutName;
-      document.getElementById('session-workout-muscles').innerText = db.activeSession.muscles || 'Sem descrição';
-      updateSessionDurationDisplay();
-
-      const container = document.getElementById('session-exercises-container');
-      container.innerHTML = '';
-
-      db.activeSession.exercises.forEach((ex, exIdx) => {
-        const card = document.createElement('div');
-        card.className = 'card mt-15';
+        <div class="hint">${(m.foods||[]).map(f => `${esc(f.name||'Alimento')} (${n(f.grams)} g)`).join(' • ')}</div>
+        <button class="btn outline" style="margin-top:9px;padding:7px 10px;font-size:11px">Excluir registro</button>`;
         
-        let lastInfo = ex.lastData ? `<p class="text-xs text-red mb-10"><i class="fa-solid fa-history"></i> Anterior (${ex.lastData.date}): ${ex.lastData.sets.map(s => `${s.weight}kg x ${s.reps}`).join(' | ')}</p>` : '';
-
-        let setsHtml = ex.sets.map((s, setIdx) => `
-          <div class="set-row">
-            <span class="text-xs text-muted text-center">#${setIdx + 1}</span>
-            <input type="number" class="set-input" value="${s.weight}" onchange="updateSetData(${exIdx}, ${setIdx}, 'weight', this.value)" placeholder="kg">
-            <input type="number" class="set-input" value="${s.reps}" onchange="updateSetData(${exIdx}, ${setIdx}, 'reps', this.value)" placeholder="reps">
-            <button class="check-btn ${s.completed ? 'completed' : ''}" onclick="toggleSetComplete(${exIdx}, ${setIdx})">
-              <i class="fa-solid fa-check"></i>
-            </button>
-          </div>
-        `).join('');
-
-        card.innerHTML = `
-          <h3 style="font-size:1rem;">${ex.name}</h3>
-          ${lastInfo}
-          <div class="set-row-header grid-4 text-xs text-muted text-center mb-5" style="display:grid; grid-template-columns: 40px 1fr 1fr 45px;">
-            <span>Série</span><span>KG</span><span>Reps</span><span>OK</span>
-          </div>
-          ${setsHtml}
-        `;
-        container.appendChild(card);
-      });
-    }
-
-    function updateSetData(exIdx, setIdx, field, val) {
-      if (!db.activeSession) return;
-      db.activeSession.exercises[exIdx].sets[setIdx][field] = parseFloat(val) || 0;
-      saveToLocalStorage();
-    }
-
-    function toggleSetComplete(exIdx, setIdx) {
-      if (!db.activeSession) return;
-      const set = db.activeSession.exercises[exIdx].sets[setIdx];
-      set.completed = !set.completed;
-
-      saveToLocalStorage();
-
-      if (set.completed) {
-        checkPR(db.activeSession.exercises[exIdx].name, set.weight, set.reps);
-        startTimerPreset(60);
-      }
-
-      renderSessionView();
-    }
-
-    function checkPR(exerciseName, weight, reps) {
-      if (!weight || weight <= 0) return;
-
-      const currentPR = db.prs[exerciseName];
-      if (!currentPR || weight > currentPR.weight) {
-        db.prs[exerciseName] = { weight, reps, date: getTodayKey() };
-        saveToLocalStorage();
-        showPRToast(exerciseName, weight, reps);
-      }
-    }
-
-    function showPRToast(exercise, weight, reps) {
-      const toast = document.getElementById('toast-pr');
-      document.getElementById('toast-pr-desc').innerText = `${weight} kg x ${reps} reps em ${exercise}`;
-      toast.classList.remove('hidden');
-      setTimeout(() => toast.classList.add('hidden'), 3500);
-    }
-
-    function finishWorkoutSession() {
-      if (!db.activeSession) return;
-
-      if (confirm("Desejas concluir e guardar este treino no teu histórico?")) {
-        const now = Date.now();
-        const durationSeconds = getSessionElapsedSeconds();
-        const startTimeStr = db.activeSession.startTimeStr || new Date(db.activeSession.startTimestamp).toLocaleTimeString('pt-PT', { hour: '2-digit', minute: '2-digit' });
-        const endTimeStr = new Date(now).toLocaleTimeString('pt-PT', { hour: '2-digit', minute: '2-digit' });
-        const dateStr = db.activeSession.dateStr || new Date(now).toLocaleDateString('pt-PT');
-
-        // CÓPIA PROFUNDA DOS DADOS DO TREINO CONCLUÍDO
-        const sessionRecord = {
-          id: 'h-' + Date.now(),
-          workoutName: db.activeSession.workoutName,
-          date: dateStr,
-          timestamp: db.activeSession.startTimestamp || now,
-          endTimestamp: now,
-          startTimeStr: startTimeStr,
-          endTimeStr: endTimeStr,
-          durationSeconds: durationSeconds,
-          durationStr: formatDurationShort(durationSeconds),
-          exercises: db.activeSession.exercises.map(e => ({
-            name: e.name,
-            sets: e.sets.map(s => ({
-              setNumber: s.setNumber || 1,
-              weight: parseFloat(s.weight) || 0,
-              reps: parseInt(s.reps) || 0,
-              completed: !!s.completed
-            }))
-          }))
-        };
-
-        // Salva no histórico primeiro
-        db.history.unshift(sessionRecord); // Mais recente primeiro
-        
-        // Remove a sessão em andamento
-        db.activeSession = null;
-        saveToLocalStorage();
-        stopSessionDurationTimer();
-
-        document.getElementById('workout-session-view').classList.add('hidden');
-        document.getElementById('floating-timer').classList.add('hidden');
-        renderHomeScreen();
-        alert("Treino concluído e registado com sucesso no histórico!");
-      }
-    }
-
-    function confirmExitWorkout() {
-      if (confirm("Tens a certeza que queres fechar o treino? A sessão continuará guardada em andamento para retomares quando quiseres.")) {
-        stopSessionDurationTimer();
-        document.getElementById('workout-session-view').classList.add('hidden');
-        document.getElementById('floating-timer').classList.add('hidden');
-        renderHomeScreen();
-      }
-    }
-
-    function getLastExerciseData(exerciseName) {
-      if (!db.history || db.history.length === 0) return null;
-      for (let i = 0; i < db.history.length; i++) {
-        const ex = db.history[i].exercises.find(e => e.name.toLowerCase() === exerciseName.toLowerCase());
-        if (ex) return { date: db.history[i].date, sets: ex.sets };
-      }
-      return null;
-    }
-
-    // CRONÓMETRO DE DESCANSO
-    function toggleTimerExpand(expand) {
-      document.getElementById('timer-min').classList.toggle('hidden', expand);
-      document.getElementById('timer-max').classList.toggle('hidden', !expand);
-    }
-
-    function setTimerPreset(seconds) {
-      startTimerPreset(seconds);
-    }
-
-    function startTimerPreset(seconds) {
-      timerTimeLeft = seconds;
-      updateTimerDisplays();
-      if (!timerRunning) toggleTimer();
-    }
-
-    function toggleTimer() {
-      const playBtn = document.getElementById('timer-play-btn');
-      if (timerRunning) {
-        clearInterval(timerInterval);
-        timerRunning = false;
-        playBtn.innerHTML = '<i class="fa-solid fa-play"></i>';
-      } else {
-        if (timerTimeLeft <= 0) timerTimeLeft = 60;
-        timerRunning = true;
-        playBtn.innerHTML = '<i class="fa-solid fa-pause"></i>';
-        timerInterval = setInterval(() => {
-          timerTimeLeft--;
-          updateTimerDisplays();
-          if (timerTimeLeft <= 0) {
-            clearInterval(timerInterval);
-            timerRunning = false;
-            playBtn.innerHTML = '<i class="fa-solid fa-play"></i>';
-            playTimerSound();
-          }
-        }, 1000);
-      }
-    }
-
-    function resetTimer() {
-      clearInterval(timerInterval);
-      timerRunning = false;
-      timerTimeLeft = 60;
-      updateTimerDisplays();
-      document.getElementById('timer-play-btn').innerHTML = '<i class="fa-solid fa-play"></i>';
-    }
-
-    function addTimerTime(sec) {
-      timerTimeLeft += sec;
-      updateTimerDisplays();
-    }
-
-    function updateTimerDisplays() {
-      const m = String(Math.floor(timerTimeLeft / 60)).padStart(2, '0');
-      const s = String(timerTimeLeft % 60).padStart(2, '0');
-      const str = `${m}:${s}`;
-      document.getElementById('timer-min-display').innerText = str;
-      document.getElementById('timer-max-display').innerText = str;
-    }
-
-    function playTimerSound() {
-      if ('vibrate' in navigator) navigator.vibrate([200, 100, 200]);
-      try {
-        const ctx = new (window.AudioContext || window.webkitAudioContext)();
-        const osc = ctx.createOscillator();
-        osc.type = 'sine';
-        osc.frequency.setValueAtTime(880, ctx.currentTime);
-        osc.connect(ctx.destination);
-        osc.start();
-        osc.stop(ctx.currentTime + 0.5);
-      } catch(e){}
-    }
-
-    // ÁGUA
-    function renderWaterScreen() {
-      const todayKey = getTodayKey();
-      const waterData = db.water[todayKey] || { goal: DEFAULT_GOAL_WATER, logs: [] };
-      const totalWater = waterData.logs.reduce((sum, l) => sum + l.amount, 0);
-
-      document.getElementById('water-current-display').innerText = `${totalWater} ml`;
-      document.getElementById('water-goal-display').innerText = `Meta: ${waterData.goal} ml`;
-
-      const pct = Math.min(100, Math.round((totalWater / waterData.goal) * 100));
-      document.getElementById('water-progress-fill').style.width = `${pct}%`;
-
-      const logsContainer = document.getElementById('water-logs-list');
-      logsContainer.innerHTML = '';
-
-      if (waterData.logs.length === 0) {
-        logsContainer.innerHTML = `<p class="text-muted text-xs text-center mt-10">Nenhum registo de água hoje.</p>`;
-        return;
-      }
-
-      waterData.logs.slice().reverse().forEach((log) => {
-        const div = document.createElement('div');
-        div.className = 'card mt-5';
-        div.style.padding = '10px 14px';
-        div.innerHTML = `
-          <div class="card-header-flex">
-            <span><i class="fa-solid fa-droplet text-red"></i> ${log.amount} ml</span>
-            <span class="text-xs text-muted">${log.time}</span>
-          </div>
-        `;
-        logsContainer.appendChild(div);
-      });
-    }
-
-    function addWater(amount) {
-      const todayKey = getTodayKey();
-      if (!db.water[todayKey]) db.water[todayKey] = { goal: DEFAULT_GOAL_WATER, logs: [] };
-
-      const timeStr = new Date().toLocaleTimeString('pt-PT', { hour: '2-digit', minute: '2-digit' });
-      db.water[todayKey].logs.push({ amount, time: timeStr });
-
-      saveToLocalStorage();
-      renderWaterScreen();
-      renderHomeScreen();
-    }
-
-    function addCustomWater() {
-      const input = document.getElementById('custom-water-input');
-      const val = parseInt(input.value);
-      if (val > 0) {
-        addWater(val);
-        input.value = '';
-      }
-    }
-
-    function saveWaterGoal() {
-      const goal = parseInt(document.getElementById('water-goal-input').value);
-      if (goal > 0) {
-        const todayKey = getTodayKey();
-        if (!db.water[todayKey]) db.water[todayKey] = { goal, logs: [] };
-        else db.water[todayKey].goal = goal;
-
-        saveToLocalStorage();
-        closeModal('modal-water-goal');
-        renderWaterScreen();
-        renderHomeScreen();
-      }
-    }
-
-    function clearTodayWater() {
-      const todayKey = getTodayKey();
-      if (db.water[todayKey]) {
-        db.water[todayKey].logs = [];
-        saveToLocalStorage();
-        renderWaterScreen();
-        renderHomeScreen();
-      }
-    }
-
-    // CARDIO
-    function renderCardioScreen() {
-      document.getElementById('cardio-week-total').innerText = `${getWeeklyCardioMinutes()} Minutos`;
-      const container = document.getElementById('cardio-history-list');
-      container.innerHTML = '';
-
-      if (db.cardio.length === 0) {
-        container.innerHTML = `<p class="text-muted text-xs text-center mt-10">Nenhum cardio registado.</p>`;
-        return;
-      }
-
-      db.cardio.slice().reverse().forEach(c => {
-        const card = document.createElement('div');
-        card.className = 'card';
-        card.innerHTML = `
-          <div class="card-header-flex">
-            <strong style="color:#FFF;">${c.type}</strong>
-            <span class="text-xs text-red">${c.date}</span>
-          </div>
-          <p class="text-sm mt-5">${c.duration} min ${c.distance ? `| ${c.distance} km` : ''}</p>
-          ${c.notes ? `<p class="text-xs text-muted mt-5">${c.notes}</p>` : ''}
-        `;
-        container.appendChild(card);
-      });
-    }
-
-    function saveCardio() {
-      const type = document.getElementById('cardio-input-type').value;
-      const duration = parseInt(document.getElementById('cardio-input-duration').value);
-      const distance = parseFloat(document.getElementById('cardio-input-distance').value) || null;
-      const notes = document.getElementById('cardio-input-notes').value.trim();
-
-      if (!duration || duration <= 0) { alert("Informa a duração em minutos."); return; }
-
-      db.cardio.push({
-        id: 'c-' + Date.now(),
-        type,
-        duration,
-        distance,
-        notes,
-        date: getTodayKey()
-      });
-
-      saveToLocalStorage();
-      closeModal('modal-add-cardio');
-      renderCardioScreen();
-      renderHomeScreen();
-    }
-
-    // CÁLCULOS SEMANAIS
-    function getWeeklyCardioMinutes() {
-      return db.cardio.reduce((acc, item) => acc + (item.duration || 0), 0);
-    }
-
-    function getWeeklyCompletedWorkoutsCount() {
-      return db.history.length;
-    }
-
-    function getWeeklyWaterAvg() {
-      const keys = Object.keys(db.water);
-      if (keys.length === 0) return 0;
-      let total = 0;
-      keys.forEach(k => {
-        total += db.water[k].logs.reduce((s, l) => s + l.amount, 0);
-      });
-      return total / keys.length;
-    }
-
-    // MODAIS HELPER & ABA DE HISTÓRICO / EVOLUÇÃO
-    function openModal(id) {
-      document.getElementById(id).classList.add('active');
-      if (id === 'modal-prs') renderPRsModal();
-      if (id === 'modal-evo') renderHistoryModal();
-    }
-
-    function closeModal(id) {
-      document.getElementById(id).classList.remove('active');
-    }
-
-    function switchHistoryTab(tab) {
-      document.getElementById('tab-btn-history').classList.toggle('active', tab === 'history');
-      document.getElementById('tab-btn-exercise').classList.toggle('active', tab === 'exercise');
-
-      document.getElementById('history-tab-content-list').style.display = tab === 'history' ? 'block' : 'none';
-      document.getElementById('history-tab-content-exercise').style.display = tab === 'exercise' ? 'block' : 'none';
-
-      if (tab === 'history') renderHistoryModal();
-      if (tab === 'exercise') populateExerciseEvolutionSelect();
-    }
-
-    function renderHistoryModal() {
-      const container = document.getElementById('history-calendar-list');
-      container.innerHTML = '';
-
-      if (!db.history || db.history.length === 0) {
-        container.innerHTML = `<p class="text-muted text-sm text-center">Nenhum treino concluído no histórico ainda.</p>`;
-        return;
-      }
-
-      // Ordenar do mais recente para o mais antigo
-      const sorted = [...db.history].sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
-
-      sorted.forEach(h => {
-        const div = document.createElement('div');
-        div.className = 'card card-highlight';
-        
-        const totalSets = h.exercises.reduce((acc, ex) => acc + ex.sets.length, 0);
-        const durationText = h.durationStr || (h.durationSeconds ? formatDurationShort(h.durationSeconds) : '--');
-
-        div.innerHTML = `
-          <div class="card-header-flex">
-            <span class="card-subtitle"><i class="fa-regular fa-calendar"></i> ${h.date}</span>
-            <span class="text-xs text-red font-weight-bold" style="font-weight:800;"><i class="fa-regular fa-clock"></i> ${durationText}</span>
-          </div>
-          <h3 class="mt-5" style="font-size: 1.05rem; font-weight: 900;">${h.workoutName}</h3>
-          <p class="text-xs text-muted mt-5">${h.exercises.length} exercícios • ${totalSets} séries executadas</p>
-          <button class="btn btn-outline btn-block btn-sm mt-10" onclick="viewWorkoutDetail('${h.id}')">
-            <i class="fa-solid fa-eye"></i> Ver Detalhes do Treino
-          </button>
-        `;
-        container.appendChild(div);
-      });
-    }
-
-    function viewWorkoutDetail(historyId) {
-      const record = db.history.find(h => h.id === historyId);
-      if (!record) return;
-
-      document.getElementById('detail-workout-title').innerText = record.workoutName;
-      
-      let metaStr = `<i class="fa-regular fa-calendar"></i> ${record.date}`;
-      if (record.startTimeStr && record.endTimeStr) {
-        metaStr += ` • ${record.startTimeStr} às ${record.endTimeStr}`;
-      }
-      if (record.durationStr || record.durationSeconds) {
-        metaStr += ` • Duração: <strong>${record.durationStr || formatDurationShort(record.durationSeconds)}</strong>`;
-      }
-      document.getElementById('detail-workout-meta').innerHTML = metaStr;
-
-      const body = document.getElementById('detail-workout-body');
-      body.innerHTML = '';
-
-      record.exercises.forEach(ex => {
-        const exCard = document.createElement('div');
-        exCard.className = 'history-exercise-card';
-
-        let setItems = ex.sets.map((s, idx) => `
-          <li class="history-set-item">
-            <span>Série ${idx + 1}: ${s.reps} repetições</span>
-            <strong style="color:var(--accent-red);">${s.weight} kg</strong>
-          </li>
-        `).join('');
-
-        exCard.innerHTML = `
-          <div class="history-exercise-title">${ex.name}</div>
-          <ul class="history-set-list">
-            ${setItems}
-          </ul>
-        `;
-        body.appendChild(exCard);
-      });
-
-      openModal('modal-workout-detail');
-    }
-
-    function populateExerciseEvolutionSelect() {
-      const select = document.getElementById('exercise-evolution-select');
-      select.innerHTML = '<option value="">-- Selecionar Exercício --</option>';
-
-      const exercisesSet = new Set();
-      if (db.history) {
-        db.history.forEach(h => {
-          h.exercises.forEach(ex => exercisesSet.add(ex.name));
-        });
-      }
-      if (db.prs) {
-        Object.keys(db.prs).forEach(exName => exercisesSet.add(exName));
-      }
-
-      const exercisesList = Array.from(exercisesSet).sort();
-      exercisesList.forEach(name => {
-        const opt = document.createElement('option');
-        opt.value = name;
-        opt.innerText = name;
-        select.appendChild(opt);
-      });
-    }
-
-    function renderExerciseEvolution() {
-      const exerciseName = document.getElementById('exercise-evolution-select').value;
-      const container = document.getElementById('exercise-evolution-results');
-      container.innerHTML = '';
-
-      if (!exerciseName) {
-        container.innerHTML = `<p class="text-xs text-muted text-center">Selecione um exercício acima para consultar o histórico de cargas e repetições.</p>`;
-        return;
-      }
-
-      const matches = [];
-      if (db.history) {
-        db.history.forEach(h => {
-          const ex = h.exercises.find(e => e.name.toLowerCase() === exerciseName.toLowerCase());
-          if (ex) {
-            matches.push({
-              date: h.date,
-              timestamp: h.timestamp || 0,
-              workoutName: h.workoutName,
-              sets: ex.sets
-            });
-          }
-        });
-      }
-
-      if (matches.length === 0) {
-        container.innerHTML = `<p class="text-xs text-muted text-center">Nenhum registro encontrado para este exercício.</p>`;
-        return;
-      }
-
-      matches.sort((a, b) => b.timestamp - a.timestamp);
-
-      matches.forEach(m => {
-        const div = document.createElement('div');
-        div.className = 'card mb-10';
-        
-        let setsStr = m.sets.map((s, i) => `Série ${i+1}: <strong>${s.weight}kg</strong> (${s.reps} reps)`).join('<br>');
-
-        div.innerHTML = `
-          <div class="card-header-flex">
-            <strong style="color:#FFF;">${m.workoutName}</strong>
-            <span class="text-xs text-red">${m.date}</span>
-          </div>
-          <p class="text-xs text-muted mt-10" style="line-height:1.6;">${setsStr}</p>
-        `;
-        container.appendChild(div);
-      });
-    }
-
-    function renderPRsModal() {
-      const container = document.getElementById('prs-list');
-      container.innerHTML = '';
-      const prKeys = Object.keys(db.prs || {});
-
-      if (prKeys.length === 0) {
-        container.innerHTML = `<p class="text-muted text-sm text-center">Nenhum recorde registado ainda.</p>`;
-        return;
-      }
-
-      prKeys.forEach(exName => {
-        const pr = db.prs[exName];
-        const card = document.createElement('div');
-        card.className = 'card';
-        card.innerHTML = `
-          <div class="card-header-flex">
-            <strong>${exName}</strong>
-            <span class="text-red font-weight-bold" style="font-weight:900;">${pr.weight} kg</span>
-          </div>
-          <p class="text-xs text-muted mt-5">${pr.reps} repetições em ${pr.date}</p>
-        `;
-        container.appendChild(card);
-      });
-    }
-
-    // BACKUP E RESTAURAR
-    function exportDataBackup() {
-      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(db, null, 2));
-      const dlAnchorElem = document.createElement('a');
-      dlAnchorElem.setAttribute("href", dataStr);
-      dlAnchorElem.setAttribute("download", `FREAKY_SEASON_BACKUP_${getTodayKey()}.json`);
-      document.body.appendChild(dlAnchorElem);
-      dlAnchorElem.click();
-      dlAnchorElem.remove();
-    }
-
-    function importDataBackup(event) {
-      const fileReader = new FileReader();
-      fileReader.onload = function (e) {
-        try {
-          const importedData = JSON.parse(e.target.result);
-          if (importedData && typeof importedData === 'object') {
-            db = importedData;
-            saveToLocalStorage();
-            alert("Backup restaurado com sucesso!");
-            location.reload();
-          }
-        } catch (err) {
-          alert("Erro ao ler ficheiro de backup JSON.");
+      el.querySelector('button').onclick = () => {
+        if (confirm('Excluir esta refeição do histórico?')) {
+          meals = meals.filter(x => x.id !== m.id);
+          persist();
+          updateDay();
+          toast('Refeição excluída.');
         }
       };
-      fileReader.readAsText(event.target.files[0]);
-    }
+      box.appendChild(el);
+    });
+  }
 
-    function resetAllData() {
-      if (confirm("ATENÇÃO: Desejas apagar permanentemente todos os teus treinos e históricos?")) {
-        localStorage.removeItem('FS_FITNESS_DB');
-        sessionStorage.removeItem('FS_LOGGED_IN');
-        location.reload();
-      }
-    }
+  function persist() {
+    localStorage.setItem('FS_FOOD_MEALS', JSON.stringify(meals));
+  }
 
-    // REGISTO DINÂMICO DE SERVICE WORKER PWA
-    function initSingleFilePWA() {
-      if ('serviceWorker' in navigator) {
-        const swCode = `
-          self.addEventListener('install', e => self.skipWaiting());
-          self.addEventListener('activate', e => self.clients.claim());
-          self.addEventListener('fetch', e => {
-            e.respondWith(fetch(e.request).catch(() => caches.match(e.request)));
-          });
-        `;
-        const blob = new Blob([swCode], { type: 'application/javascript' });
-        const swUrl = URL.createObjectURL(blob);
-        navigator.serviceWorker.register(swUrl).catch(() => {});
-      }
+  $('addFood').onclick = () => addFood('', 100, 0, 0, 0, 0);
+  $('goal').addEventListener('change', () => {
+    localStorage.setItem('FS_FOOD_GOAL', String(Math.max(1, n($('goal').value) || 2200)));
+    updateDay();
+  });
+  $('mealDate').addEventListener('change', updateDay);
+
+  $('saveMeal').onclick = () => {
+    if (!foods.length || !foods.some(f => f.name.trim())) {
+      toast('Adicione pelo menos um alimento com nome.');
+      return;
     }
-  </script>
+    const meal = {
+      id: Date.now().toString(),
+      date: $('mealDate').value || today(),
+      time: new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }),
+      type: $('mealType').value,
+      foods: foods.map(f => ({ ...f })),
+      photo: photoData || ''
+    };
+    meals.push(meal);
+    persist();
+    foods = [];
+    photoData = '';
+    $('photoPreview').style.display = 'none';
+    $('photoPreview').src = '';
+    renderFoods();
+    updateDay();
+    toast('Refeição salva no histórico!');
+  };
+
+  function handlePhoto(file) {
+    if (!file || !file.type.startsWith('image/')) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      photoData = reader.result;
+      $('photoPreview').src = photoData;
+      $('photoPreview').style.display = 'block';
+    };
+    reader.readAsDataURL(file);
+  }
+
+  $('cameraInput').addEventListener('change', e => handlePhoto(e.target.files[0]));
+  $('galleryInput').addEventListener('change', e => handlePhoto(e.target.files[0]));
+
+  // Alimentos padrão iniciais
+  addFood('Arroz cozido', 150, 130, 2.7, 28, 0.3);
+  addFood('Feijão cozido', 100, 76, 4.8, 13.6, 0.5);
+  addFood('Frango grelhado', 150, 159, 32, 0, 3.2);
+
+  updateDay();
+</script>
 </body>
 </html>
