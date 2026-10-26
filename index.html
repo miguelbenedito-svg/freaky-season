@@ -288,7 +288,7 @@
       background: #080808;
       border-top: 1px solid #1A1A1A;
       display: flex;
-      justify-content: space-around;
+      justify-around: space-around;
       padding: 8px 0;
       z-index: 99;
     }
@@ -928,11 +928,11 @@
        ========================================== -->
   <script>
     // ----------------------------------------------------
-    // AS TUAS CHAVES CONFIGURADAS DO EMAILJS:
+    // CHAVES DO EMAILJS TOTALMENTE CONFIGURADAS:
     // ----------------------------------------------------
-    const EMAILJS_PUBLIC_KEY = "SUA_PUBLIC_KEY_AQUI";  // Substitui pela tua Public Key da página "Conta"
-    const EMAILJS_SERVICE_ID = "service_pwukxda";     // O teu Service ID do Gmail
-    const EMAILJS_TEMPLATE_ID = "template_fvbdu3a";   // O teu Template ID
+    const EMAILJS_PUBLIC_KEY = "xj0fgvmuyuuvlO8S-";
+    const EMAILJS_SERVICE_ID = "service_pwukxda";
+    const EMAILJS_TEMPLATE_ID = "template_fvbdu3a";
     // ----------------------------------------------------
 
     const DEFAULT_GOAL_WATER = 3000;
@@ -1022,7 +1022,7 @@
       sessionStorage.setItem('FS_LOGGED_IN', 'true');
 
       // ENVIAR E-MAIL REAL VIA EMAILJS
-      if (typeof emailjs !== 'undefined' && EMAILJS_PUBLIC_KEY !== "SUA_PUBLIC_KEY_AQUI") {
+      if (typeof emailjs !== 'undefined') {
         emailjs.init(EMAILJS_PUBLIC_KEY);
         emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
           user_name: name,
