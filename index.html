@@ -15,6 +15,7 @@
       --muted: #999999;
       --white: #ffffff;
       --input: #1d1d1d;
+      --blue: #0088ff;
     }
     * { box-sizing: border-box; }
     html { background: var(--bg); color-scheme: dark; }
@@ -29,7 +30,7 @@
     button, input, select { font: inherit; }
     button { cursor: pointer; touch-action: manipulation; }
 
-    /* Topo Fixo */
+    /* Header Fixo */
     .top {
       position: sticky;
       top: 0;
@@ -41,255 +42,73 @@
       align-items: center;
       gap: 12px;
     }
-    .brand {
-      font-size: 17px;
-      font-weight: 950;
-      font-style: italic;
-      letter-spacing: 0.3px;
-    }
+    .brand { font-size: 17px; font-weight: 950; font-style: italic; letter-spacing: 0.3px; }
     .brand span { color: var(--red); }
-    .top small {
-      display: block;
-      color: var(--muted);
-      font-size: 10px;
-      letter-spacing: 1.4px;
-      margin-top: 2px;
-      text-transform: uppercase;
-    }
+    .top small { display: block; color: var(--muted); font-size: 10px; letter-spacing: 1.4px; margin-top: 2px; text-transform: uppercase; }
 
-    main {
-      width: 100%;
-      max-width: 560px;
-      margin: 0 auto;
-      padding: 16px 14px 24px;
-    }
+    main { width: 100%; max-width: 560px; margin: 0 auto; padding: 16px 14px 24px; }
 
-    /* Separadores de Conteúdo (Tabs) */
+    /* Tabs */
     .tab-content { display: none; }
     .tab-content.active { display: block; }
 
-    /* Estilos Gerais */
-    .eyebrow {
-      font-size: 11px;
-      letter-spacing: 1.5px;
-      font-weight: 800;
-      color: var(--red);
-      text-transform: uppercase;
-      margin: 3px 0 7px;
-    }
-    h1 {
-      font-size: 25px;
-      line-height: 1.1;
-      margin: 0 0 7px;
-      font-weight: 900;
-    }
-    .intro {
-      color: var(--muted);
-      font-size: 13px;
-      line-height: 1.5;
-      margin: 0 0 18px;
-    }
-    .card {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 15px;
-      padding: 15px;
-      margin-bottom: 13px;
-    }
-    .card-title {
-      font-size: 14px;
-      font-weight: 850;
-      margin: 0 0 12px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 8px;
-    }
-    .label {
-      display: block;
-      font-size: 11px;
-      color: #bdbdbd;
-      font-weight: 750;
-      margin: 0 0 6px;
-    }
-    .field {
-      width: 100%;
-      min-width: 0;
-      background: var(--input);
-      border: 1px solid #343434;
-      color: white;
-      border-radius: 99px;
-      padding: 12px 14px;
-      font-size: 14px;
-      outline: none;
-    }
-    select.field { border-radius: 9px; }
+    /* Componentes Gerais */
+    .eyebrow { font-size: 11px; letter-spacing: 1.5px; font-weight: 800; color: var(--red); text-transform: uppercase; margin: 3px 0 7px; }
+    h1 { font-size: 25px; line-height: 1.1; margin: 0 0 7px; font-weight: 900; }
+    .intro { color: var(--muted); font-size: 13px; line-height: 1.5; margin: 0 0 18px; }
+    .card { background: var(--card); border: 1px solid var(--border); border-radius: 15px; padding: 15px; margin-bottom: 13px; }
+    .card-title { font-size: 14px; font-weight: 850; margin: 0 0 12px; display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+    .label { display: block; font-size: 11px; color: #bdbdbd; font-weight: 750; margin: 0 0 6px; }
+    .field { width: 100%; min-width: 0; background: var(--input); border: 1px solid #343434; color: white; border-radius: 9px; padding: 12px; font-size: 14px; outline: none; }
     .field:focus { border-color: var(--red); }
-    .grid2 {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-    }
-    .btn {
-      border: 0;
-      border-radius: 10px;
-      padding: 12px 14px;
-      font-size: 13px;
-      font-weight: 850;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      transition: background 0.15s;
-    }
+    .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .grid3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
+    
+    .btn { border: 0; border-radius: 10px; padding: 12px 14px; font-size: 13px; font-weight: 850; display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
     .primary { background: var(--red); color: white; }
     .primary:active { background: var(--red2); }
-    .secondary {
-      background: #292929;
-      color: #fff;
-      border: 1px solid #383838;
-    }
-    .outline {
-      background: transparent;
-      color: #ff5555;
-      border: 1px solid #682222;
-    }
+    .blue-btn { background: var(--blue); color: white; }
+    .secondary { background: #292929; color: #fff; border: 1px solid #383838; }
+    .outline { background: transparent; color: #ff5555; border: 1px solid #682222; }
     .block { width: 100%; }
     
+    /* Progresso */
+    .progress { height: 9px; border-radius: 20px; background: #303030; overflow: hidden; margin: 10px 0 6px; }
+    .progress-fill { height: 100%; width: 0%; background: var(--red); border-radius: 20px; transition: width 0.3s ease; }
+    .progress-fill-blue { height: 100%; width: 0%; background: var(--blue); border-radius: 20px; transition: width 0.3s ease; }
+    .split { display: flex; justify-content: space-between; gap: 8px; font-size: 11px; color: var(--muted); }
+    
     /* Foto */
-    .photo-box {
-      border: 1px dashed #555;
-      border-radius: 12px;
-      padding: 18px 12px;
-      text-align: center;
-      background: #101010;
-    }
+    .photo-box { border: 1px dashed #555; border-radius: 12px; padding: 18px 12px; text-align: center; background: #101010; }
     .photo-icon { font-size: 30px; margin-bottom: 6px; }
     .photo-box p { font-size: 13px; font-weight: 850; margin: 0 0 5px; }
-    .photo-box small {
-      font-size: 11px;
-      color: var(--muted);
-      line-height: 1.4;
-      display: block;
-    }
-    .photo-preview {
-      width: 100%;
-      max-height: 240px;
-      object-fit: cover;
-      border-radius: 10px;
-      margin-top: 12px;
-      display: none;
-    }
-    .hint {
-      font-size: 11px;
-      color: var(--muted);
-      line-height: 1.5;
-      margin: 9px 0 0;
-    }
+    .photo-box small { font-size: 11px; color: var(--muted); line-height: 1.4; display: block; }
+    .photo-preview { width: 100%; max-height: 240px; object-fit: cover; border-radius: 10px; margin-top: 12px; display: none; }
+    .hint { font-size: 11px; color: var(--muted); line-height: 1.5; margin: 9px 0 0; }
     
-    /* Alimentos */
-    .food-row {
-      border: 1px solid #2c2c2c;
-      background: #101010;
-      border-radius: 12px;
-      padding: 12px;
-      margin-top: 10px;
-    }
-    .food-head {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 8px;
-      margin-bottom: 10px;
-    }
+    /* Alimentação */
+    .food-row { border: 1px solid #2c2c2c; background: #101010; border-radius: 12px; padding: 12px; margin-top: 10px; }
+    .food-head { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-bottom: 10px; }
     .food-name { font-size: 13px; font-weight: 850; line-height: 1.3; }
-    .remove {
-      background: transparent;
-      border: 0;
-      color: #ff6464;
-      font-size: 18px;
-      padding: 2px 5px;
-    }
-    
-    /* Macros */
-    .macro-grid {
-      display: grid;
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-      gap: 7px;
-    }
-    .macro {
-      background: #1d1d1d;
-      border-radius: 10px;
-      padding: 10px 6px;
-      text-align: center;
-      min-width: 0;
-    }
-    .macro span {
-      display: block;
-      color: var(--muted);
-      font-size: 9px;
-      font-weight: 750;
-      margin-bottom: 4px;
-    }
+    .remove { background: transparent; border: 0; color: #ff6464; font-size: 18px; padding: 2px 5px; }
+    .macro-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 7px; }
+    .macro { background: #1d1d1d; border-radius: 10px; padding: 10px 6px; text-align: center; min-width: 0; }
+    .macro span { display: block; color: var(--muted); font-size: 9px; font-weight: 750; margin-bottom: 4px; }
     .macro strong { font-size: 15px; overflow-wrap: anywhere; }
     .macro .unit { font-size: 9px; color: #aaa; }
-    
-    /* Meta & Progresso */
-    .goal-head {
-      display: flex;
-      align-items: flex-end;
-      justify-content: space-between;
-      gap: 10px;
-    }
+    .goal-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 10px; }
     .kcal { font-size: 29px; font-weight: 950; line-height: 1; }
     .kcal small { font-size: 12px; color: var(--muted); font-weight: 700; }
-    .progress {
-      height: 9px;
-      border-radius: 20px;
-      background: #303030;
-      overflow: hidden;
-      margin: 13px 0 8px;
-    }
-    .progress-fill {
-      height: 100%;
-      width: 0%;
-      background: var(--red);
-      border-radius: 20px;
-      transition: width 0.3s ease;
-    }
-    .split {
-      display: flex;
-      justify-content: space-between;
-      gap: 8px;
-      font-size: 11px;
-      color: var(--muted);
-    }
     
-    /* Histórico */
     .meal { padding: 12px 0; border-bottom: 1px solid #292929; }
     .meal:last-child { border-bottom: 0; padding-bottom: 0; }
-    .meal-row {
-      display: flex;
-      justify-content: space-between;
-      gap: 10px;
-      align-items: start;
-    }
+    .meal-row { display: flex; justify-content: space-between; gap: 10px; align-items: start; }
     .meal strong { font-size: 13px; }
     .meal p { font-size: 11px; color: var(--muted); margin: 4px 0 0; }
-    .meal-total {
-      font-size: 13px;
-      font-weight: 900;
-      color: #ff4b4b;
-      white-space: nowrap;
-    }
-    .empty {
-      color: var(--muted);
-      font-size: 12px;
-      text-align: center;
-      padding: 14px 4px;
-    }
+    .meal-total { font-size: 13px; font-weight: 900; color: #ff4b4b; white-space: nowrap; }
+    .empty { color: var(--muted); font-size: 12px; text-align: center; padding: 14px 4px; }
 
-    /* Menu Inferior Fixo */
+    /* Navigation Bar */
     .nav {
       position: fixed;
       bottom: 0;
@@ -314,7 +133,6 @@
       font-size: 10px;
       font-weight: 750;
       min-width: 56px;
-      transition: color 0.15s;
     }
     .nav-item span:first-child { font-size: 18px; }
     .nav-item.active { color: var(--red); }
@@ -338,55 +156,94 @@
     
     @media(min-width:600px) {
       main { padding-top: 22px; }
-      .top {
-        padding-left: max(16px, calc((100% - 560px)/2));
-        padding-right: max(16px, calc((100% - 560px)/2));
-      }
+      .top { padding-left: max(16px, calc((100% - 560px)/2)); padding-right: max(16px, calc((100% - 560px)/2)); }
     }
   </style>
 </head>
 <body>
 
-  <!-- Topo da Aplicação -->
   <header class="top">
     <div>
       <div class="brand">FREAKY <span>SEASON</span></div>
-      <small id="pageSubTitle">DIÁRIO ALIMENTAR</small>
+      <small id="pageSubTitle">PAINEL PRINCIPAL</small>
     </div>
   </header>
 
   <main>
-    <!-- TAB 1: INÍCIO -->
-    <section id="sec-inicio" class="tab-content">
-      <div class="eyebrow">Dashboard • Visão Geral</div>
-      <h1>Bem-vindo ao FREAKY SEASON</h1>
-      <p class="intro">Seu centro de controle para treinos, nutrição e hábitos diários.</p>
+    <!-- TAB 1: PÁGINA PRINCIPAL / DASHBOARD -->
+    <section id="sec-inicio" class="tab-content active">
+      <div class="eyebrow">Resumo do Dia • Visão Geral</div>
+      <h1>Como está seu dia hoje?</h1>
+      <p class="intro">Acompanhe suas metas de treino, alimentação e hidratação em tempo real.</p>
       
+      <!-- Card Alimentação na Home -->
       <div class="card">
-        <div class="card-title">Resumo do Dia</div>
-        <p class="intro" style="margin:0">Selecione uma das opções no menu inferior para registrar sua alimentação, visualizar treinos ou acompanhar seu consumo de água.</p>
+        <div class="card-title">🍎 Alimentação <span style="color:var(--red)">● HOJE</span></div>
+        <div class="goal-head">
+          <div>
+            <div class="kcal" id="dashKcal">0 <small>kcal</small></div>
+            <div class="tiny" style="margin-top:4px">consumidas</div>
+          </div>
+          <div class="tiny" style="text-align:right" id="dashKcalSub">Meta: 2.200 kcal</div>
+        </div>
+        <div class="progress"><div class="progress-fill" id="dashKcalFill"></div></div>
+        <div class="split"><span id="dashKcalText">0% da meta</span><span id="dashKcalRemaining">Restam 2.200 kcal</span></div>
+      </div>
+
+      <!-- Card Água na Home -->
+      <div class="card">
+        <div class="card-title">💧 Hidratação <span style="color:var(--blue)">● HOJE</span></div>
+        <div class="goal-head">
+          <div>
+            <div class="kcal" id="dashWater" style="color:var(--blue)">0 <small style="color:#aaa">ml</small></div>
+            <div class="tiny" style="margin-top:4px">água ingerida</div>
+          </div>
+          <div class="tiny" style="text-align:right" id="dashWaterSub">Meta: 2.500 ml</div>
+        </div>
+        <div class="progress"><div class="progress-fill-blue" id="dashWaterFill"></div></div>
+        <div class="split"><span id="dashWaterText">0% da meta</span><span id="dashWaterRemaining">Restam 2.500 ml</span></div>
+      </div>
+
+      <!-- Card Treinos na Home -->
+      <div class="card">
+        <div class="card-title">🏋️ Treinos de Hoje</div>
+        <div id="dashWorkoutList">
+          <div class="empty">Nenhum treino concluído hoje.</div>
+        </div>
       </div>
     </section>
 
     <!-- TAB 2: TREINOS -->
     <section id="sec-treinos" class="tab-content">
-      <div class="eyebrow">Treino • Foco Total</div>
-      <h1>Rotina de Treinos</h1>
-      <p class="intro">Acompanhe e registre seus exercícios e evolução diária.</p>
+      <div class="eyebrow">Treinos • Registro Diário</div>
+      <h1>Registrar Treino</h1>
+      <p class="intro">Anote seus exercícios realizados no dia para acompanhar seu progresso.</p>
       
       <div class="card">
-        <div class="card-title">Seus Exercícios</div>
-        <div class="empty">Nenhum treino registrado para hoje.</div>
+        <h2 class="card-title">Adicionar Treino Realizado</h2>
+        <div style="margin-bottom:10px">
+          <label class="label">Nome do Treino</label>
+          <input class="field" id="workoutName" placeholder="Ex.: Treino A - Peito e Tríceps">
+        </div>
+        <div style="margin-bottom:10px">
+          <label class="label">Detalhes / Exercícios</label>
+          <input class="field" id="workoutDetails" placeholder="Ex.: Supino Reto 4x10, Tríceps Pulley 3x12...">
+        </div>
+        <button class="btn primary block" id="btnSaveWorkout">✓ Concluir e Salvar Treino</button>
+      </div>
+
+      <div class="card">
+        <h2 class="card-title">Histórico de Treinos</h2>
+        <div id="workoutHistory"><div class="empty">Nenhum treino registrado ainda.</div></div>
       </div>
     </section>
 
-    <!-- TAB 3: ALIMENTAÇÃO (DIÁRIO ALIMENTAR) -->
-    <section id="sec-alimentacao" class="tab-content active">
+    <!-- TAB 3: ALIMENTAÇÃO -->
+    <section id="sec-alimentacao" class="tab-content">
       <div class="eyebrow">Nutrição • Registro diário</div>
       <h1>O que você comeu hoje?</h1>
-      <p class="intro">Registre suas refeições, informe os pesos e acompanhe calorias e macronutrientes em um só lugar.</p>
+      <p class="intro">Registre suas refeições, informe os pesos e acompanhe calorias e macronutrientes.</p>
 
-      <!-- Meta Diária -->
       <div class="card">
         <div class="card-title">Sua meta diária <span style="color:var(--red)">● HOJE</span></div>
         <div class="goal-head">
@@ -403,13 +260,12 @@
         <div class="split"><span id="progressText">0% da meta</span><span id="remaining">Restam 2.200 kcal</span></div>
       </div>
 
-      <!-- Passo 1: Foto -->
       <div class="card">
         <h2 class="card-title">1. Fotografe seu prato</h2>
         <div class="photo-box">
           <div class="photo-icon">📷</div>
           <p>Adicione uma foto da refeição</p>
-          <small>A foto ajuda a identificar a refeição. Você poderá confirmar os itens e informar os pesos.</small>
+          <small>A foto ajuda a identificar os alimentos.</small>
           <div class="grid2" style="margin-top:13px">
             <label class="btn secondary" for="cameraInput">📸 Tirar foto</label>
             <label class="btn secondary" for="galleryInput">🖼️ Galeria</label>
@@ -418,10 +274,9 @@
           <input id="galleryInput" type="file" accept="image/*" hidden>
           <img class="photo-preview" id="photoPreview" alt="Prévia da foto selecionada">
         </div>
-        <p class="hint">A prévia da foto funciona neste protótipo. A identificação automática por IA exige conectar um serviço de análise de imagens.</p>
+        <p class="hint">A prévia da foto funciona neste protótipo.</p>
       </div>
 
-      <!-- Passo 2: Alimentos -->
       <div class="card">
         <h2 class="card-title">2. Dados da refeição</h2>
         <div class="grid2">
@@ -442,14 +297,11 @@
             <input id="mealDate" class="field" type="date">
           </div>
         </div>
-        
         <div id="foodList"></div>
-        
         <button class="btn secondary block" id="addFood" style="margin-top:12px">＋ Adicionar alimento</button>
         <p class="hint">Informe os valores nutricionais por 100 g conforme uma fonte confiável.</p>
       </div>
 
-      <!-- Resumo da Refeição -->
       <div class="card">
         <h2 class="card-title">Resumo desta refeição</h2>
         <div class="macro-grid">
@@ -461,7 +313,6 @@
         <button class="btn primary block" id="saveMeal" style="margin-top:14px">✓ Salvar refeição</button>
       </div>
 
-      <!-- Resumo do Dia -->
       <div class="card">
         <h2 class="card-title">Resumo de hoje</h2>
         <div class="macro-grid">
@@ -472,69 +323,63 @@
         </div>
       </div>
 
-      <!-- Histórico -->
       <div class="card">
         <h2 class="card-title">Histórico alimentar <span class="tiny">mais recentes primeiro</span></h2>
         <div id="history"><div class="empty">Nenhuma refeição salva ainda.</div></div>
       </div>
-      
-      <p class="tiny" style="text-align:center;line-height:1.5;padding:0 10px">Os registros são salvos neste navegador via LocalStorage.</p>
     </section>
 
     <!-- TAB 4: ÁGUA -->
     <section id="sec-agua" class="tab-content">
-      <div class="eyebrow">Hidratação • Diário de Água</div>
-      <h1>Consumo de Água</h1>
-      <p class="intro">Registre e monitore sua meta diária de hidratação.</p>
+      <div class="eyebrow">Hidratação • Controle Diário</div>
+      <h1>Registro de Água</h1>
+      <p class="intro">Mantenha-se hidratado durante o dia.</p>
       
       <div class="card">
-        <div class="card-title">Meta de Hoje</div>
-        <div class="empty">Em breve: controle de copos e garrafas de água.</div>
+        <div class="card-title">Seu Consumo de Hoje</div>
+        <div class="goal-head">
+          <div>
+            <div class="kcal" id="waterConsumed" style="color:var(--blue)">0 <small style="color:#aaa">ml</small></div>
+            <div class="tiny" style="margin-top:5px">ingeridos hoje</div>
+          </div>
+          <div style="width:115px">
+            <label class="label" for="waterGoal">Meta (ml)</label>
+            <input class="field" id="waterGoal" type="number" min="500" step="100" value="2500" inputmode="numeric">
+          </div>
+        </div>
+        <div class="progress"><div class="progress-fill-blue" id="waterFill"></div></div>
+        <div class="split"><span id="waterText">0% da meta</span><span id="waterRemaining">Restam 2.500 ml</span></div>
+      </div>
+
+      <div class="card">
+        <h2 class="card-title">Adicionar Água Rápido</h2>
+        <div class="grid3">
+          <button class="btn blue-btn" onclick="addWater(250)">＋ 250 ml</button>
+          <button class="btn blue-btn" onclick="addWater(500)">＋ 500 ml</button>
+          <button class="btn blue-btn" onclick="addWater(750)">＋ 750 ml</button>
+        </div>
+        <button class="btn outline block" onclick="resetWater()" style="margin-top:12px;color:#888;border-color:#444">Zerar consumo de hoje</button>
       </div>
     </section>
   </main>
 
   <!-- Navegação Inferior -->
   <nav class="nav">
-    <button class="nav-item" onclick="switchTab('sec-inicio', 'INÍCIO', this)"><span>⌂</span>Início</button>
+    <button class="nav-item active" onclick="switchTab('sec-inicio', 'PAINEL PRINCIPAL', this)"><span>⌂</span>Início</button>
     <button class="nav-item" onclick="switchTab('sec-treinos', 'TREINOS', this)"><span>🏋</span>Treinos</button>
-    <button class="nav-item active" onclick="switchTab('sec-alimentacao', 'DIÁRIO ALIMENTAR', this)"><span>◉</span>Alimentação</button>
-    <button class="nav-item" onclick="switchTab('sec-agua', 'ÁGUA', this)"><span>💧</span>Água</button>
+    <button class="nav-item" onclick="switchTab('sec-alimentacao', 'DIÁRIO ALIMENTAR', this)"><span>◉</span>Alimentação</button>
+    <button class="nav-item" onclick="switchTab('sec-agua', 'HIDRATAÇÃO', this)"><span>💧</span>Água</button>
   </nav>
 
   <div class="toast" id="toast"></div>
 
 <script>
-  // Controle das Tabs
-  function switchTab(tabId, titleText, element) {
-    document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
-    document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
-    document.getElementById(tabId).classList.add('active');
-    element.classList.add('active');
-    document.getElementById('pageSubTitle').textContent = titleText;
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  }
-
-  // Lógica do Diário Alimentar
+  // Utilitários de Data e DOM
   const $ = id => document.getElementById(id);
   const today = () => {
     const d = new Date();
     return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
   };
-  
-  $('mealDate').value = today();
-  
-  let foods = []; 
-  let photoData = '';
-  let meals = [];
-  
-  try {
-    meals = JSON.parse(localStorage.getItem('FS_FOOD_MEALS') || '[]');
-  } catch(e) {
-    meals = [];
-  }
-  
-  $('goal').value = localStorage.getItem('FS_FOOD_GOAL') || '2200';
 
   function toast(msg) {
     const el = $('toast');
@@ -544,14 +389,27 @@
     window.toastTimer = setTimeout(() => el.style.display = 'none', 2600);
   }
 
-  function n(v) {
-    const x = Number(v);
-    return Number.isFinite(x) && x > 0 ? x : 0;
+  function switchTab(tabId, titleText, element) {
+    document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+    document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+    document.getElementById(tabId).classList.add('active');
+    element.classList.add('active');
+    $('pageSubTitle').textContent = titleText;
+    updateDashboard();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
-  
-  function round(v) {
-    return Math.round(v * 10) / 10;
-  }
+
+  // --- 1. LÓGICA DE ALIMENTAÇÃO ---
+  $('mealDate').value = today();
+  let foods = []; 
+  let photoData = '';
+  let meals = [];
+  try { meals = JSON.parse(localStorage.getItem('FS_FOOD_MEALS') || '[]'); } catch(e) { meals = []; }
+  $('goal').value = localStorage.getItem('FS_FOOD_GOAL') || '2200';
+
+  function n(v) { const x = Number(v); return Number.isFinite(x) && x > 0 ? x : 0; }
+  function round(v) { return Math.round(v * 10) / 10; }
+  function esc(s) { return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 
   function addFood(name = '', grams = 100, kcal = 0, protein = 0, carbs = 0, fat = 0) {
     foods.push({ id: Date.now() + Math.random(), name, grams, kcal, protein, carbs, fat });
@@ -565,10 +423,7 @@
       const row = document.createElement('div');
       row.className = 'food-row';
       row.innerHTML = `
-        <div class="food-head">
-          <div class="food-name">Alimento ${i + 1}</div>
-          <button class="remove" aria-label="Remover alimento">×</button>
-        </div>
+        <div class="food-head"><div class="food-name">Alimento ${i + 1}</div><button class="remove" aria-label="Remover">×</button></div>
         <label class="label">Nome do alimento</label>
         <input class="field name" value="${esc(f.name)}" placeholder="Ex.: Arroz cozido">
         <div style="margin-top:10px">
@@ -580,14 +435,8 @@
           <div><label class="label">Proteína / 100 g</label><input class="field protein" type="number" min="0" step="0.1" value="${f.protein}"></div>
           <div><label class="label">Carbo / 100 g</label><input class="field carbs" type="number" min="0" step="0.1" value="${f.carbs}"></div>
           <div><label class="label">Gordura / 100 g</label><input class="field fat" type="number" min="0" step="0.1" value="${f.fat}"></div>
-        </div>
-        <div class="hint">Valores por 100 g.</div>`;
-        
-      row.querySelector('.remove').onclick = () => {
-        foods.splice(i, 1);
-        renderFoods();
-      };
-      
+        </div>`;
+      row.querySelector('.remove').onclick = () => { foods.splice(i, 1); renderFoods(); };
       [['.name','name'],['.grams','grams'],['.kcal','kcal'],['.protein','protein'],['.carbs','carbs'],['.fat','fat']].forEach(([sel, key]) => {
         row.querySelector(sel).addEventListener('input', e => {
           f[key] = key === 'name' ? e.target.value : n(e.target.value);
@@ -599,10 +448,6 @@
     updateTotals();
   }
 
-  function esc(s) {
-    return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-  }
-  
   function totals(list) {
     return list.reduce((a, f) => {
       const factor = n(f.grams) / 100;
@@ -644,17 +489,13 @@
       : `Restam ${Math.round(goal - t.kcal).toLocaleString('pt-BR')} kcal`;
       
     renderHistory();
+    updateDashboard();
   }
 
   function renderHistory() {
     const box = $('history');
     const sorted = [...meals].sort((a, b) => (b.date + b.time).localeCompare(a.date + a.time));
-    
-    if (!sorted.length) {
-      box.innerHTML = '<div class="empty">Nenhuma refeição salva ainda.</div>';
-      return;
-    }
-    
+    if (!sorted.length) { box.innerHTML = '<div class="empty">Nenhuma refeição salva ainda.</div>'; return; }
     box.innerHTML = '';
     sorted.forEach(m => {
       const t = totals(m.foods || []);
@@ -667,21 +508,16 @@
         </div>
         <div class="hint">${(m.foods||[]).map(f => `${esc(f.name||'Alimento')} (${n(f.grams)} g)`).join(' • ')}</div>
         <button class="btn outline" style="margin-top:9px;padding:7px 10px;font-size:11px">Excluir registro</button>`;
-        
       el.querySelector('button').onclick = () => {
-        if (confirm('Excluir esta refeição do histórico?')) {
+        if (confirm('Excluir esta refeição?')) {
           meals = meals.filter(x => x.id !== m.id);
-          persist();
+          localStorage.setItem('FS_FOOD_MEALS', JSON.stringify(meals));
           updateDay();
           toast('Refeição excluída.');
         }
       };
       box.appendChild(el);
     });
-  }
-
-  function persist() {
-    localStorage.setItem('FS_FOOD_MEALS', JSON.stringify(meals));
   }
 
   $('addFood').onclick = () => addFood('', 100, 0, 0, 0, 0);
@@ -692,10 +528,7 @@
   $('mealDate').addEventListener('change', updateDay);
 
   $('saveMeal').onclick = () => {
-    if (!foods.length || !foods.some(f => f.name.trim())) {
-      toast('Adicione pelo menos um alimento com nome.');
-      return;
-    }
+    if (!foods.length || !foods.some(f => f.name.trim())) { toast('Adicione pelo menos um alimento com nome.'); return; }
     const meal = {
       id: Date.now().toString(),
       date: $('mealDate').value || today(),
@@ -705,11 +538,9 @@
       photo: photoData || ''
     };
     meals.push(meal);
-    persist();
-    foods = [];
-    photoData = '';
+    localStorage.setItem('FS_FOOD_MEALS', JSON.stringify(meals));
+    foods = []; photoData = '';
     $('photoPreview').style.display = 'none';
-    $('photoPreview').src = '';
     renderFoods();
     updateDay();
     toast('Refeição salva no histórico!');
@@ -718,22 +549,159 @@
   function handlePhoto(file) {
     if (!file || !file.type.startsWith('image/')) return;
     const reader = new FileReader();
-    reader.onload = () => {
-      photoData = reader.result;
-      $('photoPreview').src = photoData;
-      $('photoPreview').style.display = 'block';
-    };
+    reader.onload = () => { photoData = reader.result; $('photoPreview').src = photoData; $('photoPreview').style.display = 'block'; };
     reader.readAsDataURL(file);
   }
-
   $('cameraInput').addEventListener('change', e => handlePhoto(e.target.files[0]));
   $('galleryInput').addEventListener('change', e => handlePhoto(e.target.files[0]));
 
-  // Alimentos padrão iniciais
+  // --- 2. LÓGICA DE ÁGUA ---
+  let waterData = {};
+  try { waterData = JSON.parse(localStorage.getItem('FS_WATER_DATA') || '{}'); } catch(e) { waterData = {}; }
+  $('waterGoal').value = localStorage.getItem('FS_WATER_GOAL') || '2500';
+
+  function updateWaterUI() {
+    const tDate = today();
+    const consumed = waterData[tDate] || 0;
+    const goal = n($('waterGoal').value) || 2500;
+    const pct = Math.min(100, (consumed / goal) * 100);
+
+    $('waterConsumed').innerHTML = `${consumed.toLocaleString('pt-BR')} <small style="color:#aaa">ml</small>`;
+    $('waterFill').style.width = pct + '%';
+    $('waterText').textContent = `${round(pct)}% da meta`;
+    $('waterRemaining').textContent = consumed > goal 
+      ? `${(consumed - goal).toLocaleString('pt-BR')} ml acima da meta`
+      : `Restam ${(goal - consumed).toLocaleString('pt-BR')} ml`;
+
+    updateDashboard();
+  }
+
+  function addWater(amount) {
+    const tDate = today();
+    waterData[tDate] = (waterData[tDate] || 0) + amount;
+    localStorage.setItem('FS_WATER_DATA', JSON.stringify(waterData));
+    updateWaterUI();
+    toast(`+${amount} ml adicionados!`);
+  }
+
+  function resetWater() {
+    const tDate = today();
+    waterData[tDate] = 0;
+    localStorage.setItem('FS_WATER_DATA', JSON.stringify(waterData));
+    updateWaterUI();
+    toast('Consumo de água zerado.');
+  }
+
+  $('waterGoal').addEventListener('change', () => {
+    localStorage.setItem('FS_WATER_GOAL', String(n($('waterGoal').value) || 2500));
+    updateWaterUI();
+  });
+
+  // --- 3. LÓGICA DE TREINOS ---
+  let workouts = [];
+  try { workouts = JSON.parse(localStorage.getItem('FS_WORKOUTS') || '[]'); } catch(e) { workouts = []; }
+
+  function renderWorkouts() {
+    const box = $('workoutHistory');
+    const sorted = [...workouts].sort((a, b) => (b.date + b.time).localeCompare(a.date + a.time));
+    if (!sorted.length) { box.innerHTML = '<div class="empty">Nenhum treino registrado ainda.</div>'; return; }
+    box.innerHTML = '';
+    sorted.forEach(w => {
+      const el = document.createElement('div');
+      el.className = 'meal';
+      el.innerHTML = `
+        <div class="meal-row">
+          <div><strong>🏋️ ${esc(w.name)}</strong><p>${esc(w.date)} • ${esc(w.time)}</p></div>
+        </div>
+        <div class="hint">${esc(w.details || 'Sem detalhes')}</div>
+        <button class="btn outline" style="margin-top:9px;padding:7px 10px;font-size:11px">Excluir treino</button>`;
+      el.querySelector('button').onclick = () => {
+        if (confirm('Excluir este treino?')) {
+          workouts = workouts.filter(x => x.id !== w.id);
+          localStorage.setItem('FS_WORKOUTS', JSON.stringify(workouts));
+          renderWorkouts();
+          updateDashboard();
+          toast('Treino excluído.');
+        }
+      };
+      box.appendChild(el);
+    });
+  }
+
+  $('btnSaveWorkout').onclick = () => {
+    const name = $('workoutName').value.trim();
+    if (!name) { toast('Informe o nome do treino.'); return; }
+    const item = {
+      id: Date.now().toString(),
+      name: name,
+      details: $('workoutDetails').value.trim(),
+      date: today(),
+      time: new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })
+    };
+    workouts.push(item);
+    localStorage.setItem('FS_WORKOUTS', JSON.stringify(workouts));
+    $('workoutName').value = '';
+    $('workoutDetails').value = '';
+    renderWorkouts();
+    updateDashboard();
+    toast('Treino concluído salvo!');
+  };
+
+  // --- 4. ATUALIZAR RESUMO NA PÁGINA PRINCIPAL (HOME) ---
+  function updateDashboard() {
+    const tDate = today();
+
+    // Calorias na Home
+    const dayMeals = meals.filter(m => m.date === tDate);
+    const foodTotals = totals(dayMeals.flatMap(m => m.foods || []));
+    const kcalGoal = n($('goal').value) || 2200;
+    const kcalPct = Math.min(100, (foodTotals.kcal / kcalGoal) * 100);
+
+    $('dashKcal').innerHTML = `${Math.round(foodTotals.kcal).toLocaleString('pt-BR')} <small>kcal</small>`;
+    $('dashKcalSub').textContent = `Meta: ${kcalGoal.toLocaleString('pt-BR')} kcal`;
+    $('dashKcalFill').style.width = kcalPct + '%';
+    $('dashKcalText').textContent = `${round(kcalPct)}% da meta`;
+    $('dashKcalRemaining').textContent = foodTotals.kcal > kcalGoal 
+      ? `${Math.round(foodTotals.kcal - kcalGoal).toLocaleString('pt-BR')} kcal acima`
+      : `Restam ${Math.round(kcalGoal - foodTotals.kcal).toLocaleString('pt-BR')} kcal`;
+
+    // Água na Home
+    const waterConsumed = waterData[tDate] || 0;
+    const wGoal = n($('waterGoal').value) || 2500;
+    const waterPct = Math.min(100, (waterConsumed / wGoal) * 100);
+
+    $('dashWater').innerHTML = `${waterConsumed.toLocaleString('pt-BR')} <small style="color:#aaa">ml</small>`;
+    $('dashWaterSub').textContent = `Meta: ${wGoal.toLocaleString('pt-BR')} ml`;
+    $('dashWaterFill').style.width = waterPct + '%';
+    $('dashWaterText').textContent = `${round(waterPct)}% da meta`;
+    $('dashWaterRemaining').textContent = waterConsumed > wGoal 
+      ? `${(waterConsumed - wGoal).toLocaleString('pt-BR')} ml acima`
+      : `Restam ${(wGoal - waterConsumed).toLocaleString('pt-BR')} ml`;
+
+    // Treinos na Home
+    const todayWorkouts = workouts.filter(w => w.date === tDate);
+    const wBox = $('dashWorkoutList');
+    if (!todayWorkouts.length) {
+      wBox.innerHTML = '<div class="empty">Nenhum treino concluído hoje.</div>';
+    } else {
+      wBox.innerHTML = '';
+      todayWorkouts.forEach(w => {
+        const item = document.createElement('div');
+        item.style.padding = '8px 0';
+        item.style.borderBottom = '1px solid #222';
+        item.innerHTML = `<strong>🏋️ ${esc(w.name)}</strong><div class="tiny" style="margin-top:2px">${esc(w.details || 'Concluído')} • ${w.time}</div>`;
+        wBox.appendChild(item);
+      });
+    }
+  }
+
+  // Inicialização
   addFood('Arroz cozido', 150, 130, 2.7, 28, 0.3);
   addFood('Feijão cozido', 100, 76, 4.8, 13.6, 0.5);
   addFood('Frango grelhado', 150, 159, 32, 0, 3.2);
 
+  updateWaterUI();
+  renderWorkouts();
   updateDay();
 </script>
 </body>
