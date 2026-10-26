@@ -288,7 +288,7 @@
       background: #080808;
       border-top: 1px solid #1A1A1A;
       display: flex;
-      justify-around: space-around;
+      justify-content: space-around;
       padding: 8px 0;
       z-index: 99;
     }
@@ -321,7 +321,7 @@
     .fullscreen-session.hidden { display: none; }
 
     .session-header {
-      padding: 14px;
+      padding: 12px 16px;
       background: #111;
       border-bottom: 1px solid #222;
       display: flex;
@@ -332,6 +332,19 @@
       z-index: 10;
     }
     .session-body { padding: 16px; max-width: 600px; margin: 0 auto; width: 100%; }
+
+    .session-timer-badge {
+      background: rgba(255, 26, 26, 0.15);
+      border: 1px solid var(--accent-red);
+      color: var(--accent-red);
+      font-weight: 800;
+      font-size: 0.85rem;
+      padding: 4px 10px;
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
 
     .btn-back { background: transparent; border: none; color: #FFF; font-size: 1.2rem; cursor: pointer; }
 
@@ -366,7 +379,7 @@
     }
     .check-btn.completed { background: var(--accent-red); color: #FFF; border-color: var(--accent-red); }
 
-    /* TEMPORIZADOR FLUTUANTE */
+    /* TEMPORIZADOR FLUTUANTE DE DESCANSO */
     .floating-timer {
       position: fixed;
       bottom: 65px;
@@ -405,7 +418,7 @@
       display: none;
       position: fixed;
       top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(0,0,0,0.85);
+      background: rgba(0,0,0,0.88);
       z-index: 300;
       align-items: center;
       justify-content: center;
@@ -417,7 +430,7 @@
       border: 1px solid #282828;
       border-radius: var(--radius);
       width: 100%;
-      max-width: 500px;
+      max-width: 520px;
       max-height: 85vh;
       overflow-y: auto;
     }
@@ -425,6 +438,28 @@
     .modal-body { padding: 16px; }
     .modal-footer { padding: 12px 16px; border-top: 1px solid #222; display: flex; justify-content: flex-end; gap: 8px; }
     .btn-close { background: transparent; border: none; color: #888; font-size: 1.4rem; cursor: pointer; }
+
+    /* TABS DENTRO DE MODAL */
+    .modal-tab-bar {
+      display: flex;
+      border-bottom: 1px solid #222;
+      margin-bottom: 15px;
+    }
+    .modal-tab-btn {
+      flex: 1;
+      padding: 10px;
+      background: transparent;
+      border: none;
+      color: #888;
+      font-weight: 700;
+      font-size: 0.85rem;
+      border-bottom: 2px solid transparent;
+      cursor: pointer;
+    }
+    .modal-tab-btn.active {
+      color: var(--accent-red);
+      border-bottom-color: var(--accent-red);
+    }
 
     /* FORMULÁRIOS */
     .form-group { margin-bottom: 12px; }
@@ -439,6 +474,34 @@
       font-size: 0.9rem;
     }
     .form-group-inline { display: flex; gap: 8px; }
+
+    /* LISTA DETALHADA DE EXERCÍCIOS NO HISTÓRICO */
+    .history-exercise-card {
+      background: #181818;
+      border: 1px solid #262626;
+      border-radius: 8px;
+      padding: 12px;
+      margin-bottom: 10px;
+    }
+    .history-exercise-title {
+      font-size: 0.95rem;
+      font-weight: 800;
+      color: #FFF;
+      margin-bottom: 8px;
+    }
+    .history-set-list {
+      list-style: none;
+      padding-left: 0;
+    }
+    .history-set-item {
+      font-size: 0.85rem;
+      color: #CCC;
+      padding: 4px 0;
+      border-bottom: 1px dashed #282828;
+      display: flex;
+      justify-content: space-between;
+    }
+    .history-set-item:last-child { border-bottom: none; }
 
     /* TOAST RECORDE */
     .toast-pr {
@@ -525,6 +588,33 @@
     </div>
   </div>
 
+  <!-- MODAL RETOMAR TREINO EM ANDAMENTO -->
+  <div id="modal-resume-workout" class="modal" style="z-index: 450;">
+    <div class="modal-content text-center" style="padding: 24px 18px; border: 2px solid var(--accent-red);">
+      <div style="font-size: 2.8rem; color: var(--accent-red);" class="mb-10">
+        <i class="fa-solid fa-triangle-exclamation"></i>
+      </div>
+      <h2 style="font-size: 1.2rem; font-weight: 900;" class="mb-10">
+        VOCÊ TEM UM TREINO EM ANDAMENTO
+      </h2>
+      <div class="card card-highlight text-left mb-15 mt-10">
+        <span class="card-subtitle">SESSÃO NÃO CONCLUÍDA</span>
+        <h3 id="resume-workout-title" class="mt-5">Treino A</h3>
+        <p class="text-xs text-muted mt-5" id="resume-workout-time"><i class="fa-regular fa-clock"></i> Tempo decorrido: --</p>
+        <p class="text-xs text-muted mt-5" id="resume-workout-progress"><i class="fa-solid fa-bars-progress"></i> Progresso: --</p>
+      </div>
+
+      <div class="grid-2">
+        <button class="btn btn-primary" onclick="resumeUnfinishedSession()">
+          <i class="fa-solid fa-play"></i> CONTINUAR TREINO
+        </button>
+        <button class="btn btn-outline-danger" onclick="discardUnfinishedSession()">
+          <i class="fa-solid fa-trash"></i> DESCARTAR
+        </button>
+      </div>
+    </div>
+  </div>
+
   <!-- MODAL MENSAGEM MOTIVACIONAL DE BOAS-VINDAS -->
   <div id="modal-welcome-motivation" class="modal">
     <div class="modal-content text-center" style="padding: 24px 16px; border: 2px solid var(--accent-red);">
@@ -550,7 +640,7 @@
       <h1 id="logo-text" class="logo-fallback" style="display:none;">FREAKY <span>SEASON</span></h1>
       <div class="header-actions">
         <button class="icon-btn" onclick="openModal('modal-prs')" title="Recordes Pessoais"><i class="fa-solid fa-trophy"></i></button>
-        <button class="icon-btn" onclick="openModal('modal-evo')" title="Evolução"><i class="fa-solid fa-chart-line"></i></button>
+        <button class="icon-btn" onclick="openModal('modal-evo')" title="Histórico e Evolução"><i class="fa-solid fa-clock-rotate-left"></i></button>
         <button class="icon-btn" onclick="openModal('modal-settings')" title="Configurações"><i class="fa-solid fa-gear"></i></button>
       </div>
     </div>
@@ -599,7 +689,10 @@
       </div>
 
       <div class="card mt-15">
-        <span class="card-subtitle">RESUMO DA SEMANA</span>
+        <div class="card-header-flex">
+          <span class="card-subtitle">RESUMO DA SEMANA</span>
+          <button class="btn btn-xs btn-outline" onclick="openModal('modal-evo')"><i class="fa-solid fa-list-check"></i> Histórico</button>
+        </div>
         <div class="week-summary-grid mt-10">
           <div class="summary-item"><span id="sum-completed-workouts">0</span><label>Treinos</label></div>
           <div class="summary-item"><span id="sum-water-avg">0.0L</span><label>Média Água</label></div>
@@ -612,7 +705,10 @@
     <section id="tab-workouts" class="tab-content">
       <div class="section-title-bar">
         <h2>DIVISÃO DE TREINOS</h2>
-        <button class="btn btn-sm btn-outline" onclick="openModal('modal-add-workout')"><i class="fa-solid fa-plus"></i> Novo</button>
+        <div>
+          <button class="btn btn-sm btn-outline mr-5" onclick="openModal('modal-evo')"><i class="fa-solid fa-clock-rotate-left"></i> Histórico</button>
+          <button class="btn btn-sm btn-primary" onclick="openModal('modal-add-workout')"><i class="fa-solid fa-plus"></i> Novo</button>
+        </div>
       </div>
 
       <div id="workouts-list" class="workout-list">
@@ -682,8 +778,12 @@
       <div class="session-header">
         <button class="btn-back" onclick="confirmExitWorkout()"><i class="fa-solid fa-arrow-left"></i></button>
         <div class="session-title-wrap text-center">
-          <h2 id="session-workout-name" style="font-size:1rem;">Nome do Treino</h2>
+          <h2 id="session-workout-name" style="font-size:0.95rem;">Nome do Treino</h2>
           <span id="session-workout-muscles" class="text-xs text-muted">Músculos</span>
+        </div>
+        <div class="session-timer-badge">
+          <i class="fa-regular fa-clock"></i>
+          <span id="session-duration-timer">00:00</span>
         </div>
         <button class="btn btn-sm btn-primary" onclick="finishWorkoutSession()">Concluir</button>
       </div>
@@ -703,7 +803,7 @@
     </div>
     <div class="timer-expanded hidden" id="timer-max">
       <div class="timer-header">
-        <span>CRONÓMETRO DE DESCANSO</span>
+        <span>DESCANSO ENTRE SÉRIES</span>
         <button class="btn-close" onclick="toggleTimerExpand(false)"><i class="fa-solid fa-xmark"></i></button>
       </div>
       <div class="timer-display" id="timer-max-display">01:00</div>
@@ -844,18 +944,57 @@
     </div>
   </div>
 
-  <!-- Modal Evolução / Calendário -->
+  <!-- Modal Histórico Completo & Evolução por Exercício -->
   <div id="modal-evo" class="modal">
     <div class="modal-content">
       <div class="modal-header">
-        <h3><i class="fa-solid fa-chart-line text-red"></i> Evolução e Calendário</h3>
+        <h3><i class="fa-solid fa-clock-rotate-left text-red"></i> Histórico & Evolução</h3>
         <button class="btn-close" onclick="closeModal('modal-evo')">&times;</button>
       </div>
       <div class="modal-body">
-        <h4>Histórico de Treinos Concluídos</h4>
-        <div id="history-calendar-list" class="mt-10">
-          <!-- Lista de treinos concluídos com data -->
+        <div class="modal-tab-bar">
+          <button class="modal-tab-btn active" id="tab-btn-history" onclick="switchHistoryTab('history')">Histórico de Treinos</button>
+          <button class="modal-tab-btn" id="tab-btn-exercise" onclick="switchHistoryTab('exercise')">Evolução por Exercício</button>
         </div>
+
+        <!-- ABA 1: HISTÓRICO DE TREINOS -->
+        <div id="history-tab-content-list">
+          <div id="history-calendar-list">
+            <!-- Lista de treinos concluídos com detalhes -->
+          </div>
+        </div>
+
+        <!-- ABA 2: EVOLUÇÃO POR EXERCÍCIO -->
+        <div id="history-tab-content-exercise" style="display: none;">
+          <div class="form-group">
+            <label>Selecione um Exercício</label>
+            <select id="exercise-evolution-select" class="form-input" onchange="renderExerciseEvolution()">
+              <option value="">-- Selecionar Exercício --</option>
+            </select>
+          </div>
+          <div id="exercise-evolution-results" class="mt-15">
+            <p class="text-xs text-muted text-center">Selecione um exercício acima para consultar o histórico de cargas e repetições.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Detalhes do Treino do Histórico -->
+  <div id="modal-workout-detail" class="modal" style="z-index: 350;">
+    <div class="modal-content">
+      <div class="modal-header">
+        <div>
+          <h3 id="detail-workout-title" style="font-size: 1.1rem; font-weight: 900;">Treino A</h3>
+          <p class="text-xs text-muted" id="detail-workout-meta">Data e Duração</p>
+        </div>
+        <button class="btn-close" onclick="closeModal('modal-workout-detail')">&times;</button>
+      </div>
+      <div class="modal-body" id="detail-workout-body">
+        <!-- Lista detalhada dos exercícios renderizada via JS -->
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeModal('modal-workout-detail')">Fechar</button>
       </div>
     </div>
   </div>
@@ -943,10 +1082,11 @@
       history: [],
       water: {},
       cardio: [],
-      prs: {}
+      prs: {},
+      activeSession: null // Sessão em andamento persistida
     };
 
-    let activeSession = null;
+    let sessionDurationInterval = null;
     let timerInterval = null;
     let timerTimeLeft = 0;
     let timerRunning = false;
@@ -960,6 +1100,7 @@
       renderWorkoutsList();
       renderCardioScreen();
       renderWaterScreen();
+      checkUnfinishedSession();
       initSingleFilePWA();
     });
 
@@ -1070,6 +1211,7 @@
         document.getElementById('auth-overlay').style.display = 'none';
         renderHomeScreen();
         updateUserSettingsUI();
+        checkUnfinishedSession();
       } else {
         errorEl.style.display = 'block';
       }
@@ -1099,9 +1241,65 @@
       if (data) {
         try {
           db = JSON.parse(data);
+          if (!db.history) db.history = [];
+          if (!db.workouts) db.workouts = [];
+          if (!db.water) db.water = {};
+          if (!db.cardio) db.cardio = [];
+          if (!db.prs) db.prs = {};
         } catch (e) {
           console.error("Erro ao carregar dados:", e);
         }
+      }
+    }
+
+    // VERIFICAÇÃO E CONTINUIDADE DE TREINO EM ANDAMENTO
+    function checkUnfinishedSession() {
+      if (!sessionStorage.getItem('FS_LOGGED_IN')) return;
+
+      if (db.activeSession) {
+        const elapsedSec = getSessionElapsedSeconds();
+        const completedSetsCount = countCompletedSets(db.activeSession);
+        const totalSetsCount = countTotalSets(db.activeSession);
+
+        document.getElementById('resume-workout-title').innerText = db.activeSession.workoutName;
+        document.getElementById('resume-workout-time').innerHTML = `<i class="fa-regular fa-clock"></i> Tempo decorrido: <strong>${formatDurationShort(elapsedSec)}</strong>`;
+        document.getElementById('resume-workout-progress').innerHTML = `<i class="fa-solid fa-bars-progress"></i> Progresso: <strong>${completedSetsCount} de ${totalSetsCount} séries concluídas</strong>`;
+
+        openModal('modal-resume-workout');
+      }
+    }
+
+    function countCompletedSets(session) {
+      if (!session || !session.exercises) return 0;
+      let count = 0;
+      session.exercises.forEach(ex => {
+        ex.sets.forEach(s => { if (s.completed) count++; });
+      });
+      return count;
+    }
+
+    function countTotalSets(session) {
+      if (!session || !session.exercises) return 0;
+      let count = 0;
+      session.exercises.forEach(ex => { count += ex.sets.length; });
+      return count;
+    }
+
+    function resumeUnfinishedSession() {
+      closeModal('modal-resume-workout');
+      renderSessionView();
+      document.getElementById('workout-session-view').classList.remove('hidden');
+      document.getElementById('floating-timer').classList.remove('hidden');
+      startSessionDurationTimer();
+    }
+
+    function discardUnfinishedSession() {
+      if (confirm("Tens a certeza que desejas descartar este treino em andamento? Todos os dados gravados nesta sessão serão perdidos.")) {
+        db.activeSession = null;
+        saveToLocalStorage();
+        stopSessionDurationTimer();
+        closeModal('modal-resume-workout');
+        renderHomeScreen();
       }
     }
 
@@ -1178,6 +1376,13 @@
       } else {
         prHighlightEl.innerHTML = `<p class="text-muted text-sm">Nenhum recorde registado ainda. Cadastra o teu primeiro treino!</p>`;
       }
+    }
+
+    function startScheduledWorkout() {
+      const daysOfWeek = ['Domingo', 'Segunda-feira', 'Terça-feira', 'Quarta-feira', 'Quinta-feira', 'Sexta-feira', 'Sábado'];
+      const todayName = daysOfWeek[new Date().getDay()];
+      const todayWorkout = db.workouts.find(w => w.day === todayName);
+      if (todayWorkout) startWorkoutSession(todayWorkout.id);
     }
 
     // LISTA DE TREINOS
@@ -1312,15 +1517,19 @@
       }
     }
 
-    // MODO EXECUÇÃO DE TREINO
+    // MODO EXECUÇÃO DE TREINO E CRONÔMETRO
     function startWorkoutSession(workoutId) {
       const workout = db.workouts.find(w => w.id === workoutId);
       if (!workout) return;
 
-      activeSession = {
+      const now = Date.now();
+      db.activeSession = {
         workoutId: workout.id,
         workoutName: workout.name,
-        startTime: new Date().toISOString(),
+        muscles: workout.muscles || '',
+        startTimestamp: now,
+        startTimeStr: new Date(now).toLocaleTimeString('pt-PT', { hour: '2-digit', minute: '2-digit' }),
+        dateStr: new Date(now).toLocaleDateString('pt-PT'),
         exercises: workout.exercises.map(ex => {
           const lastSession = getLastExerciseData(ex.name);
           return {
@@ -1328,6 +1537,7 @@
             targetSets: ex.sets,
             lastData: lastSession,
             sets: Array.from({ length: ex.sets }, (_, i) => ({
+              setNumber: i + 1,
               weight: lastSession && lastSession.sets[i] ? lastSession.sets[i].weight : ex.targetWeight,
               reps: lastSession && lastSession.sets[i] ? lastSession.sets[i].reps : ex.targetReps,
               completed: false
@@ -1336,17 +1546,69 @@
         })
       };
 
+      saveToLocalStorage();
       renderSessionView();
       document.getElementById('workout-session-view').classList.remove('hidden');
       document.getElementById('floating-timer').classList.remove('hidden');
+      startSessionDurationTimer();
+    }
+
+    function getSessionElapsedSeconds() {
+      if (!db.activeSession || !db.activeSession.startTimestamp) return 0;
+      return Math.max(0, Math.floor((Date.now() - db.activeSession.startTimestamp) / 1000));
+    }
+
+    function startSessionDurationTimer() {
+      stopSessionDurationTimer();
+      updateSessionDurationDisplay();
+      sessionDurationInterval = setInterval(updateSessionDurationDisplay, 1000);
+    }
+
+    function stopSessionDurationTimer() {
+      if (sessionDurationInterval) {
+        clearInterval(sessionDurationInterval);
+        sessionDurationInterval = null;
+      }
+    }
+
+    function updateSessionDurationDisplay() {
+      const el = document.getElementById('session-duration-timer');
+      if (el && db.activeSession) {
+        const sec = getSessionElapsedSeconds();
+        el.innerText = formatDuration(sec);
+      }
+    }
+
+    function formatDuration(seconds) {
+      const hrs = Math.floor(seconds / 3600);
+      const mins = Math.floor((seconds % 3600) / 60);
+      const secs = seconds % 60;
+      if (hrs > 0) {
+        return `${hrs}:${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+      }
+      return `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+    }
+
+    function formatDurationShort(seconds) {
+      const hrs = Math.floor(seconds / 3600);
+      const mins = Math.floor((seconds % 3600) / 60);
+      const secs = seconds % 60;
+      if (hrs > 0) return `${hrs}h ${mins}min`;
+      if (mins === 0) return `${secs}s`;
+      return `${mins} min`;
     }
 
     function renderSessionView() {
-      document.getElementById('session-workout-name').innerText = activeSession.workoutName;
+      if (!db.activeSession) return;
+
+      document.getElementById('session-workout-name').innerText = db.activeSession.workoutName;
+      document.getElementById('session-workout-muscles').innerText = db.activeSession.muscles || 'Sem descrição';
+      updateSessionDurationDisplay();
+
       const container = document.getElementById('session-exercises-container');
       container.innerHTML = '';
 
-      activeSession.exercises.forEach((ex, exIdx) => {
+      db.activeSession.exercises.forEach((ex, exIdx) => {
         const card = document.createElement('div');
         card.className = 'card mt-15';
         
@@ -1376,15 +1638,20 @@
     }
 
     function updateSetData(exIdx, setIdx, field, val) {
-      activeSession.exercises[exIdx].sets[setIdx][field] = parseFloat(val) || 0;
+      if (!db.activeSession) return;
+      db.activeSession.exercises[exIdx].sets[setIdx][field] = parseFloat(val) || 0;
+      saveToLocalStorage();
     }
 
     function toggleSetComplete(exIdx, setIdx) {
-      const set = activeSession.exercises[exIdx].sets[setIdx];
+      if (!db.activeSession) return;
+      const set = db.activeSession.exercises[exIdx].sets[setIdx];
       set.completed = !set.completed;
 
+      saveToLocalStorage();
+
       if (set.completed) {
-        checkPR(activeSession.exercises[exIdx].name, set.weight, set.reps);
+        checkPR(db.activeSession.exercises[exIdx].name, set.weight, set.reps);
         startTimerPreset(60);
       }
 
@@ -1410,38 +1677,64 @@
     }
 
     function finishWorkoutSession() {
-      if (confirm("Desejas concluir e guardar este treino?")) {
+      if (!db.activeSession) return;
+
+      if (confirm("Desejas concluir e guardar este treino no teu histórico?")) {
+        const now = Date.now();
+        const durationSeconds = getSessionElapsedSeconds();
+        const startTimeStr = db.activeSession.startTimeStr || new Date(db.activeSession.startTimestamp).toLocaleTimeString('pt-PT', { hour: '2-digit', minute: '2-digit' });
+        const endTimeStr = new Date(now).toLocaleTimeString('pt-PT', { hour: '2-digit', minute: '2-digit' });
+        const dateStr = db.activeSession.dateStr || new Date(now).toLocaleDateString('pt-PT');
+
+        // CÓPIA PROFUNDA DOS DADOS DO TREINO CONCLUÍDO
         const sessionRecord = {
           id: 'h-' + Date.now(),
-          workoutName: activeSession.workoutName,
-          date: getTodayKey(),
-          exercises: activeSession.exercises.map(e => ({
+          workoutName: db.activeSession.workoutName,
+          date: dateStr,
+          timestamp: db.activeSession.startTimestamp || now,
+          endTimestamp: now,
+          startTimeStr: startTimeStr,
+          endTimeStr: endTimeStr,
+          durationSeconds: durationSeconds,
+          durationStr: formatDurationShort(durationSeconds),
+          exercises: db.activeSession.exercises.map(e => ({
             name: e.name,
-            sets: e.sets.map(s => ({ weight: s.weight, reps: s.reps, completed: s.completed }))
+            sets: e.sets.map(s => ({
+              setNumber: s.setNumber || 1,
+              weight: parseFloat(s.weight) || 0,
+              reps: parseInt(s.reps) || 0,
+              completed: !!s.completed
+            }))
           }))
         };
 
-        db.history.push(sessionRecord);
+        // Salva no histórico primeiro
+        db.history.unshift(sessionRecord); // Mais recente primeiro
+        
+        // Remove a sessão em andamento
+        db.activeSession = null;
         saveToLocalStorage();
+        stopSessionDurationTimer();
 
-        activeSession = null;
         document.getElementById('workout-session-view').classList.add('hidden');
         document.getElementById('floating-timer').classList.add('hidden');
         renderHomeScreen();
-        alert("Treino registado com sucesso! Bom trabalho!");
+        alert("Treino concluído e registado com sucesso no histórico!");
       }
     }
 
     function confirmExitWorkout() {
-      if (confirm("Tens a certeza que queres sair? O progresso não guardado deste treino será perdido.")) {
-        activeSession = null;
+      if (confirm("Tens a certeza que queres fechar o treino? A sessão continuará guardada em andamento para retomares quando quiseres.")) {
+        stopSessionDurationTimer();
         document.getElementById('workout-session-view').classList.add('hidden');
         document.getElementById('floating-timer').classList.add('hidden');
+        renderHomeScreen();
       }
     }
 
     function getLastExerciseData(exerciseName) {
-      for (let i = db.history.length - 1; i >= 0; i--) {
+      if (!db.history || db.history.length === 0) return null;
+      for (let i = 0; i < db.history.length; i++) {
         const ex = db.history[i].exercises.find(e => e.name.toLowerCase() === exerciseName.toLowerCase());
         if (ex) return { date: db.history[i].date, sets: ex.sets };
       }
@@ -1668,7 +1961,7 @@
       return total / keys.length;
     }
 
-    // MODAIS HELPER
+    // MODAIS HELPER & ABA DE HISTÓRICO / EVOLUÇÃO
     function openModal(id) {
       document.getElementById(id).classList.add('active');
       if (id === 'modal-prs') renderPRsModal();
@@ -1677,6 +1970,164 @@
 
     function closeModal(id) {
       document.getElementById(id).classList.remove('active');
+    }
+
+    function switchHistoryTab(tab) {
+      document.getElementById('tab-btn-history').classList.toggle('active', tab === 'history');
+      document.getElementById('tab-btn-exercise').classList.toggle('active', tab === 'exercise');
+
+      document.getElementById('history-tab-content-list').style.display = tab === 'history' ? 'block' : 'none';
+      document.getElementById('history-tab-content-exercise').style.display = tab === 'exercise' ? 'block' : 'none';
+
+      if (tab === 'history') renderHistoryModal();
+      if (tab === 'exercise') populateExerciseEvolutionSelect();
+    }
+
+    function renderHistoryModal() {
+      const container = document.getElementById('history-calendar-list');
+      container.innerHTML = '';
+
+      if (!db.history || db.history.length === 0) {
+        container.innerHTML = `<p class="text-muted text-sm text-center">Nenhum treino concluído no histórico ainda.</p>`;
+        return;
+      }
+
+      // Ordenar do mais recente para o mais antigo
+      const sorted = [...db.history].sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+
+      sorted.forEach(h => {
+        const div = document.createElement('div');
+        div.className = 'card card-highlight';
+        
+        const totalSets = h.exercises.reduce((acc, ex) => acc + ex.sets.length, 0);
+        const durationText = h.durationStr || (h.durationSeconds ? formatDurationShort(h.durationSeconds) : '--');
+
+        div.innerHTML = `
+          <div class="card-header-flex">
+            <span class="card-subtitle"><i class="fa-regular fa-calendar"></i> ${h.date}</span>
+            <span class="text-xs text-red font-weight-bold" style="font-weight:800;"><i class="fa-regular fa-clock"></i> ${durationText}</span>
+          </div>
+          <h3 class="mt-5" style="font-size: 1.05rem; font-weight: 900;">${h.workoutName}</h3>
+          <p class="text-xs text-muted mt-5">${h.exercises.length} exercícios • ${totalSets} séries executadas</p>
+          <button class="btn btn-outline btn-block btn-sm mt-10" onclick="viewWorkoutDetail('${h.id}')">
+            <i class="fa-solid fa-eye"></i> Ver Detalhes do Treino
+          </button>
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    function viewWorkoutDetail(historyId) {
+      const record = db.history.find(h => h.id === historyId);
+      if (!record) return;
+
+      document.getElementById('detail-workout-title').innerText = record.workoutName;
+      
+      let metaStr = `<i class="fa-regular fa-calendar"></i> ${record.date}`;
+      if (record.startTimeStr && record.endTimeStr) {
+        metaStr += ` • ${record.startTimeStr} às ${record.endTimeStr}`;
+      }
+      if (record.durationStr || record.durationSeconds) {
+        metaStr += ` • Duração: <strong>${record.durationStr || formatDurationShort(record.durationSeconds)}</strong>`;
+      }
+      document.getElementById('detail-workout-meta').innerHTML = metaStr;
+
+      const body = document.getElementById('detail-workout-body');
+      body.innerHTML = '';
+
+      record.exercises.forEach(ex => {
+        const exCard = document.createElement('div');
+        exCard.className = 'history-exercise-card';
+
+        let setItems = ex.sets.map((s, idx) => `
+          <li class="history-set-item">
+            <span>Série ${idx + 1}: ${s.reps} repetições</span>
+            <strong style="color:var(--accent-red);">${s.weight} kg</strong>
+          </li>
+        `).join('');
+
+        exCard.innerHTML = `
+          <div class="history-exercise-title">${ex.name}</div>
+          <ul class="history-set-list">
+            ${setItems}
+          </ul>
+        `;
+        body.appendChild(exCard);
+      });
+
+      openModal('modal-workout-detail');
+    }
+
+    function populateExerciseEvolutionSelect() {
+      const select = document.getElementById('exercise-evolution-select');
+      select.innerHTML = '<option value="">-- Selecionar Exercício --</option>';
+
+      const exercisesSet = new Set();
+      if (db.history) {
+        db.history.forEach(h => {
+          h.exercises.forEach(ex => exercisesSet.add(ex.name));
+        });
+      }
+      if (db.prs) {
+        Object.keys(db.prs).forEach(exName => exercisesSet.add(exName));
+      }
+
+      const exercisesList = Array.from(exercisesSet).sort();
+      exercisesList.forEach(name => {
+        const opt = document.createElement('option');
+        opt.value = name;
+        opt.innerText = name;
+        select.appendChild(opt);
+      });
+    }
+
+    function renderExerciseEvolution() {
+      const exerciseName = document.getElementById('exercise-evolution-select').value;
+      const container = document.getElementById('exercise-evolution-results');
+      container.innerHTML = '';
+
+      if (!exerciseName) {
+        container.innerHTML = `<p class="text-xs text-muted text-center">Selecione um exercício acima para consultar o histórico de cargas e repetições.</p>`;
+        return;
+      }
+
+      const matches = [];
+      if (db.history) {
+        db.history.forEach(h => {
+          const ex = h.exercises.find(e => e.name.toLowerCase() === exerciseName.toLowerCase());
+          if (ex) {
+            matches.push({
+              date: h.date,
+              timestamp: h.timestamp || 0,
+              workoutName: h.workoutName,
+              sets: ex.sets
+            });
+          }
+        });
+      }
+
+      if (matches.length === 0) {
+        container.innerHTML = `<p class="text-xs text-muted text-center">Nenhum registro encontrado para este exercício.</p>`;
+        return;
+      }
+
+      matches.sort((a, b) => b.timestamp - a.timestamp);
+
+      matches.forEach(m => {
+        const div = document.createElement('div');
+        div.className = 'card mb-10';
+        
+        let setsStr = m.sets.map((s, i) => `Série ${i+1}: <strong>${s.weight}kg</strong> (${s.reps} reps)`).join('<br>');
+
+        div.innerHTML = `
+          <div class="card-header-flex">
+            <strong style="color:#FFF;">${m.workoutName}</strong>
+            <span class="text-xs text-red">${m.date}</span>
+          </div>
+          <p class="text-xs text-muted mt-10" style="line-height:1.6;">${setsStr}</p>
+        `;
+        container.appendChild(div);
+      });
     }
 
     function renderPRsModal() {
@@ -1701,29 +2152,6 @@
           <p class="text-xs text-muted mt-5">${pr.reps} repetições em ${pr.date}</p>
         `;
         container.appendChild(card);
-      });
-    }
-
-    function renderHistoryModal() {
-      const container = document.getElementById('history-calendar-list');
-      container.innerHTML = '';
-
-      if (db.history.length === 0) {
-        container.innerHTML = `<p class="text-muted text-sm text-center">Nenhum treino concluído no histórico.</p>`;
-        return;
-      }
-
-      db.history.slice().reverse().forEach(h => {
-        const div = document.createElement('div');
-        div.className = 'card';
-        div.innerHTML = `
-          <div class="card-header-flex">
-            <strong>${h.workoutName}</strong>
-            <span class="text-xs text-red">${h.date}</span>
-          </div>
-          <p class="text-xs text-muted mt-5">${h.exercises.length} exercícios realizados</p>
-        `;
-        container.appendChild(div);
       });
     }
 
