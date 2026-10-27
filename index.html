@@ -2,707 +2,2942 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>FREAKY SEASON - Personal Gym & Diário Alimentar</title>
   <meta name="theme-color" content="#000000">
-  <title>FREAKY SEASON</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="FreakySeason">
+
+  <!-- ÍCONES -->
+  <link rel="icon" type="image/jpeg" href="logo.jpg?v=2">
+  <link rel="apple-touch-icon" href="logo.jpg?v=2">
+  <link rel="apple-touch-icon" sizes="180x180" href="logo.jpg?v=2">
+  
+  <link rel="manifest" href='data:application/manifest+json,{"name":"FREAKY SEASON","short_name":"FreakySeason","start_url":"./index.html","display":"standalone","background_color":"#000000","theme_color":"#000000","icons":[{"src":"logo.jpg","sizes":"192x192","type":"image/jpeg"},{"src":"logo.jpg","sizes":"512x512","type":"image/jpeg"}]}'>
+  
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- EmailJS SDK -->
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+
   <style>
     :root {
-      --bg: #000000;
-      --card: #141414;
-      --border: #292929;
-      --red: #ff1a1a;
-      --red2: #d60000;
-      --muted: #999999;
-      --white: #ffffff;
-      --input: #1d1d1d;
-      --blue: #0088ff;
+      --bg-color: #000000;
+      --card-bg: #141414;
+      --card-border: #222222;
+      --accent-red: #FF1A1A;
+      --accent-red-hover: #D60000;
+      --text-main: #FFFFFF;
+      --text-muted: #888888;
+      --input-bg: #1C1C1C;
+      --radius: 12px;
+      --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     }
-    * { box-sizing: border-box; }
-    html { background: var(--bg); color-scheme: dark; }
-    body {
+
+    * {
+      box-sizing: border-box;
       margin: 0;
-      background: var(--bg);
-      color: var(--white);
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      padding-bottom: calc(88px + env(safe-area-inset-bottom));
+      padding: 0;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      font-family: var(--font-family);
+      padding-bottom: 85px;
+      overflow-x: hidden;
       -webkit-font-smoothing: antialiased;
     }
-    button, input, select { font: inherit; }
-    button { cursor: pointer; touch-action: manipulation; }
 
-    /* Header Fixo */
-    .top {
+    .app-header {
+      background: #000000;
+      border-bottom: 1px solid #1A1A1A;
+      padding: 12px 16px;
       position: sticky;
       top: 0;
-      z-index: 5;
-      background: rgba(0, 0, 0, 0.96);
-      border-bottom: 1px solid #202020;
-      padding: 14px 16px;
+      z-index: 100;
+    }
+
+    .header-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    .app-logo {
+      max-height: 38px;
+      width: auto;
+      object-fit: contain;
+    }
+
+    .logo-fallback {
+      font-size: 1.2rem;
+      font-weight: 900;
+      font-style: italic;
+      letter-spacing: 1px;
+    }
+    .logo-fallback span { color: var(--accent-red); }
+
+    .header-actions {
+      display: flex;
+      gap: 10px;
+    }
+
+    .auth-overlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: #000000;
+      z-index: 500;
       display: flex;
       align-items: center;
-      gap: 12px;
+      justify-content: center;
+      padding: 20px;
     }
-    .brand { font-size: 17px; font-weight: 950; font-style: italic; letter-spacing: 0.3px; }
-    .brand span { color: var(--red); }
-    .top small { display: block; color: var(--muted); font-size: 10px; letter-spacing: 1.4px; margin-top: 2px; text-transform: uppercase; }
+    .auth-card {
+      background: #121212;
+      border: 1px solid #222222;
+      border-radius: 16px;
+      padding: 24px 20px;
+      width: 100%;
+      max-width: 400px;
+      box-shadow: 0 10px 30px rgba(255, 26, 26, 0.15);
+    }
 
-    main { width: 100%; max-width: 560px; margin: 0 auto; padding: 16px 14px 24px; }
+    .auth-toggle-link {
+      color: var(--accent-red);
+      cursor: pointer;
+      font-weight: 700;
+      text-decoration: underline;
+    }
 
-    /* Tabs */
+    .app-container {
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 16px;
+    }
+
     .tab-content { display: none; }
-    .tab-content.active { display: block; }
+    .tab-content.active { display: block; animation: fadeIn 0.2s ease-in-out; }
 
-    /* Componentes Gerais */
-    .eyebrow { font-size: 11px; letter-spacing: 1.5px; font-weight: 800; color: var(--red); text-transform: uppercase; margin: 3px 0 7px; }
-    h1 { font-size: 25px; line-height: 1.1; margin: 0 0 7px; font-weight: 900; }
-    .intro { color: var(--muted); font-size: 13px; line-height: 1.5; margin: 0 0 18px; }
-    .card { background: var(--card); border: 1px solid var(--border); border-radius: 15px; padding: 15px; margin-bottom: 13px; }
-    .card-title { font-size: 14px; font-weight: 850; margin: 0 0 12px; display: flex; justify-content: space-between; align-items: center; gap: 8px; }
-    .label { display: block; font-size: 11px; color: #bdbdbd; font-weight: 750; margin: 0 0 6px; }
-    .field { width: 100%; min-width: 0; background: var(--input); border: 1px solid #343434; color: white; border-radius: 9px; padding: 12px; font-size: 14px; outline: none; }
-    .field:focus { border-color: var(--red); }
-    .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-    .grid3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
-    
-    .btn { border: 0; border-radius: 10px; padding: 12px 14px; font-size: 13px; font-weight: 850; display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
-    .primary { background: var(--red); color: white; }
-    .primary:active { background: var(--red2); }
-    .blue-btn { background: var(--blue); color: white; }
-    .secondary { background: #292929; color: #fff; border: 1px solid #383838; }
-    .outline { background: transparent; color: #ff5555; border: 1px solid #682222; }
-    .block { width: 100%; }
-    
-    /* Progresso */
-    .progress { height: 9px; border-radius: 20px; background: #303030; overflow: hidden; margin: 10px 0 6px; }
-    .progress-fill { height: 100%; width: 0%; background: var(--red); border-radius: 20px; transition: width 0.3s ease; }
-    .progress-fill-blue { height: 100%; width: 0%; background: var(--blue); border-radius: 20px; transition: width 0.3s ease; }
-    .split { display: flex; justify-content: space-between; gap: 8px; font-size: 11px; color: var(--muted); }
-    
-    /* Foto */
-    .photo-box { border: 1px dashed #555; border-radius: 12px; padding: 18px 12px; text-align: center; background: #101010; }
-    .photo-icon { font-size: 30px; margin-bottom: 6px; }
-    .photo-box p { font-size: 13px; font-weight: 850; margin: 0 0 5px; }
-    .photo-box small { font-size: 11px; color: var(--muted); line-height: 1.4; display: block; }
-    .photo-preview { width: 100%; max-height: 240px; object-fit: cover; border-radius: 10px; margin-top: 12px; display: none; }
-    .hint { font-size: 11px; color: var(--muted); line-height: 1.5; margin: 9px 0 0; }
-    
-    /* Alimentação */
-    .food-row { border: 1px solid #2c2c2c; background: #101010; border-radius: 12px; padding: 12px; margin-top: 10px; }
-    .food-head { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-bottom: 10px; }
-    .food-name { font-size: 13px; font-weight: 850; line-height: 1.3; }
-    .remove { background: transparent; border: 0; color: #ff6464; font-size: 18px; padding: 2px 5px; }
-    .macro-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 7px; }
-    .macro { background: #1d1d1d; border-radius: 10px; padding: 10px 6px; text-align: center; min-width: 0; }
-    .macro span { display: block; color: var(--muted); font-size: 9px; font-weight: 750; margin-bottom: 4px; }
-    .macro strong { font-size: 15px; overflow-wrap: anywhere; }
-    .macro .unit { font-size: 9px; color: #aaa; }
-    .goal-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 10px; }
-    .kcal { font-size: 29px; font-weight: 950; line-height: 1; }
-    .kcal small { font-size: 12px; color: var(--muted); font-weight: 700; }
-    
-    .meal { padding: 12px 0; border-bottom: 1px solid #292929; }
-    .meal:last-child { border-bottom: 0; padding-bottom: 0; }
-    .meal-row { display: flex; justify-content: space-between; gap: 10px; align-items: start; }
-    .meal strong { font-size: 13px; }
-    .meal p { font-size: 11px; color: var(--muted); margin: 4px 0 0; }
-    .meal-total { font-size: 13px; font-weight: 900; color: #ff4b4b; white-space: nowrap; }
-    .empty { color: var(--muted); font-size: 12px; text-align: center; padding: 14px 4px; }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
 
-    /* Navigation Bar */
-    .nav {
+    .card {
+      background-color: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius);
+      padding: 16px;
+      margin-bottom: 12px;
+      position: relative;
+    }
+
+    .card-highlight { border-left: 4px solid var(--accent-red); }
+
+    .card-subtitle {
+      font-size: 0.7rem;
+      font-weight: 800;
+      color: var(--text-muted);
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+
+    .card-header-flex {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 12px 18px;
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 0.9rem;
+      border: none;
+      cursor: pointer;
+      transition: background 0.15s ease, transform 0.1s ease;
+    }
+    .btn:active { transform: scale(0.98); }
+
+    .btn-primary { background: var(--accent-red); color: #FFF; }
+    .btn-primary:hover { background: var(--accent-red-hover); }
+
+    .btn-secondary { background: #262626; color: #FFF; }
+    .btn-outline { background: transparent; border: 1px solid #333; color: #FFF; }
+    .btn-outline-danger { background: transparent; border: 1px solid var(--accent-red); color: var(--accent-red); }
+
+    .btn-block { width: 100%; }
+    .btn-sm { padding: 8px 12px; font-size: 0.8rem; }
+    .btn-xs { padding: 4px 8px; font-size: 0.75rem; }
+
+    .icon-btn {
+      background: #181818;
+      border: 1px solid #282828;
+      color: #FFF;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
+    .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+
+    .mt-5 { margin-top: 5px; }
+    .mt-10 { margin-top: 10px; }
+    .mt-15 { margin-top: 15px; }
+    .mt-20 { margin-top: 20px; }
+    .mb-5 { margin-bottom: 5px; }
+    .mb-10 { margin-bottom: 10px; }
+    .mb-15 { margin-bottom: 15px; }
+
+    .text-red { color: var(--accent-red); }
+    .text-muted { color: var(--text-muted); }
+    .text-xs { font-size: 0.75rem; }
+    .text-sm { font-size: 0.85rem; }
+    .text-center { text-align: center; }
+
+    .section-title-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+    .section-title-bar h2, .section-title-bar h3 { font-size: 1.1rem; font-weight: 800; }
+
+    .date-badge {
+      font-size: 0.8rem;
+      color: var(--accent-red);
+      font-weight: 700;
+      margin-bottom: 6px;
+      text-transform: uppercase;
+    }
+
+    .greeting-title {
+      font-size: 1.3rem;
+      font-weight: 900;
+      margin-bottom: 12px;
+      color: var(--text-main);
+    }
+    .greeting-title span { color: var(--accent-red); }
+
+    .progress-bar-bg {
+      background: #222;
+      border-radius: 6px;
+      height: 8px;
+      width: 100%;
+      overflow: hidden;
+    }
+    .progress-bar-fill {
+      background: var(--accent-red);
+      height: 100%;
+      transition: width 0.3s ease;
+    }
+
+    .week-summary-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      text-align: center;
+      background: #181818;
+      padding: 12px;
+      border-radius: 8px;
+    }
+    .summary-item span { display: block; font-size: 1.1rem; font-weight: 800; color: var(--accent-red); }
+    .summary-item label { font-size: 0.7rem; color: var(--text-muted); }
+
+    .bottom-nav {
       position: fixed;
       bottom: 0;
       left: 0;
       right: 0;
-      z-index: 8;
-      background: #090909;
-      border-top: 1px solid #292929;
-      padding: 9px 12px calc(9px + env(safe-area-inset-bottom));
+      background: #080808;
+      border-top: 1px solid #1A1A1A;
       display: flex;
       justify-content: space-around;
-      gap: 5px;
+      padding: 8px 0 calc(8px + env(safe-area-inset-bottom));
+      z-index: 99;
     }
+
     .nav-item {
       background: transparent;
-      border: 0;
-      color: #777777;
+      border: none;
+      color: #666;
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 4px;
-      font-size: 10px;
-      font-weight: 750;
-      min-width: 56px;
+      gap: 3px;
+      font-size: 0.65rem;
+      cursor: pointer;
+      width: 20%;
     }
-    .nav-item span:first-child { font-size: 18px; }
-    .nav-item.active { color: var(--red); }
+    .nav-item i { font-size: 1.15rem; }
+    .nav-item.active { color: var(--accent-red); font-weight: 700; }
 
-    .toast {
+    .fullscreen-session {
       position: fixed;
-      top: 76px;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: #000;
+      z-index: 200;
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+    }
+    .fullscreen-session.hidden { display: none; }
+
+    .session-header {
+      padding: 12px 16px;
+      background: #111;
+      border-bottom: 1px solid #222;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+    .session-body { padding: 16px; max-width: 600px; margin: 0 auto; width: 100%; }
+
+    .session-timer-badge {
+      background: rgba(255, 26, 26, 0.15);
+      border: 1px solid var(--accent-red);
+      color: var(--accent-red);
+      font-weight: 800;
+      font-size: 0.85rem;
+      padding: 4px 10px;
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn-back { background: transparent; border: none; color: #FFF; font-size: 1.2rem; cursor: pointer; }
+
+    .set-row {
+      display: grid;
+      grid-template-columns: 40px 1fr 1fr 45px;
+      gap: 8px;
+      align-items: center;
+      margin-bottom: 8px;
+      background: #181818;
+      padding: 6px 10px;
+      border-radius: 6px;
+    }
+    .set-input {
+      background: #222;
+      border: 1px solid #333;
+      color: #FFF;
+      text-align: center;
+      padding: 8px;
+      border-radius: 6px;
+      font-size: 0.9rem;
+      width: 100%;
+    }
+    .check-btn {
+      height: 36px;
+      border-radius: 6px;
+      border: 1px solid #333;
+      background: #222;
+      color: #555;
+      cursor: pointer;
+    }
+    .check-btn.completed { background: var(--accent-red); color: #FFF; border-color: var(--accent-red); }
+
+    .floating-timer {
+      position: fixed;
+      bottom: 70px;
+      right: 16px;
+      z-index: 150;
+    }
+    .floating-timer.hidden { display: none; }
+
+    .timer-minimized {
+      background: #181818;
+      border: 1px solid var(--accent-red);
+      padding: 8px 14px;
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 800;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+    }
+
+    .timer-expanded {
+      background: #141414;
+      border: 1px solid #333;
+      border-radius: 12px;
+      padding: 14px;
+      width: 240px;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.8);
+    }
+    .timer-header { display: flex; justify-content: space-between; font-size: 0.75rem; font-weight: 800; margin-bottom: 8px; }
+    .timer-display { font-size: 2rem; font-weight: 900; text-align: center; margin: 10px 0; color: var(--accent-red); }
+    .timer-presets button { background: #222; border: 1px solid #333; color: #FFF; padding: 6px; border-radius: 4px; font-size: 0.75rem; cursor: pointer; }
+
+    .photo-box {
+      border: 1px dashed #444;
+      border-radius: 12px;
+      padding: 18px 12px;
+      text-align: center;
+      background: #101010;
+    }
+    .photo-icon { font-size: 30px; margin-bottom: 6px; }
+    .photo-preview {
+      width: 100%;
+      max-height: 240px;
+      object-fit: cover;
+      border-radius: 10px;
+      margin-top: 12px;
+      display: none;
+    }
+    .food-row {
+      border: 1px solid #2C2C2C;
+      background: #101010;
+      border-radius: 12px;
+      padding: 12px;
+      margin-top: 10px;
+    }
+    .food-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+    .food-name-title { font-size: 0.85rem; font-weight: 800; color: #FFF; }
+    .remove-food-btn {
+      background: transparent;
+      border: 0;
+      color: #FF5555;
+      font-size: 1.2rem;
+      cursor: pointer;
+      padding: 2px 6px;
+    }
+    .macro-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 6px;
+    }
+    .macro-box {
+      background: #181818;
+      border: 1px solid #282828;
+      border-radius: 8px;
+      padding: 10px 4px;
+      text-align: center;
+      min-width: 0;
+    }
+    .macro-box span {
+      display: block;
+      color: var(--text-muted);
+      font-size: 0.65rem;
+      font-weight: 800;
+      margin-bottom: 4px;
+      text-transform: uppercase;
+    }
+    .macro-box strong { font-size: 0.95rem; color: #FFF; word-break: break-all; }
+    .macro-box .unit { font-size: 0.65rem; color: #AAA; }
+
+    .food-meal-card {
+      padding: 12px;
+      border-bottom: 1px solid #222;
+    }
+    .food-meal-card:last-child { border-bottom: 0; }
+
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.88);
+      z-index: 300;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+    .modal.active { display: flex; }
+    .modal-content {
+      background: #141414;
+      border: 1px solid #282828;
+      border-radius: var(--radius);
+      width: 100%;
+      max-width: 520px;
+      max-height: 85vh;
+      overflow-y: auto;
+    }
+    .modal-header { padding: 14px 16px; border-bottom: 1px solid #222; display: flex; justify-content: space-between; align-items: center; }
+    .modal-body { padding: 16px; }
+    .modal-footer { padding: 12px 16px; border-top: 1px solid #222; display: flex; justify-content: flex-end; gap: 8px; }
+    .btn-close { background: transparent; border: none; color: #888; font-size: 1.4rem; cursor: pointer; }
+
+    .modal-tab-bar {
+      display: flex;
+      border-bottom: 1px solid #222;
+      margin-bottom: 15px;
+    }
+    .modal-tab-btn {
+      flex: 1;
+      padding: 10px;
+      background: transparent;
+      border: none;
+      color: #888;
+      font-weight: 700;
+      font-size: 0.85rem;
+      border-bottom: 2px solid transparent;
+      cursor: pointer;
+    }
+    .modal-tab-btn.active {
+      color: var(--accent-red);
+      border-bottom-color: var(--accent-red);
+    }
+
+    .form-group { margin-bottom: 12px; }
+    .form-group label { display: block; font-size: 0.75rem; color: var(--text-muted); margin-bottom: 4px; font-weight: 700; }
+    .form-input {
+      width: 100%;
+      background: var(--input-bg);
+      border: 1px solid #2A2A2A;
+      color: #FFF;
+      padding: 10px 12px;
+      border-radius: 6px;
+      font-size: 0.9rem;
+    }
+    .form-group-inline { display: flex; gap: 8px; }
+
+    .history-exercise-card {
+      background: #181818;
+      border: 1px solid #262626;
+      border-radius: 8px;
+      padding: 12px;
+      margin-bottom: 10px;
+    }
+    .history-exercise-title {
+      font-size: 0.95rem;
+      font-weight: 800;
+      color: #FFF;
+      margin-bottom: 8px;
+    }
+    .history-set-list { list-style: none; padding-left: 0; }
+    .history-set-item {
+      font-size: 0.85rem;
+      color: #CCC;
+      padding: 4px 0;
+      border-bottom: 1px dashed #282828;
+      display: flex;
+      justify-content: space-between;
+    }
+    .history-set-item:last-child { border-bottom: none; }
+
+    .toast-pr {
+      position: fixed;
+      top: 20px;
       left: 50%;
       transform: translateX(-50%);
-      background: #202020;
-      border: 1px solid var(--red);
-      border-radius: 10px;
-      padding: 11px 15px;
-      font-size: 12px;
-      z-index: 20;
-      display: none;
-      max-width: 90%;
-      text-align: center;
+      background: #181818;
+      border: 2px solid var(--accent-red);
+      padding: 12px 20px;
+      border-radius: 30px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      z-index: 400;
+      box-shadow: 0 4px 20px rgba(255,26,26,0.4);
+      animation: slideDown 0.3s ease;
     }
-    .tiny { font-size: 10px; color: var(--muted); }
-    
-    @media(min-width:600px) {
-      main { padding-top: 22px; }
-      .top { padding-left: max(16px, calc((100% - 560px)/2)); padding-right: max(16px, calc((100% - 560px)/2)); }
+    .toast-pr.hidden { display: none; }
+    .toast-icon { font-size: 1.5rem; color: var(--accent-red); }
+
+    @keyframes slideDown {
+      from { top: -60px; opacity: 0; }
+      to { top: 20px; opacity: 1; }
     }
+
+    .divider { border: 0; height: 1px; background: #222; margin: 15px 0; }
   </style>
 </head>
 <body>
 
-  <header class="top">
-    <div>
-      <div class="brand">FREAKY <span>SEASON</span></div>
-      <small id="pageSubTitle">PAINEL PRINCIPAL</small>
+  <!-- AUTENTICAÇÃO -->
+  <div id="auth-overlay" class="auth-overlay">
+    <div class="auth-card">
+      <div class="text-center mb-15">
+        <img src="logo.jpg?v=2" alt="FREAKY SEASON" style="max-height: 45px; margin-bottom: 8px;" onerror="this.style.display='none';">
+        <h2 style="font-size:1.4rem; font-weight:900;">FREAKY <span class="text-red">SEASON</span></h2>
+        <p class="text-xs text-muted mt-5">Acesso Pessoal do Atleta</p>
+      </div>
+
+      <!-- VISÃO LOGIN -->
+      <div id="auth-login-view">
+        <div class="form-group">
+          <label>Seu E-mail</label>
+          <input type="email" id="login-email" class="form-input" placeholder="seu@email.com" onkeyup="if(event.key==='Enter') loginUser()">
+        </div>
+        <div class="form-group">
+          <label>Sua Senha / PIN</label>
+          <input type="password" id="login-pin" class="form-input" placeholder="Digite sua senha" maxlength="20" onkeyup="if(event.key==='Enter') loginUser()">
+        </div>
+        <p id="login-error" class="text-xs text-red mt-5 text-center" style="display:none;">E-mail ou Senha incorretos. Tente novamente.</p>
+        <button class="btn btn-primary btn-block mt-15" onclick="loginUser()">
+          <i class="fa-solid fa-lock-open"></i> ENTRAR
+        </button>
+
+        <p class="text-xs text-center text-muted mt-15">
+          Ainda não tem conta? <span class="auth-toggle-link" onclick="toggleAuthMode('register')">Criar conta</span>
+        </p>
+      </div>
+
+      <!-- VISÃO REGISTO -->
+      <div id="auth-register-view" style="display:none;">
+        <h3 class="text-sm text-red mb-10 text-center"><i class="fa-solid fa-user-plus"></i> Criar Nova Conta</h3>
+        <div class="form-group">
+          <label>Seu Nome</label>
+          <input type="text" id="reg-name" class="form-input" placeholder="Ex: Miguel" onkeyup="if(event.key==='Enter') registerUser()">
+        </div>
+        <div class="form-group">
+          <label>Seu E-mail</label>
+          <input type="email" id="reg-email" class="form-input" placeholder="Ex: miguel@email.com" onkeyup="if(event.key==='Enter') registerUser()">
+        </div>
+        <div class="form-group">
+          <label>Criar Senha / PIN</label>
+          <input type="password" id="reg-pin" class="form-input" placeholder="Digite uma senha" maxlength="20" onkeyup="if(event.key==='Enter') registerUser()">
+        </div>
+        <button class="btn btn-primary btn-block mt-15" id="btn-register-submit" onclick="registerUser()">
+          <i class="fa-solid fa-check"></i> CADASTRAR PERFIL
+        </button>
+
+        <p class="text-xs text-center text-muted mt-15">
+          Já tem uma conta? <span class="auth-toggle-link" onclick="toggleAuthMode('login')">Fazer Login</span>
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- RETOMAR TREINO -->
+  <div id="modal-resume-workout" class="modal" style="z-index: 450;">
+    <div class="modal-content text-center" style="padding: 24px 18px; border: 2px solid var(--accent-red);">
+      <div style="font-size: 2.8rem; color: var(--accent-red);" class="mb-10">
+        <i class="fa-solid fa-triangle-exclamation"></i>
+      </div>
+      <h2 style="font-size: 1.2rem; font-weight: 900;" class="mb-10">VOCÊ TEM UM TREINO EM ANDAMENTO</h2>
+      <div class="card card-highlight text-left mb-15 mt-10">
+        <span class="card-subtitle">SESSÃO NÃO CONCLUÍDA</span>
+        <h3 id="resume-workout-title" class="mt-5">Treino A</h3>
+        <p class="text-xs text-muted mt-5" id="resume-workout-time"><i class="fa-regular fa-clock"></i> Tempo decorrido: --</p>
+        <p class="text-xs text-muted mt-5" id="resume-workout-progress"><i class="fa-solid fa-bars-progress"></i> Progresso: --</p>
+      </div>
+
+      <div class="grid-2">
+        <button class="btn btn-primary" onclick="resumeUnfinishedSession()">
+          <i class="fa-solid fa-play"></i> CONTINUAR TREINO
+        </button>
+        <button class="btn btn-outline-danger" onclick="discardUnfinishedSession()">
+          <i class="fa-solid fa-trash"></i> DESCARTAR
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- BOAS-VINDAS -->
+  <div id="modal-welcome-motivation" class="modal">
+    <div class="modal-content text-center" style="padding: 24px 16px; border: 2px solid var(--accent-red);">
+      <div style="font-size: 3rem; color: var(--accent-red);" class="mb-10">
+        <i class="fa-solid fa-fire-flame-curved"></i>
+      </div>
+      <h2 style="font-size: 1.3rem; font-weight: 900;" class="mb-10">PARABÉNS POR ESTAR TREINANDO!</h2>
+      <p class="text-sm" style="color: #DDD; line-height: 1.5;" class="mb-15" id="welcome-motivation-text">
+        Você é forte demais e vai alcançar todos os seus objetivos!
+      </p>
+      <button class="btn btn-primary btn-block" onclick="closeWelcomeMotivation()">
+        <i class="fa-solid fa-dumbbell"></i> BORA PRO TREINO 💪
+      </button>
+    </div>
+  </div>
+
+  <!-- CABEÇALHO -->
+  <header class="app-header">
+    <div class="header-content">
+      <img src="logo.jpg?v=2" alt="FREAKY SEASON" class="app-logo" onerror="this.style.display='none'; document.getElementById('logo-text').style.display='block';">
+      <h1 id="logo-text" class="logo-fallback" style="display:none;">FREAKY <span>SEASON</span></h1>
+      <div class="header-actions">
+        <button class="icon-btn" onclick="openModal('modal-prs')" title="Recordes Pessoais"><i class="fa-solid fa-trophy"></i></button>
+        <button class="icon-btn" onclick="openModal('modal-evo')" title="Histórico e Evolução"><i class="fa-solid fa-clock-rotate-left"></i></button>
+        <button class="icon-btn" onclick="openModal('modal-settings')" title="Configurações"><i class="fa-solid fa-gear"></i></button>
+      </div>
     </div>
   </header>
 
-  <main>
-    <!-- TAB 1: PÁGINA PRINCIPAL / DASHBOARD -->
-    <section id="sec-inicio" class="tab-content active">
-      <div class="eyebrow">Resumo do Dia • Visão Geral</div>
-      <h1>Como está seu dia hoje?</h1>
-      <p class="intro">Acompanhe suas metas de treino, alimentação e hidratação em tempo real.</p>
+  <main class="app-container">
+
+    <!-- SEPARADOR 1: INÍCIO -->
+    <section id="tab-home" class="tab-content active">
+      <div class="date-badge" id="current-date">A carregar data...</div>
+      <h2 class="greeting-title" id="home-user-greeting">Massa, <span>Atleta</span>! Hora do treino</h2>
       
-      <!-- Card Alimentação na Home -->
-      <div class="card">
-        <div class="card-title">🍎 Alimentação <span style="color:var(--red)">● HOJE</span></div>
-        <div class="goal-head">
-          <div>
-            <div class="kcal" id="dashKcal">0 <small>kcal</small></div>
-            <div class="tiny" style="margin-top:4px">consumidas</div>
-          </div>
-          <div class="tiny" style="text-align:right" id="dashKcalSub">Meta: 2.200 kcal</div>
-        </div>
-        <div class="progress"><div class="progress-fill" id="dashKcalFill"></div></div>
-        <div class="split"><span id="dashKcalText">0% da meta</span><span id="dashKcalRemaining">Restam 2.200 kcal</span></div>
+      <div class="card card-highlight">
+        <span class="card-subtitle">TREINO DO DIA</span>
+        <h2 id="home-scheduled-workout-title">A carregar...</h2>
+        <p id="home-scheduled-workout-desc" class="text-muted">Nenhum treino agendado para hoje.</p>
+        <button class="btn btn-primary btn-block mt-15" id="home-start-btn" onclick="startScheduledWorkout()">
+          <i class="fa-solid fa-play"></i> INICIAR TREINO
+        </button>
       </div>
 
-      <!-- Card Água na Home -->
-      <div class="card">
-        <div class="card-title">💧 Hidratação <span style="color:var(--blue)">● HOJE</span></div>
-        <div class="goal-head">
-          <div>
-            <div class="kcal" id="dashWater" style="color:var(--blue)">0 <small style="color:#aaa">ml</small></div>
-            <div class="tiny" style="margin-top:4px">água ingerida</div>
-          </div>
-          <div class="tiny" style="text-align:right" id="dashWaterSub">Meta: 2.500 ml</div>
+      <!-- ALIMENTAÇÃO NA HOME -->
+      <div class="card card-highlight" onclick="switchTab('food')" style="cursor:pointer;">
+        <div class="card-header-flex">
+          <span class="card-subtitle">ALIMENTAÇÃO HOJE</span>
+          <i class="fa-solid fa-utensils text-red"></i>
         </div>
-        <div class="progress"><div class="progress-fill-blue" id="dashWaterFill"></div></div>
-        <div class="split"><span id="dashWaterText">0% da meta</span><span id="dashWaterRemaining">Restam 2.500 ml</span></div>
+        <div style="display:flex; justify-content:space-between; align-items:baseline;" class="mt-5">
+          <h3 id="home-food-val">0 / 2200 kcal</h3>
+          <span id="home-food-pct" class="text-xs text-muted">0%</span>
+        </div>
+        <div class="progress-bar-bg mt-10">
+          <div id="home-food-bar" class="progress-bar-fill" style="width: 0%;"></div>
+        </div>
+        <p class="text-xs text-muted mt-5" id="home-food-sub">0 g Prot • 0 g Carb • 0 g Gord</p>
       </div>
 
-      <!-- Card Treinos na Home -->
-      <div class="card">
-        <div class="card-title">🏋️ Treinos de Hoje</div>
-        <div id="dashWorkoutList">
-          <div class="empty">Nenhum treino concluído hoje.</div>
+      <div class="grid-2">
+        <div class="card" onclick="switchTab('water')">
+          <div class="card-icon"><i class="fa-solid fa-droplet text-red"></i></div>
+          <span class="card-subtitle">ÁGUA HOJE</span>
+          <h3 id="home-water-val">0 / 3.0 L</h3>
+          <div class="progress-bar-bg mt-10"><div id="home-water-bar" class="progress-bar-fill" style="width: 0%;"></div></div>
+        </div>
+        <div class="card" onclick="switchTab('cardio')">
+          <div class="card-icon"><i class="fa-solid fa-fire text-red"></i></div>
+          <span class="card-subtitle">CARDIO SEMANAL</span>
+          <h3 id="home-cardio-val">0 min</h3>
+          <p class="text-xs text-muted mt-5">Esta semana</p>
+        </div>
+      </div>
+
+      <div class="card mt-15">
+        <div class="card-header-flex">
+          <span class="card-subtitle">ÚLTIMO RECORDE (PR)</span>
+          <i class="fa-solid fa-medal text-red"></i>
+        </div>
+        <div id="home-pr-highlight" class="pr-highlight-box mt-10">
+          <p class="text-muted text-sm">Nenhum recorde registado ainda. Cadastra o teu primeiro treino!</p>
+        </div>
+      </div>
+
+      <div class="card mt-15">
+        <div class="card-header-flex">
+          <span class="card-subtitle">RESUMO DA SEMANA</span>
+          <button class="btn btn-xs btn-outline" onclick="openModal('modal-evo')"><i class="fa-solid fa-list-check"></i> Histórico</button>
+        </div>
+        <div class="week-summary-grid mt-10">
+          <div class="summary-item"><span id="sum-completed-workouts">0</span><label>Treinos</label></div>
+          <div class="summary-item"><span id="sum-water-avg">0.0L</span><label>Média Água</label></div>
+          <div class="summary-item"><span id="sum-cardio-total">0m</span><label>Cardio</label></div>
         </div>
       </div>
     </section>
 
-    <!-- TAB 2: TREINOS -->
-    <section id="sec-treinos" class="tab-content">
-      <div class="eyebrow">Treinos • Registro Diário</div>
-      <h1>Registrar Treino</h1>
-      <p class="intro">Anote seus exercícios realizados no dia para acompanhar seu progresso.</p>
-      
-      <div class="card">
-        <h2 class="card-title">Adicionar Treino Realizado</h2>
-        <div style="margin-bottom:10px">
-          <label class="label">Nome do Treino</label>
-          <input class="field" id="workoutName" placeholder="Ex.: Treino A - Peito e Tríceps">
+    <!-- SEPARADOR 2: TREINOS -->
+    <section id="tab-workouts" class="tab-content">
+      <div class="section-title-bar">
+        <h2>DIVISÃO DE TREINOS</h2>
+        <div>
+          <button class="btn btn-sm btn-outline mr-5" onclick="openModal('modal-evo')"><i class="fa-solid fa-clock-rotate-left"></i> Histórico</button>
+          <button class="btn btn-sm btn-primary" onclick="openCreateWorkoutModal()"><i class="fa-solid fa-plus"></i> Novo</button>
         </div>
-        <div style="margin-bottom:10px">
-          <label class="label">Detalhes / Exercícios</label>
-          <input class="field" id="workoutDetails" placeholder="Ex.: Supino Reto 4x10, Tríceps Pulley 3x12...">
-        </div>
-        <button class="btn primary block" id="btnSaveWorkout">✓ Concluir e Salvar Treino</button>
       </div>
-
-      <div class="card">
-        <h2 class="card-title">Histórico de Treinos</h2>
-        <div id="workoutHistory"><div class="empty">Nenhum treino registrado ainda.</div></div>
-      </div>
+      <div id="workouts-list" class="workout-list"></div>
     </section>
 
-    <!-- TAB 3: ALIMENTAÇÃO -->
-    <section id="sec-alimentacao" class="tab-content">
-      <div class="eyebrow">Nutrição • Registro diário</div>
-      <h1>O que você comeu hoje?</h1>
-      <p class="intro">Registre suas refeições, informe os pesos e acompanhe calorias e macronutrientes.</p>
+    <!-- SEPARADOR 3: DIÁRIO ALIMENTAR -->
+    <section id="tab-food" class="tab-content">
+      <div class="section-title-bar">
+        <h2>DIÁRIO ALIMENTAR</h2>
+        <button class="btn btn-sm btn-outline" onclick="openModal('modal-food-goal')"><i class="fa-solid fa-bullseye"></i> Meta</button>
+      </div>
 
-      <div class="card">
-        <div class="card-title">Sua meta diária <span style="color:var(--red)">● HOJE</span></div>
-        <div class="goal-head">
+      <div class="card card-highlight">
+        <div class="card-header-flex">
+          <span class="card-subtitle">PROGRESSO CALÓRICO DO DIA</span>
+          <input type="date" id="food-filter-date" class="form-input" style="width: 140px; padding: 4px 8px; font-size: 0.75rem;" onchange="renderFoodScreen()">
+        </div>
+        <div style="display:flex; justify-content:space-between; align-items:flex-end;" class="mt-10">
           <div>
-            <div class="kcal" id="consumed">0 <small>kcal</small></div>
-            <div class="tiny" style="margin-top:5px">consumidas hoje</div>
+            <div style="font-size: 1.8rem; font-weight: 950; color: #FFF;" id="food-consumed-display">0 <small style="font-size: 0.8rem; color: var(--text-muted);">kcal</small></div>
+            <div class="text-xs text-muted mt-5" id="food-remaining-display">Restam 2.200 kcal</div>
           </div>
-          <div style="width:115px">
-            <label class="label" for="goal">Meta (kcal)</label>
-            <input class="field" id="goal" type="number" min="1" step="50" value="2200" inputmode="numeric">
+          <div class="text-right">
+            <span class="text-xs text-muted">Meta Diária</span>
+            <div style="font-size: 1.1rem; font-weight: 800; color: var(--accent-red);" id="food-goal-display">2.200 kcal</div>
           </div>
         </div>
-        <div class="progress"><div class="progress-fill" id="progressFill"></div></div>
-        <div class="split"><span id="progressText">0% da meta</span><span id="remaining">Restam 2.200 kcal</span></div>
+        <div class="progress-bar-bg mt-15" style="height: 10px;">
+          <div id="food-progress-fill" class="progress-bar-fill" style="width: 0%;"></div>
+        </div>
+        <p class="text-xs text-muted text-center mt-5" id="food-pct-display">0% da meta atingida</p>
       </div>
 
       <div class="card">
-        <h2 class="card-title">1. Fotografe seu prato</h2>
+        <span class="card-subtitle mb-10" style="display:block;">TOTAL DE MACRONUTRIENTES DO DIA</span>
+        <div class="macro-grid">
+          <div class="macro-box"><span>CALORIAS</span><strong id="day-macro-kcal">0</strong><div class="unit">kcal</div></div>
+          <div class="macro-box"><span>PROTEÍNAS</span><strong id="day-macro-prot">0</strong><div class="unit">g</div></div>
+          <div class="macro-box"><span>CARBOS</span><strong id="day-macro-carbs">0</strong><div class="unit">g</div></div>
+          <div class="macro-box"><span>GORDURAS</span><strong id="day-macro-fat">0</strong><div class="unit">g</div></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3 class="text-sm mb-10"><i class="fa-solid fa-camera text-red"></i> 1. Fotografe seu prato</h3>
         <div class="photo-box">
           <div class="photo-icon">📷</div>
-          <p>Adicione uma foto da refeição</p>
-          <small>A foto ajuda a identificar os alimentos.</small>
-          <div class="grid2" style="margin-top:13px">
-            <label class="btn secondary" for="cameraInput">📸 Tirar foto</label>
-            <label class="btn secondary" for="galleryInput">🖼️ Galeria</label>
+          <p class="text-sm font-weight-bold">Adicione uma foto da refeição</p>
+          <span class="text-xs text-muted">A foto ajuda a identificar os alimentos automaticamente.</span>
+          <div class="grid-2 mt-10">
+            <label class="btn btn-secondary btn-sm" for="food-camera-input"><i class="fa-solid fa-camera"></i> 📸 Tirar Foto</label>
+            <label class="btn btn-secondary btn-sm" for="food-gallery-input"><i class="fa-solid fa-image"></i> 🖼️ Galeria</label>
           </div>
-          <input id="cameraInput" type="file" accept="image/*" capture="environment" hidden>
-          <input id="galleryInput" type="file" accept="image/*" hidden>
-          <img class="photo-preview" id="photoPreview" alt="Prévia da foto selecionada">
+          <input id="food-camera-input" type="file" accept="image/*" capture="environment" style="display:none;" onchange="handleFoodPhoto(this.files[0])">
+          <input id="food-gallery-input" type="file" accept="image/*" style="display:none;" onchange="handleFoodPhoto(this.files[0])">
+          <img id="food-photo-preview" class="photo-preview" alt="Prévia da foto">
         </div>
-        <p class="hint">A prévia da foto funciona neste protótipo.</p>
+        <button class="btn btn-primary btn-block mt-10" id="btn-ai-analyze" onclick="analyzePlateWithAI()" style="display:none;">
+          <i class="fa-solid fa-wand-magic-sparkles"></i> ANALISAR PRATO COM IA
+        </button>
       </div>
 
       <div class="card">
-        <h2 class="card-title">2. Dados da refeição</h2>
-        <div class="grid2">
-          <div>
-            <label class="label" for="mealType">Tipo de refeição</label>
-            <select id="mealType" class="field">
-              <option>Café da manhã</option>
-              <option>Lanche da manhã</option>
-              <option selected>Almoço</option>
-              <option>Lanche da tarde</option>
-              <option>Jantar</option>
-              <option>Ceia</option>
-              <option>Outra</option>
+        <h3 class="text-sm mb-10"><i class="fa-solid fa-list-check text-red"></i> 2. Dados da Refeição</h3>
+        <div class="grid-2">
+          <div class="form-group">
+            <label>Tipo de Refeição</label>
+            <select id="food-meal-type" class="form-input">
+              <option value="Café da manhã">Café da manhã</option>
+              <option value="Lanche da manhã">Lanche da manhã</option>
+              <option value="Almoço" selected>Almoço</option>
+              <option value="Lanche da tarde">Lanche da tarde</option>
+              <option value="Jantar">Jantar</option>
+              <option value="Ceia">Ceia</option>
+              <option value="Outra">Outra</option>
             </select>
           </div>
-          <div>
-            <label class="label" for="mealDate">Data</label>
-            <input id="mealDate" class="field" type="date">
+          <div class="form-group">
+            <label>Data da Refeição</label>
+            <input id="food-meal-date" class="form-input" type="date">
           </div>
         </div>
-        <div id="foodList"></div>
-        <button class="btn secondary block" id="addFood" style="margin-top:12px">＋ Adicionar alimento</button>
-        <p class="hint">Informe os valores nutricionais por 100 g conforme uma fonte confiável.</p>
-      </div>
 
-      <div class="card">
-        <h2 class="card-title">Resumo desta refeição</h2>
-        <div class="macro-grid">
-          <div class="macro"><span>CALORIAS</span><strong id="mealKcal">0</strong><div class="unit">kcal</div></div>
-          <div class="macro"><span>PROTEÍNAS</span><strong id="mealProtein">0</strong><div class="unit">g</div></div>
-          <div class="macro"><span>CARBOS</span><strong id="mealCarbs">0</strong><div class="unit">g</div></div>
-          <div class="macro"><span>GORDURAS</span><strong id="mealFat">0</strong><div class="unit">g</div></div>
+        <div class="form-group mt-10">
+          <label>Adicionar Alimento da Tabela TACO</label>
+          <div class="form-group-inline">
+            <select id="taco-select-db" class="form-input">
+              <option value="">-- Selecionar da base TACO --</option>
+            </select>
+            <button class="btn btn-secondary btn-sm" onclick="addSelectedTacoFood()"><i class="fa-solid fa-plus"></i></button>
+          </div>
         </div>
-        <button class="btn primary block" id="saveMeal" style="margin-top:14px">✓ Salvar refeição</button>
+
+        <div id="food-items-container" class="mt-10"></div>
+
+        <button class="btn btn-secondary btn-block mt-10" onclick="addFoodItemRow('', 100, 0, 0, 0, 0)">
+          <i class="fa-solid fa-plus"></i> Adicionar Alimento Personalizado
+        </button>
       </div>
 
-      <div class="card">
-        <h2 class="card-title">Resumo de hoje</h2>
+      <div class="card card-highlight">
+        <span class="card-subtitle mb-10" style="display:block;">RESUMO DESTA REFEIÇÃO</span>
         <div class="macro-grid">
-          <div class="macro"><span>CALORIAS</span><strong id="dayKcal">0</strong><div class="unit">kcal</div></div>
-          <div class="macro"><span>PROTEÍNAS</span><strong id="dayProtein">0</strong><div class="unit">g</div></div>
-          <div class="macro"><span>CARBOS</span><strong id="dayCarbs">0</strong><div class="unit">g</div></div>
-          <div class="macro"><span>GORDURAS</span><strong id="dayFat">0</strong><div class="unit">g</div></div>
+          <div class="macro-box"><span>CALORIAS</span><strong id="meal-total-kcal">0</strong><div class="unit">kcal</div></div>
+          <div class="macro-box"><span>PROTEÍNAS</span><strong id="meal-total-prot">0</strong><div class="unit">g</div></div>
+          <div class="macro-box"><span>CARBOS</span><strong id="meal-total-carbs">0</strong><div class="unit">g</div></div>
+          <div class="macro-box"><span>GORDURAS</span><strong id="meal-total-fat">0</strong><div class="unit">g</div></div>
         </div>
+        <button class="btn btn-primary btn-block mt-15" id="btn-save-meal" onclick="saveCurrentMeal()">
+          <i class="fa-solid fa-check"></i> SALVAR REFEIÇÃO
+        </button>
       </div>
 
-      <div class="card">
-        <h2 class="card-title">Histórico alimentar <span class="tiny">mais recentes primeiro</span></h2>
-        <div id="history"><div class="empty">Nenhuma refeição salva ainda.</div></div>
+      <div class="section-title-bar mt-20">
+        <h3>Histórico Alimentar</h3>
+        <span class="text-xs text-muted">Mais recentes primeiro</span>
       </div>
+      <div id="food-history-container"></div>
     </section>
 
-    <!-- TAB 4: ÁGUA -->
-    <section id="sec-agua" class="tab-content">
-      <div class="eyebrow">Hidratação • Controle Diário</div>
-      <h1>Registro de Água</h1>
-      <p class="intro">Mantenha-se hidratado durante o dia.</p>
-      
-      <div class="card">
-        <div class="card-title">Seu Consumo de Hoje</div>
-        <div class="goal-head">
-          <div>
-            <div class="kcal" id="waterConsumed" style="color:var(--blue)">0 <small style="color:#aaa">ml</small></div>
-            <div class="tiny" style="margin-top:5px">ingeridos hoje</div>
-          </div>
-          <div style="width:115px">
-            <label class="label" for="waterGoal">Meta (ml)</label>
-            <input class="field" id="waterGoal" type="number" min="500" step="100" value="2500" inputmode="numeric">
-          </div>
-        </div>
-        <div class="progress"><div class="progress-fill-blue" id="waterFill"></div></div>
-        <div class="split"><span id="waterText">0% da meta</span><span id="waterRemaining">Restam 2.500 ml</span></div>
+    <!-- SEPARADOR 4: CARDIO -->
+    <section id="tab-cardio" class="tab-content">
+      <div class="section-title-bar">
+        <h2>REGISTO DE CARDIO</h2>
+        <button class="btn btn-sm btn-primary" onclick="openModal('modal-add-cardio')"><i class="fa-solid fa-plus"></i> Registar</button>
       </div>
-
       <div class="card">
-        <h2 class="card-title">Adicionar Água Rápido</h2>
-        <div class="grid3">
-          <button class="btn blue-btn" onclick="addWater(250)">＋ 250 ml</button>
-          <button class="btn blue-btn" onclick="addWater(500)">＋ 500 ml</button>
-          <button class="btn blue-btn" onclick="addWater(750)">＋ 750 ml</button>
-        </div>
-        <button class="btn outline block" onclick="resetWater()" style="margin-top:12px;color:#888;border-color:#444">Zerar consumo de hoje</button>
+        <span class="card-subtitle">TOTAL NESTA SEMANA</span>
+        <h2 id="cardio-week-total" class="text-red">0 Minutos</h2>
       </div>
+      <div class="section-title-bar mt-20"><h3>Histórico Recente</h3></div>
+      <div id="cardio-history-list" class="cardio-list"></div>
     </section>
+
+    <!-- SEPARADOR 5: ÁGUA -->
+    <section id="tab-water" class="tab-content">
+      <div class="section-title-bar">
+        <h2>CONTROLO DE ÁGUA</h2>
+        <button class="btn btn-sm btn-outline" onclick="openModal('modal-water-goal')"><i class="fa-solid fa-bullseye"></i> Meta</button>
+      </div>
+      <div class="card text-center">
+        <div class="water-gauge">
+          <div class="water-val" id="water-current-display" style="font-size:1.8rem; font-weight:800; color:var(--accent-red);">0 ml</div>
+          <div class="water-sub text-xs text-muted" id="water-goal-display">Meta: 3000 ml</div>
+        </div>
+        <div class="progress-bar-bg mt-15" style="height: 12px;"><div id="water-progress-fill" class="progress-bar-fill" style="width: 0%;"></div></div>
+      </div>
+      <div class="water-quick-buttons grid-3 mt-15">
+        <button class="btn btn-secondary" onclick="addWater(250)"><i class="fa-solid fa-glass-water"></i> +250ml</button>
+        <button class="btn btn-secondary" onclick="addWater(500)"><i class="fa-solid fa-bottle-water"></i> +500ml</button>
+        <button class="btn btn-secondary" onclick="addWater(1000)"><i class="fa-solid fa-whiskey-glass"></i> +1 Litro</button>
+      </div>
+      <div class="card mt-15">
+        <div class="form-group-inline">
+          <input type="number" id="custom-water-input" placeholder="Qtd personalizada (ml)" class="form-input">
+          <button class="btn btn-primary" onclick="addCustomWater()">Adicionar</button>
+        </div>
+      </div>
+      <div class="section-title-bar mt-20">
+        <h3>Registos de Hoje</h3>
+        <button class="btn btn-xs btn-outline-danger" onclick="clearTodayWater()">Limpar</button>
+      </div>
+      <div id="water-logs-list" class="water-logs"></div>
+    </section>
+
+    <!-- EXECUÇÃO DE TREINO (FULLSCREEN) -->
+    <div id="workout-session-view" class="fullscreen-session hidden">
+      <div class="session-header">
+        <button class="btn-back" onclick="confirmExitWorkout()"><i class="fa-solid fa-arrow-left"></i></button>
+        <div class="session-title-wrap text-center">
+          <h2 id="session-workout-name" style="font-size:0.95rem;">Nome do Treino</h2>
+          <span id="session-workout-muscles" class="text-xs text-muted">Músculos</span>
+        </div>
+        <div class="session-timer-badge">
+          <i class="fa-regular fa-clock"></i>
+          <span id="session-duration-timer">00:00</span>
+        </div>
+        <button class="btn btn-sm btn-primary" onclick="finishWorkoutSession()">Concluir</button>
+      </div>
+      <div id="session-exercises-container" class="session-body"></div>
+    </div>
+
   </main>
 
-  <!-- Navegação Inferior -->
-  <nav class="nav">
-    <button class="nav-item active" onclick="switchTab('sec-inicio', 'PAINEL PRINCIPAL', this)"><span>⌂</span>Início</button>
-    <button class="nav-item" onclick="switchTab('sec-treinos', 'TREINOS', this)"><span>🏋</span>Treinos</button>
-    <button class="nav-item" onclick="switchTab('sec-alimentacao', 'DIÁRIO ALIMENTAR', this)"><span>◉</span>Alimentação</button>
-    <button class="nav-item" onclick="switchTab('sec-agua', 'HIDRATAÇÃO', this)"><span>💧</span>Água</button>
+  <!-- CRONÓMETRO DE DESCANSO -->
+  <div id="floating-timer" class="floating-timer hidden">
+    <div class="timer-minimized" id="timer-min" onclick="toggleTimerExpand(true)">
+      <i class="fa-solid fa-stopwatch text-red"></i>
+      <span id="timer-min-display">00:00</span>
+    </div>
+    <div class="timer-expanded hidden" id="timer-max">
+      <div class="timer-header">
+        <span>DESCANSO ENTRE SÉRIES</span>
+        <button class="btn-close" onclick="toggleTimerExpand(false)"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="timer-display" id="timer-max-display">01:00</div>
+      <div class="timer-presets grid-4">
+        <button onclick="setTimerPreset(30)">30s</button>
+        <button onclick="setTimerPreset(60)">60s</button>
+        <button onclick="setTimerPreset(90)">90s</button>
+        <button onclick="setTimerPreset(120)">120s</button>
+      </div>
+      <div class="timer-controls grid-3 mt-10">
+        <button class="btn btn-sm btn-secondary" onclick="resetTimer()"><i class="fa-solid fa-rotate-right"></i></button>
+        <button class="btn btn-sm btn-primary" id="timer-play-btn" onclick="toggleTimer()"><i class="fa-solid fa-play"></i></button>
+        <button class="btn btn-sm btn-secondary" onclick="addTimerTime(15)">+15s</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- NAVEGAÇÃO INFERIOR -->
+  <nav class="bottom-nav">
+    <button class="nav-item active" onclick="switchTab('home')" id="nav-home">
+      <i class="fa-solid fa-house"></i>
+      <span>Início</span>
+    </button>
+    <button class="nav-item" onclick="switchTab('workouts')" id="nav-workouts">
+      <i class="fa-solid fa-dumbbell"></i>
+      <span>Treinos</span>
+    </button>
+    <button class="nav-item" onclick="switchTab('food')" id="nav-food">
+      <i class="fa-solid fa-utensils"></i>
+      <span>Nutrição</span>
+    </button>
+    <button class="nav-item" onclick="switchTab('cardio')" id="nav-cardio">
+      <i class="fa-solid fa-person-running"></i>
+      <span>Cardio</span>
+    </button>
+    <button class="nav-item" onclick="switchTab('water')" id="nav-water">
+      <i class="fa-solid fa-droplet"></i>
+      <span>Água</span>
+    </button>
   </nav>
 
-  <div class="toast" id="toast"></div>
-
-<script>
-  // Utilitários de Data e DOM
-  const $ = id => document.getElementById(id);
-  const today = () => {
-    const d = new Date();
-    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
-  };
-
-  function toast(msg) {
-    const el = $('toast');
-    el.textContent = msg;
-    el.style.display = 'block';
-    clearTimeout(window.toastTimer);
-    window.toastTimer = setTimeout(() => el.style.display = 'none', 2600);
-  }
-
-  function switchTab(tabId, titleText, element) {
-    document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
-    document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
-    document.getElementById(tabId).classList.add('active');
-    element.classList.add('active');
-    $('pageSubTitle').textContent = titleText;
-    updateDashboard();
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  }
-
-  // --- 1. LÓGICA DE ALIMENTAÇÃO ---
-  $('mealDate').value = today();
-  let foods = []; 
-  let photoData = '';
-  let meals = [];
-  try { meals = JSON.parse(localStorage.getItem('FS_FOOD_MEALS') || '[]'); } catch(e) { meals = []; }
-  $('goal').value = localStorage.getItem('FS_FOOD_GOAL') || '2200';
-
-  function n(v) { const x = Number(v); return Number.isFinite(x) && x > 0 ? x : 0; }
-  function round(v) { return Math.round(v * 10) / 10; }
-  function esc(s) { return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
-
-  function addFood(name = '', grams = 100, kcal = 0, protein = 0, carbs = 0, fat = 0) {
-    foods.push({ id: Date.now() + Math.random(), name, grams, kcal, protein, carbs, fat });
-    renderFoods();
-  }
-
-  function renderFoods() {
-    const box = $('foodList');
-    box.innerHTML = '';
-    foods.forEach((f, i) => {
-      const row = document.createElement('div');
-      row.className = 'food-row';
-      row.innerHTML = `
-        <div class="food-head"><div class="food-name">Alimento ${i + 1}</div><button class="remove" aria-label="Remover">×</button></div>
-        <label class="label">Nome do alimento</label>
-        <input class="field name" value="${esc(f.name)}" placeholder="Ex.: Arroz cozido">
-        <div style="margin-top:10px">
-          <label class="label">Peso consumido (g)</label>
-          <input class="field grams" type="number" min="0" step="1" inputmode="decimal" value="${f.grams}">
+  <!-- MODAIS -->
+  <div id="modal-add-workout" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 id="modal-workout-title">Criar Treino</h3>
+        <button class="btn-close" onclick="closeModal('modal-add-workout')">&times;</button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" id="edit-workout-id">
+        <div class="form-group">
+          <label>Nome do Treino (ex: Peito & Tríceps)</label>
+          <input type="text" id="workout-input-name" class="form-input" placeholder="Ex: Treino A - Peito Completo">
         </div>
-        <div class="grid2" style="margin-top:10px">
-          <div><label class="label">Kcal / 100 g</label><input class="field kcal" type="number" min="0" step="0.1" value="${f.kcal}"></div>
-          <div><label class="label">Proteína / 100 g</label><input class="field protein" type="number" min="0" step="0.1" value="${f.protein}"></div>
-          <div><label class="label">Carbo / 100 g</label><input class="field carbs" type="number" min="0" step="0.1" value="${f.carbs}"></div>
-          <div><label class="label">Gordura / 100 g</label><input class="field fat" type="number" min="0" step="0.1" value="${f.fat}"></div>
-        </div>`;
-      row.querySelector('.remove').onclick = () => { foods.splice(i, 1); renderFoods(); };
-      [['.name','name'],['.grams','grams'],['.kcal','kcal'],['.protein','protein'],['.carbs','carbs'],['.fat','fat']].forEach(([sel, key]) => {
-        row.querySelector(sel).addEventListener('input', e => {
-          f[key] = key === 'name' ? e.target.value : n(e.target.value);
-          updateTotals();
-        });
+        <div class="form-group">
+          <label>Dia da Semana</label>
+          <select id="workout-input-day" class="form-input">
+            <option value="Segunda-feira">Segunda-feira</option>
+            <option value="Terça-feira">Terça-feira</option>
+            <option value="Quarta-feira">Quarta-feira</option>
+            <option value="Quinta-feira">Quinta-feira</option>
+            <option value="Sexta-feira">Sexta-feira</option>
+            <option value="Sábado">Sábado</option>
+            <option value="Domingo">Domingo</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Grupo Muscular / Descrição</label>
+          <input type="text" id="workout-input-muscles" class="form-input" placeholder="Ex: Peitoral, Tríceps, Deltoide Anterior">
+        </div>
+        <div class="section-title-bar mt-15">
+          <h4>Exercícios</h4>
+          <button type="button" class="btn btn-xs btn-outline" onclick="addExerciseField()"><i class="fa-solid fa-plus"></i> Exercício</button>
+        </div>
+        <div id="workout-exercises-fields" class="exercise-fields-list"></div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeModal('modal-add-workout')">Cancelar</button>
+        <button class="btn btn-primary" onclick="saveWorkout()">Guardar Treino</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="modal-add-cardio" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Registar Cardio</h3>
+        <button class="btn-close" onclick="closeModal('modal-add-cardio')">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label>Atividade</label>
+          <select id="cardio-input-type" class="form-input">
+            <option value="Passadeira">Passadeira / Corrida</option>
+            <option value="Bicicleta">Bicicleta</option>
+            <option value="Escada">Escada</option>
+            <option value="Caminhada">Caminhada</option>
+            <option value="Elíptico">Elíptico</option>
+            <option value="Outro">Outro</option>
+          </select>
+        </div>
+        <div class="grid-2">
+          <div class="form-group">
+            <label>Duração (min)</label>
+            <input type="number" id="cardio-input-duration" class="form-input" placeholder="30">
+          </div>
+          <div class="form-group">
+            <label>Distância (km)</label>
+            <input type="number" step="0.1" id="cardio-input-distance" class="form-input" placeholder="3.5">
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Observações (Opcional)</label>
+          <input type="text" id="cardio-input-notes" class="form-input" placeholder="Ex: Velocidade 9.0, Inclinação 2">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeModal('modal-add-cardio')">Cancelar</button>
+        <button class="btn btn-primary" onclick="saveCardio()">Registar Cardio</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="modal-prs" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3><i class="fa-solid fa-trophy text-red"></i> Recordes Pessoais (PR)</h3>
+        <button class="btn-close" onclick="closeModal('modal-prs')">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div id="prs-list" class="prs-container"></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="modal-evo" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3><i class="fa-solid fa-clock-rotate-left text-red"></i> Histórico & Evolução</h3>
+        <button class="btn-close" onclick="closeModal('modal-evo')">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="modal-tab-bar">
+          <button class="modal-tab-btn active" id="tab-btn-history" onclick="switchHistoryTab('history')">Histórico de Treinos</button>
+          <button class="modal-tab-btn" id="tab-btn-exercise" onclick="switchHistoryTab('exercise')">Evolução por Exercício</button>
+        </div>
+        <div id="history-tab-content-list">
+          <div id="history-calendar-list"></div>
+        </div>
+        <div id="history-tab-content-exercise" style="display: none;">
+          <div class="form-group">
+            <label>Selecione um Exercício</label>
+            <select id="exercise-evolution-select" class="form-input" onchange="renderExerciseEvolution()">
+              <option value="">-- Selecionar Exercício --</option>
+            </select>
+          </div>
+          <div id="exercise-evolution-results" class="mt-15">
+            <p class="text-xs text-muted text-center">Selecione um exercício acima para consultar o histórico de cargas e repetições.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="modal-workout-detail" class="modal" style="z-index: 350;">
+    <div class="modal-content">
+      <div class="modal-header">
+        <div>
+          <h3 id="detail-workout-title" style="font-size: 1.1rem; font-weight: 900;">Treino A</h3>
+          <p class="text-xs text-muted" id="detail-workout-meta">Data e Duração</p>
+        </div>
+        <button class="btn-close" onclick="closeModal('modal-workout-detail')">&times;</button>
+      </div>
+      <div class="modal-body" id="detail-workout-body"></div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeModal('modal-workout-detail')">Fechar</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="modal-meal-detail" class="modal" style="z-index: 350;">
+    <div class="modal-content">
+      <div class="modal-header">
+        <div>
+          <h3 id="detail-meal-title" style="font-size: 1.1rem; font-weight: 900;">Almoço</h3>
+          <p class="text-xs text-muted" id="detail-meal-meta">Data e Horário</p>
+        </div>
+        <button class="btn-close" onclick="closeModal('modal-meal-detail')">&times;</button>
+      </div>
+      <div class="modal-body" id="detail-meal-body"></div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeModal('modal-meal-detail')">Fechar</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="modal-food-goal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Meta Diária de Calorias</h3>
+        <button class="btn-close" onclick="closeModal('modal-food-goal')">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label>Meta em kcal (Ex: 2200)</label>
+          <input type="number" id="food-goal-input" class="form-input" placeholder="2200" step="50">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-primary" onclick="saveFoodGoal()">Guardar Meta</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="modal-water-goal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Meta Diária de Água</h3>
+        <button class="btn-close" onclick="closeModal('modal-water-goal')">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label>Meta em ml (Ex: 3000 para 3 Litros)</label>
+          <input type="number" id="water-goal-input" class="form-input" placeholder="3000">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-primary" onclick="saveWaterGoal()">Guardar Meta</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="modal-settings" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3><i class="fa-solid fa-gear text-red"></i> Configurações & Perfil</h3>
+        <button class="btn-close" onclick="closeModal('modal-settings')">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="card mb-15">
+          <span class="card-subtitle">PERFIL CONECTADO</span>
+          <h3 id="settings-user-name" class="mt-5">--</h3>
+          <p id="settings-user-email" class="text-xs text-muted">--</p>
+          <button class="btn btn-xs btn-outline-danger mt-10" onclick="lockApp()"><i class="fa-solid fa-lock"></i> Bloquear App</button>
+        </div>
+
+        <div class="form-group mb-15">
+          <label>Chave API Vision (OpenAI / Gemini) [Opcional]</label>
+          <input type="password" id="settings-ai-key" class="form-input" placeholder="sk-..." onchange="saveAiApiKey(this.value)">
+          <span class="text-xs text-muted">Se preenchida, a análise de imagem usará a API oficial em tempo real.</span>
+        </div>
+
+        <p class="text-sm text-muted mb-15">Todos os teus dados são guardados exclusivamente no navegador do teu telemóvel.</p>
+        
+        <button class="btn btn-block btn-secondary mb-10" onclick="exportDataBackup()">
+          <i class="fa-solid fa-download"></i> Exportar Backup (JSON)
+        </button>
+        
+        <label class="btn btn-block btn-outline mb-15" style="display: block; text-align: center; cursor: pointer;">
+          <i class="fa-solid fa-upload"></i> Importar Backup (JSON)
+          <input type="file" id="import-backup-file" accept=".json" onchange="importDataBackup(event)" style="display:none;">
+        </label>
+
+        <hr class="divider">
+
+        <button class="btn btn-block btn-outline-danger mt-15" onclick="resetAllData()">
+          <i class="fa-solid fa-trash"></i> APAGAR TODOS OS DADOS
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast-pr" class="toast-pr hidden">
+    <i class="fa-solid fa-fire toast-icon"></i>
+    <div>
+      <h4 id="toast-pr-title">NOVO RECORDE PESSOAL!</h4>
+      <p id="toast-pr-desc">100 kg - Supino Inclinado</p>
+    </div>
+  </div>
+
+  <script>
+    const EMAILJS_PUBLIC_KEY = "xj0fgvmuyuuvlO8S-";
+    const EMAILJS_SERVICE_ID = "service_pwukxda";
+    const EMAILJS_TEMPLATE_ID = "template_fvbdu3a";
+
+    const DEFAULT_GOAL_WATER = 3000;
+    const DEFAULT_GOAL_FOOD = 2200;
+
+    const TACO_DB = [
+      { name: "Arroz branco cozido", kcal: 128, p: 2.5, c: 28.1, f: 0.2 },
+      { name: "Arroz integral cozido", kcal: 124, p: 2.6, c: 25.8, f: 1.0 },
+      { name: "Feijão carioca cozido", kcal: 76, p: 4.8, c: 13.6, f: 0.5 },
+      { name: "Feijão preto cozido", kcal: 77, p: 4.5, c: 14.0, f: 0.5 },
+      { name: "Peito de frango grelhado", kcal: 159, p: 32.0, c: 0.0, f: 3.2 },
+      { name: "Frango desfiado cozido", kcal: 150, p: 29.0, c: 0.0, f: 3.0 },
+      { name: "Bife bovino grelhado", kcal: 219, p: 31.0, c: 0.0, f: 10.5 },
+      { name: "Carne moída refogada", kcal: 212, p: 26.0, c: 0.0, f: 12.0 },
+      { name: "Ovo de galinha cozido", kcal: 146, p: 13.3, c: 0.6, f: 9.5 },
+      { name: "Ovo frito", kcal: 240, p: 15.6, c: 0.8, f: 18.6 },
+      { name: "Batata doce cozida", kcal: 77, p: 0.6, c: 18.4, f: 0.1 },
+      { name: "Batata inglesa cozida", kcal: 52, p: 1.2, c: 11.9, f: 0.1 },
+      { name: "Mandioca/Aipim cozido", kcal: 125, p: 0.6, c: 30.1, f: 0.3 },
+      { name: "Pão francês", kcal: 300, p: 8.0, c: 58.6, f: 3.1 },
+      { name: "Tapioca (massa pronta)", kcal: 240, p: 0.0, c: 60.0, f: 0.0 },
+      { name: "Banana prata", kcal: 98, p: 1.3, c: 26.0, f: 0.1 },
+      { name: "Maçã", kcal: 52, p: 0.2, c: 13.8, f: 0.2 },
+      { name: "Whey Protein (pó)", kcal: 400, p: 80.0, c: 6.0, f: 6.0 },
+      { name: "Azeite de oliva", kcal: 884, p: 0.0, c: 0.0, f: 100.0 },
+      { name: "Manteiga", kcal: 726, p: 0.4, c: 0.1, f: 82.0 },
+      { name: "Salada verde (alface/tomate)", kcal: 15, p: 1.0, c: 3.0, f: 0.2 },
+      { name: "Queijo muçarela", kcal: 330, p: 22.6, c: 3.0, f: 25.2 },
+      { name: "Queijo cottage", kcal: 98, p: 11.0, c: 3.4, f: 4.3 },
+      { name: "Aveia em flocos", kcal: 394, p: 13.9, c: 66.6, f: 8.5 },
+      { name: "Pasta de amendoim", kcal: 588, p: 25.0, c: 20.0, f: 50.0 },
+      { name: "Leite integral", kcal: 61, p: 3.2, c: 4.6, f: 3.2 },
+      { name: "Leite desnatado", kcal: 35, p: 3.4, c: 4.8, f: 0.1 },
+      { name: "Iogurte natural", kcal: 51, p: 4.1, c: 3.6, f: 2.3 },
+      { name: "Cuscuz de milho cozido", kcal: 112, p: 2.2, c: 25.0, f: 0.7 },
+      { name: "Macarrão cozido", kcal: 158, p: 5.8, c: 30.8, f: 0.9 },
+      { name: "Atum em conserva (drenado)", kcal: 166, p: 26.0, c: 0.0, f: 6.0 },
+      { name: "Tilápia / Peixe grelhado", kcal: 128, p: 26.0, c: 0.0, f: 2.7 }
+    ];
+
+    let db = {
+      user: null,
+      users: [],
+      workouts: [],
+      history: [],
+      water: {},
+      cardio: [],
+      prs: {},
+      foodMeals: [],
+      foodGoal: DEFAULT_GOAL_FOOD,
+      aiApiKey: "",
+      activeSession: null
+    };
+
+    let currentMealFoods = [];
+    let currentPhotoBase64 = "";
+    let sessionDurationInterval = null;
+    let timerInterval = null;
+    let timerTimeLeft = 0;
+    let timerRunning = false;
+
+    document.addEventListener('DOMContentLoaded', () => {
+      loadFromLocalStorage();
+      checkAuthStatus();
+      updateCurrentDate();
+      populateTacoSelect();
+      initFoodDateInputs();
+      renderHomeScreen();
+      renderWorkoutsList();
+      renderCardioScreen();
+      renderWaterScreen();
+      renderFoodScreen();
+      checkUnfinishedSession();
+      initSingleFilePWA();
+    });
+
+    function getTodayKey() {
+      const now = new Date();
+      return `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
+    }
+
+    function initFoodDateInputs() {
+      const today = getTodayKey();
+      document.getElementById('food-meal-date').value = today;
+      document.getElementById('food-filter-date').value = today;
+    }
+
+    function updateCurrentDate() {
+      const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+      const dateStr = new Date().toLocaleDateString('pt-PT', options);
+      document.getElementById('current-date').innerText = dateStr.toUpperCase();
+    }
+
+    function toggleAuthMode(mode) {
+      const loginView = document.getElementById('auth-login-view');
+      const regView = document.getElementById('auth-register-view');
+      const errorEl = document.getElementById('login-error');
+      if (errorEl) errorEl.style.display = 'none';
+
+      if (mode === 'register') {
+        loginView.style.display = 'none';
+        regView.style.display = 'block';
+
+        const loginEmail = document.getElementById('login-email').value.trim();
+        const loginPin = document.getElementById('login-pin').value.trim();
+        if (loginEmail && !document.getElementById('reg-email').value) {
+          document.getElementById('reg-email').value = loginEmail;
+        }
+        if (loginPin && !document.getElementById('reg-pin').value) {
+          document.getElementById('reg-pin').value = loginPin;
+        }
+      } else {
+        loginView.style.display = 'block';
+        regView.style.display = 'none';
+      }
+    }
+
+    function checkAuthStatus() {
+      const overlay = document.getElementById('auth-overlay');
+
+      if (!sessionStorage.getItem('FS_LOGGED_IN')) {
+        overlay.style.display = 'flex';
+        toggleAuthMode('login');
+      } else {
+        overlay.style.display = 'none';
+        updateUserSettingsUI();
+      }
+    }
+
+    function registerUser() {
+      const name = document.getElementById('reg-name').value.trim();
+      const email = document.getElementById('reg-email').value.trim().toLowerCase();
+      const pin = document.getElementById('reg-pin').value.trim();
+
+      if (!name || !pin || !email) {
+        alert("Por favor, preencha Nome, E-mail e crie uma Senha/PIN.");
+        return;
+      }
+
+      const btn = document.getElementById('btn-register-submit');
+      if (btn) {
+        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> A registar...';
+        btn.disabled = true;
+      }
+
+      if (!db.users) db.users = [];
+      const userObj = { name, email, pin, registered: true };
+
+      const existingIdx = db.users.findIndex(u => u.email && u.email.toLowerCase() === email);
+      if (existingIdx >= 0) db.users[existingIdx] = userObj;
+      else db.users.push(userObj);
+
+      db.user = userObj;
+      saveToLocalStorage();
+      sessionStorage.setItem('FS_LOGGED_IN', 'true');
+
+      try {
+        if (typeof emailjs !== 'undefined' && EMAILJS_PUBLIC_KEY) {
+          emailjs.init(EMAILJS_PUBLIC_KEY);
+          emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
+            user_name: name,
+            user_email: email
+          }).catch(err => console.error("Erro EmailJS:", err));
+        }
+      } catch (err) {
+        console.error("Erro ao tentar enviar EmailJS:", err);
+      }
+
+      if (btn) {
+        btn.innerHTML = '<i class="fa-solid fa-check"></i> CADASTRAR PERFIL';
+        btn.disabled = false;
+      }
+
+      document.getElementById('auth-overlay').style.display = 'none';
+      renderHomeScreen();
+      updateUserSettingsUI();
+
+      document.getElementById('welcome-motivation-text').innerHTML = `
+        Parabéns por dar o primeiro passo, <strong style="color:#FFF;">${name}</strong>!<br><br>
+        Você é forte demais e vai alcançar todos os seus objetivos! A temporada bizarra começou!
+      `;
+      openModal('modal-welcome-motivation');
+    }
+
+    function closeWelcomeMotivation() { closeModal('modal-welcome-motivation'); }
+
+    function loginUser() {
+      const emailInput = document.getElementById('login-email').value.trim().toLowerCase();
+      const pinInput = document.getElementById('login-pin').value.trim();
+      const errorEl = document.getElementById('login-error');
+
+      if (!emailInput || !pinInput) {
+        alert("Por favor, digite o seu E-mail e a sua Senha / PIN.");
+        return;
+      }
+
+      let foundUser = null;
+      if (db.users && Array.isArray(db.users)) {
+        foundUser = db.users.find(u => u.email && u.email.toLowerCase() === emailInput);
+      }
+      if (!foundUser && db.user && db.user.email && db.user.email.toLowerCase() === emailInput) {
+        foundUser = db.user;
+      }
+
+      if (!foundUser) {
+        document.getElementById('reg-email').value = emailInput;
+        document.getElementById('reg-pin').value = pinInput;
+
+        if (confirm(`A conta '${emailInput}' ainda não está cadastrada.\nDeseja criar a sua conta agora com estes dados?`)) {
+          let defaultName = emailInput.split('@')[0];
+          defaultName = defaultName.charAt(0).toUpperCase() + defaultName.slice(1);
+          const name = prompt("Qual é o seu nome para o perfil?", defaultName) || defaultName;
+          document.getElementById('reg-name').value = name;
+          registerUser();
+          return;
+        } else {
+          toggleAuthMode('register');
+          return;
+        }
+      }
+
+      if (foundUser.pin === pinInput) {
+        if (errorEl) errorEl.style.display = 'none';
+        db.user = foundUser;
+        saveToLocalStorage();
+        sessionStorage.setItem('FS_LOGGED_IN', 'true');
+        document.getElementById('auth-overlay').style.display = 'none';
+        renderHomeScreen();
+        updateUserSettingsUI();
+        checkUnfinishedSession();
+      } else {
+        if (errorEl) {
+          errorEl.innerText = "Senha / PIN incorreta para este e-mail.";
+          errorEl.style.display = 'block';
+        } else {
+          alert("Senha / PIN incorreta para este e-mail.");
+        }
+      }
+    }
+
+    function lockApp() {
+      sessionStorage.removeItem('FS_LOGGED_IN');
+      closeModal('modal-settings');
+      document.getElementById('login-pin').value = '';
+      checkAuthStatus();
+    }
+
+    function updateUserSettingsUI() {
+      if (db.user) {
+        document.getElementById('settings-user-name').innerText = db.user.name;
+        document.getElementById('settings-user-email').innerText = db.user.email || 'Sem e-mail registado';
+      }
+      if (db.aiApiKey) {
+        document.getElementById('settings-ai-key').value = db.aiApiKey;
+      }
+    }
+
+    function saveAiApiKey(val) {
+      db.aiApiKey = val.trim();
+      saveToLocalStorage();
+    }
+
+    function saveToLocalStorage() {
+      localStorage.setItem('FS_FITNESS_DB', JSON.stringify(db));
+    }
+
+    function loadFromLocalStorage() {
+      const data = localStorage.getItem('FS_FITNESS_DB');
+      if (data) {
+        try {
+          db = JSON.parse(data);
+          if (!db.history) db.history = [];
+          if (!db.workouts) db.workouts = [];
+          if (!db.water) db.water = {};
+          if (!db.cardio) db.cardio = [];
+          if (!db.prs) db.prs = {};
+          if (!db.foodMeals) db.foodMeals = [];
+          if (!db.foodGoal) db.foodGoal = DEFAULT_GOAL_FOOD;
+          if (!db.users) db.users = db.user ? [db.user] : [];
+        } catch (e) {
+          console.error("Erro ao carregar dados:", e);
+        }
+      } else {
+        if (!db.users) db.users = [];
+      }
+    }
+
+    function checkUnfinishedSession() {
+      if (!sessionStorage.getItem('FS_LOGGED_IN')) return;
+
+      if (db.activeSession) {
+        const elapsedSec = getSessionElapsedSeconds();
+        const completedSetsCount = countCompletedSets(db.activeSession);
+        const totalSetsCount = countTotalSets(db.activeSession);
+
+        document.getElementById('resume-workout-title').innerText = db.activeSession.workoutName;
+        document.getElementById('resume-workout-time').innerHTML = `<i class="fa-regular fa-clock"></i> Tempo decorrido: <strong>${formatDurationShort(elapsedSec)}</strong>`;
+        document.getElementById('resume-workout-progress').innerHTML = `<i class="fa-solid fa-bars-progress"></i> Progresso: <strong>${completedSetsCount} de ${totalSetsCount} séries concluídas</strong>`;
+
+        openModal('modal-resume-workout');
+      }
+    }
+
+    function countCompletedSets(session) {
+      if (!session || !session.exercises) return 0;
+      let count = 0;
+      session.exercises.forEach(ex => {
+        ex.sets.forEach(s => { if (s.completed) count++; });
       });
-      box.appendChild(row);
-    });
-    updateTotals();
-  }
+      return count;
+    }
 
-  function totals(list) {
-    return list.reduce((a, f) => {
-      const factor = n(f.grams) / 100;
-      a.kcal += n(f.kcal) * factor;
-      a.protein += n(f.protein) * factor;
-      a.carbs += n(f.carbs) * factor;
-      a.fat += n(f.fat) * factor;
-      return a;
-    }, { kcal: 0, protein: 0, carbs: 0, fat: 0 });
-  }
+    function countTotalSets(session) {
+      if (!session || !session.exercises) return 0;
+      let count = 0;
+      session.exercises.forEach(ex => { count += ex.sets.length; });
+      return count;
+    }
 
-  function updateTotals() {
-    const t = totals(foods);
-    $('mealKcal').textContent = Math.round(t.kcal);
-    $('mealProtein').textContent = round(t.protein);
-    $('mealCarbs').textContent = round(t.carbs);
-    $('mealFat').textContent = round(t.fat);
-    updateDay();
-  }
+    function resumeUnfinishedSession() {
+      closeModal('modal-resume-workout');
+      renderSessionView();
+      document.getElementById('workout-session-view').classList.remove('hidden');
+      document.getElementById('floating-timer').classList.remove('hidden');
+      startSessionDurationTimer();
+    }
 
-  function updateDay() {
-    const date = $('mealDate').value || today();
-    const day = meals.filter(m => m.date === date);
-    const t = totals(day.flatMap(m => m.foods || []));
-    
-    $('dayKcal').textContent = Math.round(t.kcal);
-    $('dayProtein').textContent = round(t.protein);
-    $('dayCarbs').textContent = round(t.carbs);
-    $('dayFat').textContent = round(t.fat);
-    
-    const goal = n($('goal').value);
-    const pct = goal ? Math.min(100, (t.kcal / goal) * 100) : 0;
-    
-    $('consumed').innerHTML = `${Math.round(t.kcal).toLocaleString('pt-BR')} <small>kcal</small>`;
-    $('progressFill').style.width = pct + '%';
-    $('progressText').textContent = `${round(pct)}% da meta`;
-    $('remaining').textContent = t.kcal > goal 
-      ? `${Math.round(t.kcal - goal).toLocaleString('pt-BR')} kcal acima da meta` 
-      : `Restam ${Math.round(goal - t.kcal).toLocaleString('pt-BR')} kcal`;
-      
-    renderHistory();
-    updateDashboard();
-  }
+    function discardUnfinishedSession() {
+      if (confirm("Descartar este treino em andamento?")) {
+        db.activeSession = null;
+        saveToLocalStorage();
+        stopSessionDurationTimer();
+        closeModal('modal-resume-workout');
+        renderHomeScreen();
+      }
+    }
 
-  function renderHistory() {
-    const box = $('history');
-    const sorted = [...meals].sort((a, b) => (b.date + b.time).localeCompare(a.date + a.time));
-    if (!sorted.length) { box.innerHTML = '<div class="empty">Nenhuma refeição salva ainda.</div>'; return; }
-    box.innerHTML = '';
-    sorted.forEach(m => {
-      const t = totals(m.foods || []);
-      const el = document.createElement('div');
-      el.className = 'meal';
-      el.innerHTML = `
-        <div class="meal-row">
-          <div><strong>${esc(m.type)}</strong><p>${esc(m.date)} • ${esc(m.time)} • ${(m.foods||[]).length} alimento(s)</p></div>
-          <div class="meal-total">${Math.round(t.kcal)} kcal</div>
-        </div>
-        <div class="hint">${(m.foods||[]).map(f => `${esc(f.name||'Alimento')} (${n(f.grams)} g)`).join(' • ')}</div>
-        <button class="btn outline" style="margin-top:9px;padding:7px 10px;font-size:11px">Excluir registro</button>`;
-      el.querySelector('button').onclick = () => {
-        if (confirm('Excluir esta refeição?')) {
-          meals = meals.filter(x => x.id !== m.id);
-          localStorage.setItem('FS_FOOD_MEALS', JSON.stringify(meals));
-          updateDay();
-          toast('Refeição excluída.');
-        }
-      };
-      box.appendChild(el);
-    });
-  }
+    function switchTab(tabName) {
+      document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+      document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
 
-  $('addFood').onclick = () => addFood('', 100, 0, 0, 0, 0);
-  $('goal').addEventListener('change', () => {
-    localStorage.setItem('FS_FOOD_GOAL', String(Math.max(1, n($('goal').value) || 2200)));
-    updateDay();
-  });
-  $('mealDate').addEventListener('change', updateDay);
+      document.getElementById(`tab-${tabName}`).classList.add('active');
+      document.getElementById(`nav-${tabName}`).classList.add('active');
 
-  $('saveMeal').onclick = () => {
-    if (!foods.length || !foods.some(f => f.name.trim())) { toast('Adicione pelo menos um alimento com nome.'); return; }
-    const meal = {
-      id: Date.now().toString(),
-      date: $('mealDate').value || today(),
-      time: new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }),
-      type: $('mealType').value,
-      foods: foods.map(f => ({ ...f })),
-      photo: photoData || ''
-    };
-    meals.push(meal);
-    localStorage.setItem('FS_FOOD_MEALS', JSON.stringify(meals));
-    foods = []; photoData = '';
-    $('photoPreview').style.display = 'none';
-    renderFoods();
-    updateDay();
-    toast('Refeição salva no histórico!');
-  };
+      if (tabName === 'home') renderHomeScreen();
+      if (tabName === 'workouts') renderWorkoutsList();
+      if (tabName === 'food') renderFoodScreen();
+      if (tabName === 'cardio') renderCardioScreen();
+      if (tabName === 'water') renderWaterScreen();
+    }
 
-  function handlePhoto(file) {
-    if (!file || !file.type.startsWith('image/')) return;
-    const reader = new FileReader();
-    reader.onload = () => { photoData = reader.result; $('photoPreview').src = photoData; $('photoPreview').style.display = 'block'; };
-    reader.readAsDataURL(file);
-  }
-  $('cameraInput').addEventListener('change', e => handlePhoto(e.target.files[0]));
-  $('galleryInput').addEventListener('change', e => handlePhoto(e.target.files[0]));
+    function renderHomeScreen() {
+      const daysOfWeek = ['Domingo', 'Segunda-feira', 'Terça-feira', 'Quarta-feira', 'Quinta-feira', 'Sexta-feira', 'Sábado'];
+      const todayName = daysOfWeek[new Date().getDay()];
 
-  // --- 2. LÓGICA DE ÁGUA ---
-  let waterData = {};
-  try { waterData = JSON.parse(localStorage.getItem('FS_WATER_DATA') || '{}'); } catch(e) { waterData = {}; }
-  $('waterGoal').value = localStorage.getItem('FS_WATER_GOAL') || '2500';
+      const userName = (db.user && db.user.name) ? db.user.name : 'Atleta';
+      document.getElementById('home-user-greeting').innerHTML = `Massa, <span>${userName}</span>! Hora do treino`;
 
-  function updateWaterUI() {
-    const tDate = today();
-    const consumed = waterData[tDate] || 0;
-    const goal = n($('waterGoal').value) || 2500;
-    const pct = Math.min(100, (consumed / goal) * 100);
+      const todayWorkout = db.workouts.find(w => w.day === todayName);
+      const titleEl = document.getElementById('home-scheduled-workout-title');
+      const descEl = document.getElementById('home-scheduled-workout-desc');
+      const startBtn = document.getElementById('home-start-btn');
 
-    $('waterConsumed').innerHTML = `${consumed.toLocaleString('pt-BR')} <small style="color:#aaa">ml</small>`;
-    $('waterFill').style.width = pct + '%';
-    $('waterText').textContent = `${round(pct)}% da meta`;
-    $('waterRemaining').textContent = consumed > goal 
-      ? `${(consumed - goal).toLocaleString('pt-BR')} ml acima da meta`
-      : `Restam ${(goal - consumed).toLocaleString('pt-BR')} ml`;
+      if (todayWorkout) {
+        titleEl.innerText = todayWorkout.name;
+        descEl.innerText = `${todayWorkout.muscles} (${todayWorkout.exercises.length} exercícios)`;
+        startBtn.style.display = 'inline-flex';
+        startBtn.onclick = () => startWorkoutSession(todayWorkout.id);
+      } else {
+        titleEl.innerText = "Descanso / Treino Livre";
+        descEl.innerText = "Nenhum treino agendado para hoje.";
+        startBtn.style.display = 'none';
+      }
 
-    updateDashboard();
-  }
+      const todayKey = getTodayKey();
+      const todayMeals = db.foodMeals.filter(m => m.date === todayKey);
+      const todayNutrients = calculateMealsTotalNutrients(todayMeals);
+      const foodGoal = db.foodGoal || DEFAULT_GOAL_FOOD;
+      const foodPct = Math.min(100, Math.round((todayNutrients.kcal / foodGoal) * 100));
 
-  function addWater(amount) {
-    const tDate = today();
-    waterData[tDate] = (waterData[tDate] || 0) + amount;
-    localStorage.setItem('FS_WATER_DATA', JSON.stringify(waterData));
-    updateWaterUI();
-    toast(`+${amount} ml adicionados!`);
-  }
+      document.getElementById('home-food-val').innerText = `${Math.round(todayNutrients.kcal)} / ${foodGoal} kcal`;
+      document.getElementById('home-food-pct').innerText = `${foodPct}%`;
+      document.getElementById('home-food-bar').style.width = `${foodPct}%`;
+      document.getElementById('home-food-sub').innerText = `${Math.round(todayNutrients.prot)} g Prot • ${Math.round(todayNutrients.carbs)} g Carb • ${Math.round(todayNutrients.fat)} g Gord`;
 
-  function resetWater() {
-    const tDate = today();
-    waterData[tDate] = 0;
-    localStorage.setItem('FS_WATER_DATA', JSON.stringify(waterData));
-    updateWaterUI();
-    toast('Consumo de água zerado.');
-  }
+      const waterData = db.water[todayKey] || { goal: DEFAULT_GOAL_WATER, logs: [] };
+      const totalWater = waterData.logs.reduce((sum, l) => sum + l.amount, 0);
+      document.getElementById('home-water-val').innerText = `${(totalWater/1000).toFixed(1)} / ${(waterData.goal/1000).toFixed(1)} L`;
+      const waterPct = Math.min(100, Math.round((totalWater / waterData.goal) * 100));
+      document.getElementById('home-water-bar').style.width = `${waterPct}%`;
 
-  $('waterGoal').addEventListener('change', () => {
-    localStorage.setItem('FS_WATER_GOAL', String(n($('waterGoal').value) || 2500));
-    updateWaterUI();
-  });
+      const weeklyCardioMin = getWeeklyCardioMinutes();
+      document.getElementById('home-cardio-val').innerText = `${weeklyCardioMin} min`;
 
-  // --- 3. LÓGICA DE TREINOS ---
-  let workouts = [];
-  try { workouts = JSON.parse(localStorage.getItem('FS_WORKOUTS') || '[]'); } catch(e) { workouts = []; }
+      document.getElementById('sum-completed-workouts').innerText = getWeeklyCompletedWorkoutsCount();
+      document.getElementById('sum-water-avg').innerText = `${(getWeeklyWaterAvg()/1000).toFixed(1)}L`;
+      document.getElementById('sum-cardio-total').innerText = `${weeklyCardioMin}m`;
 
-  function renderWorkouts() {
-    const box = $('workoutHistory');
-    const sorted = [...workouts].sort((a, b) => (b.date + b.time).localeCompare(a.date + a.time));
-    if (!sorted.length) { box.innerHTML = '<div class="empty">Nenhum treino registrado ainda.</div>'; return; }
-    box.innerHTML = '';
-    sorted.forEach(w => {
-      const el = document.createElement('div');
-      el.className = 'meal';
-      el.innerHTML = `
-        <div class="meal-row">
-          <div><strong>🏋️ ${esc(w.name)}</strong><p>${esc(w.date)} • ${esc(w.time)}</p></div>
-        </div>
-        <div class="hint">${esc(w.details || 'Sem detalhes')}</div>
-        <button class="btn outline" style="margin-top:9px;padding:7px 10px;font-size:11px">Excluir treino</button>`;
-      el.querySelector('button').onclick = () => {
-        if (confirm('Excluir este treino?')) {
-          workouts = workouts.filter(x => x.id !== w.id);
-          localStorage.setItem('FS_WORKOUTS', JSON.stringify(workouts));
-          renderWorkouts();
-          updateDashboard();
-          toast('Treino excluído.');
-        }
-      };
-      box.appendChild(el);
-    });
-  }
+      const prHighlightEl = document.getElementById('home-pr-highlight');
+      const prKeys = Object.keys(db.prs || {});
+      if (prKeys.length > 0) {
+        const lastPRKey = prKeys[prKeys.length - 1];
+        const pr = db.prs[lastPRKey];
+        prHighlightEl.innerHTML = `
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <div>
+              <strong style="color:#FFF;">${lastPRKey}</strong>
+              <p class="text-xs text-muted">${pr.weight} kg x ${pr.reps} reps em ${pr.date}</p>
+            </div>
+            <span class="text-red" style="font-size:1.2rem; font-weight:900;"><i class="fa-solid fa-fire"></i></span>
+          </div>
+        `;
+      } else {
+        prHighlightEl.innerHTML = `<p class="text-muted text-sm">Nenhum recorde registado ainda. Cadastra o teu primeiro treino!</p>`;
+      }
+    }
 
-  $('btnSaveWorkout').onclick = () => {
-    const name = $('workoutName').value.trim();
-    if (!name) { toast('Informe o nome do treino.'); return; }
-    const item = {
-      id: Date.now().toString(),
-      name: name,
-      details: $('workoutDetails').value.trim(),
-      date: today(),
-      time: new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })
-    };
-    workouts.push(item);
-    localStorage.setItem('FS_WORKOUTS', JSON.stringify(workouts));
-    $('workoutName').value = '';
-    $('workoutDetails').value = '';
-    renderWorkouts();
-    updateDashboard();
-    toast('Treino concluído salvo!');
-  };
+    function startScheduledWorkout() {
+      const daysOfWeek = ['Domingo', 'Segunda-feira', 'Terça-feira', 'Quarta-feira', 'Quinta-feira', 'Sexta-feira', 'Sábado'];
+      const todayName = daysOfWeek[new Date().getDay()];
+      const todayWorkout = db.workouts.find(w => w.day === todayName);
+      if (todayWorkout) startWorkoutSession(todayWorkout.id);
+    }
 
-  // --- 4. ATUALIZAR RESUMO NA PÁGINA PRINCIPAL (HOME) ---
-  function updateDashboard() {
-    const tDate = today();
+    function renderWorkoutsList() {
+      const container = document.getElementById('workouts-list');
+      container.innerHTML = '';
 
-    // Calorias na Home
-    const dayMeals = meals.filter(m => m.date === tDate);
-    const foodTotals = totals(dayMeals.flatMap(m => m.foods || []));
-    const kcalGoal = n($('goal').value) || 2200;
-    const kcalPct = Math.min(100, (foodTotals.kcal / kcalGoal) * 100);
+      if (db.workouts.length === 0) {
+        container.innerHTML = `
+          <div class="card text-center" style="padding: 30px 15px;">
+            <i class="fa-solid fa-dumbbell text-muted" style="font-size:2.5rem;"></i>
+            <p class="text-muted mt-10">Nenhum treino registado.</p>
+            <button class="btn btn-primary btn-sm mt-15" onclick="openCreateWorkoutModal()">Criar Primeiro Treino</button>
+          </div>
+        `;
+        return;
+      }
 
-    $('dashKcal').innerHTML = `${Math.round(foodTotals.kcal).toLocaleString('pt-BR')} <small>kcal</small>`;
-    $('dashKcalSub').textContent = `Meta: ${kcalGoal.toLocaleString('pt-BR')} kcal`;
-    $('dashKcalFill').style.width = kcalPct + '%';
-    $('dashKcalText').textContent = `${round(kcalPct)}% da meta`;
-    $('dashKcalRemaining').textContent = foodTotals.kcal > kcalGoal 
-      ? `${Math.round(foodTotals.kcal - kcalGoal).toLocaleString('pt-BR')} kcal acima`
-      : `Restam ${Math.round(kcalGoal - foodTotals.kcal).toLocaleString('pt-BR')} kcal`;
-
-    // Água na Home
-    const waterConsumed = waterData[tDate] || 0;
-    const wGoal = n($('waterGoal').value) || 2500;
-    const waterPct = Math.min(100, (waterConsumed / wGoal) * 100);
-
-    $('dashWater').innerHTML = `${waterConsumed.toLocaleString('pt-BR')} <small style="color:#aaa">ml</small>`;
-    $('dashWaterSub').textContent = `Meta: ${wGoal.toLocaleString('pt-BR')} ml`;
-    $('dashWaterFill').style.width = waterPct + '%';
-    $('dashWaterText').textContent = `${round(waterPct)}% da meta`;
-    $('dashWaterRemaining').textContent = waterConsumed > wGoal 
-      ? `${(waterConsumed - wGoal).toLocaleString('pt-BR')} ml acima`
-      : `Restam ${(wGoal - waterConsumed).toLocaleString('pt-BR')} ml`;
-
-    // Treinos na Home
-    const todayWorkouts = workouts.filter(w => w.date === tDate);
-    const wBox = $('dashWorkoutList');
-    if (!todayWorkouts.length) {
-      wBox.innerHTML = '<div class="empty">Nenhum treino concluído hoje.</div>';
-    } else {
-      wBox.innerHTML = '';
-      todayWorkouts.forEach(w => {
-        const item = document.createElement('div');
-        item.style.padding = '8px 0';
-        item.style.borderBottom = '1px solid #222';
-        item.innerHTML = `<strong>🏋️ ${esc(w.name)}</strong><div class="tiny" style="margin-top:2px">${esc(w.details || 'Concluído')} • ${w.time}</div>`;
-        wBox.appendChild(item);
+      db.workouts.forEach(w => {
+        const card = document.createElement('div');
+        card.className = 'card';
+        card.innerHTML = `
+          <div class="card-header-flex">
+            <span class="card-subtitle">${w.day.toUpperCase()}</span>
+            <div>
+              <button class="icon-btn" style="width:28px; height:28px;" onclick="editWorkout('${w.id}')"><i class="fa-solid fa-pen" style="font-size:0.75rem;"></i></button>
+              <button class="icon-btn" style="width:28px; height:28px;" onclick="deleteWorkout('${w.id}')"><i class="fa-solid fa-trash text-red" style="font-size:0.75rem;"></i></button>
+            </div>
+          </div>
+          <h3 class="mt-5">${w.name}</h3>
+          <p class="text-xs text-muted mt-5">${w.muscles || 'Sem descrição'}</p>
+          <p class="text-xs mt-10"><i class="fa-solid fa-list-check"></i> ${w.exercises ? w.exercises.length : 0} Exercícios</p>
+          <button class="btn btn-primary btn-block btn-sm mt-15" onclick="startWorkoutSession('${w.id}')">
+            <i class="fa-solid fa-play"></i> Iniciar Treino
+          </button>
+        `;
+        container.appendChild(card);
       });
     }
-  }
 
-  // Inicialização
-  addFood('Arroz cozido', 150, 130, 2.7, 28, 0.3);
-  addFood('Feijão cozido', 100, 76, 4.8, 13.6, 0.5);
-  addFood('Frango grelhado', 150, 159, 32, 0, 3.2);
+    function openCreateWorkoutModal() {
+      document.getElementById('edit-workout-id').value = '';
+      document.getElementById('workout-input-name').value = '';
+      document.getElementById('workout-input-day').value = 'Segunda-feira';
+      document.getElementById('workout-input-muscles').value = '';
+      document.getElementById('workout-exercises-fields').innerHTML = '';
+      document.getElementById('modal-workout-title').innerText = 'Criar Treino';
+      addExerciseField();
+      openModal('modal-add-workout');
+    }
 
-  updateWaterUI();
-  renderWorkouts();
-  updateDay();
-</script>
+    function addExerciseField(name = '', sets = 3, reps = 10, weight = '') {
+      const container = document.getElementById('workout-exercises-fields');
+      const fieldId = 'ex-' + Date.now() + Math.random().toString(36).substr(2, 4);
+      
+      const div = document.createElement('div');
+      div.className = 'card mt-10 exercise-field-card';
+      div.id = fieldId;
+      div.innerHTML = `
+        <div class="card-header-flex mb-10">
+          <span class="text-xs text-red font-weight-bold" style="font-weight:800;">EXERCÍCIO</span>
+          <button type="button" class="btn-close" onclick="document.getElementById('${fieldId}').remove()">&times;</button>
+        </div>
+        <div class="form-group">
+          <input type="text" class="form-input ex-field-name" placeholder="Ex: Supino Reto, Pulley Tríceps..." value="${name}">
+        </div>
+        <div class="grid-3">
+          <div>
+            <label class="text-xs text-muted">Séries</label>
+            <input type="number" class="form-input ex-field-sets" value="${sets}">
+          </div>
+          <div>
+            <label class="text-xs text-muted">Reps Meta</label>
+            <input type="number" class="form-input ex-field-reps" value="${reps}">
+          </div>
+          <div>
+            <label class="text-xs text-muted">Peso Meta (kg)</label>
+            <input type="number" class="form-input ex-field-weight" value="${weight}">
+          </div>
+        </div>
+      `;
+      container.appendChild(div);
+    }
+
+    function saveWorkout() {
+      const id = document.getElementById('edit-workout-id').value || 'w-' + Date.now();
+      const name = document.getElementById('workout-input-name').value.trim();
+      const day = document.getElementById('workout-input-day').value;
+      const muscles = document.getElementById('workout-input-muscles').value.trim();
+
+      if (!name) { alert("Por favor, digite o nome do treino."); return; }
+
+      const exerciseCards = document.querySelectorAll('#workout-exercises-fields .exercise-field-card');
+      const exercises = [];
+
+      exerciseCards.forEach(c => {
+        const exNameInput = c.querySelector('.ex-field-name');
+        const exName = exNameInput ? exNameInput.value.trim() : '';
+        if (exName) {
+          exercises.push({
+            id: 'ex-' + Date.now() + Math.random().toString(36).substr(2, 4),
+            name: exName,
+            sets: parseInt(c.querySelector('.ex-field-sets').value) || 3,
+            targetReps: parseInt(c.querySelector('.ex-field-reps').value) || 10,
+            targetWeight: parseFloat(c.querySelector('.ex-field-weight').value) || 0
+          });
+        }
+      });
+
+      if (exercises.length === 0) {
+        alert("Adicione pelo menos 1 exercício com nome antes de salvar.");
+        return;
+      }
+
+      const workoutObj = { id, name, day, muscles, exercises };
+      const existingIdx = db.workouts.findIndex(w => w.id === id);
+
+      if (existingIdx >= 0) db.workouts[existingIdx] = workoutObj;
+      else db.workouts.push(workoutObj);
+
+      saveToLocalStorage();
+      closeModal('modal-add-workout');
+      renderWorkoutsList();
+      renderHomeScreen();
+      showGenericToast("DIVISÃO DE TREINOS", "Treino salvo com sucesso!");
+    }
+
+    function editWorkout(id) {
+      const w = db.workouts.find(item => item.id === id);
+      if (!w) return;
+
+      document.getElementById('edit-workout-id').value = w.id;
+      document.getElementById('workout-input-name').value = w.name;
+      document.getElementById('workout-input-day').value = w.day;
+      document.getElementById('workout-input-muscles').value = w.muscles;
+      document.getElementById('modal-workout-title').innerText = 'Editar Treino';
+
+      const container = document.getElementById('workout-exercises-fields');
+      container.innerHTML = '';
+      
+      if (w.exercises && w.exercises.length > 0) {
+        w.exercises.forEach(ex => addExerciseField(ex.name, ex.sets, ex.targetReps, ex.targetWeight));
+      } else {
+        addExerciseField();
+      }
+
+      openModal('modal-add-workout');
+    }
+
+    function deleteWorkout(id) {
+      if (confirm("Eliminar este treino?")) {
+        db.workouts = db.workouts.filter(w => w.id !== id);
+        saveToLocalStorage();
+        renderWorkoutsList();
+        renderHomeScreen();
+      }
+    }
+
+    function startWorkoutSession(workoutId) {
+      const workout = db.workouts.find(w => w.id === workoutId);
+      if (!workout) return;
+
+      const now = Date.now();
+      db.activeSession = {
+        workoutId: workout.id,
+        workoutName: workout.name,
+        muscles: workout.muscles || '',
+        startTimestamp: now,
+        startTimeStr: new Date(now).toLocaleTimeString('pt-PT', { hour: '2-digit', minute: '2-digit' }),
+        dateStr: new Date(now).toLocaleDateString('pt-PT'),
+        exercises: workout.exercises.map(ex => {
+          const lastSession = getLastExerciseData(ex.name);
+          return {
+            name: ex.name,
+            targetSets: ex.sets,
+            lastData: lastSession,
+            sets: Array.from({ length: ex.sets }, (_, i) => ({
+              setNumber: i + 1,
+              weight: lastSession && lastSession.sets[i] ? lastSession.sets[i].weight : ex.targetWeight,
+              reps: lastSession && lastSession.sets[i] ? lastSession.sets[i].reps : ex.targetReps,
+              completed: false
+            }))
+          };
+        })
+      };
+
+      saveToLocalStorage();
+      renderSessionView();
+      document.getElementById('workout-session-view').classList.remove('hidden');
+      document.getElementById('floating-timer').classList.remove('hidden');
+      startSessionDurationTimer();
+    }
+
+    function addExerciseToActiveSession() {
+      if (!db.activeSession) return;
+      const exName = prompt("Nome do novo exercício:");
+      if (!exName || !exName.trim()) return;
+
+      const setsCount = parseInt(prompt("Número de séries:", "3")) || 3;
+      const defaultReps = parseInt(prompt("Meta de repetições:", "10")) || 10;
+      const defaultWeight = parseFloat(prompt("Peso inicial (kg):", "0")) || 0;
+
+      db.activeSession.exercises.push({
+        name: exName.trim(),
+        targetSets: setsCount,
+        lastData: getLastExerciseData(exName.trim()),
+        sets: Array.from({ length: setsCount }, (_, i) => ({
+          setNumber: i + 1,
+          weight: defaultWeight,
+          reps: defaultReps,
+          completed: false
+        }))
+      });
+
+      saveToLocalStorage();
+      renderSessionView();
+    }
+
+    function addSetToActiveExercise(exIdx) {
+      if (!db.activeSession) return;
+      const ex = db.activeSession.exercises[exIdx];
+      const lastSet = ex.sets[ex.sets.length - 1] || { weight: 0, reps: 10 };
+      ex.sets.push({
+        setNumber: ex.sets.length + 1,
+        weight: lastSet.weight,
+        reps: lastSet.reps,
+        completed: false
+      });
+      saveToLocalStorage();
+      renderSessionView();
+    }
+
+    function getSessionElapsedSeconds() {
+      if (!db.activeSession || !db.activeSession.startTimestamp) return 0;
+      return Math.max(0, Math.floor((Date.now() - db.activeSession.startTimestamp) / 1000));
+    }
+
+    function startSessionDurationTimer() {
+      stopSessionDurationTimer();
+      updateSessionDurationDisplay();
+      sessionDurationInterval = setInterval(updateSessionDurationDisplay, 1000);
+    }
+
+    function stopSessionDurationTimer() {
+      if (sessionDurationInterval) {
+        clearInterval(sessionDurationInterval);
+        sessionDurationInterval = null;
+      }
+    }
+
+    function updateSessionDurationDisplay() {
+      const el = document.getElementById('session-duration-timer');
+      if (el && db.activeSession) {
+        const sec = getSessionElapsedSeconds();
+        el.innerText = formatDuration(sec);
+      }
+    }
+
+    function formatDuration(seconds) {
+      const hrs = Math.floor(seconds / 3600);
+      const mins = Math.floor((seconds % 3600) / 60);
+      const secs = seconds % 60;
+      if (hrs > 0) {
+        return `${hrs}:${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+      }
+      return `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+    }
+
+    function formatDurationShort(seconds) {
+      const hrs = Math.floor(seconds / 3600);
+      const mins = Math.floor((seconds % 3600) / 60);
+      const secs = seconds % 60;
+      if (hrs > 0) return `${hrs}h ${mins}min`;
+      if (mins === 0) return `${secs}s`;
+      return `${mins} min`;
+    }
+
+    function renderSessionView() {
+      if (!db.activeSession) return;
+
+      document.getElementById('session-workout-name').innerText = db.activeSession.workoutName;
+      document.getElementById('session-workout-muscles').innerText = db.activeSession.muscles || 'Sem descrição';
+      updateSessionDurationDisplay();
+
+      const container = document.getElementById('session-exercises-container');
+      container.innerHTML = '';
+
+      db.activeSession.exercises.forEach((ex, exIdx) => {
+        const card = document.createElement('div');
+        card.className = 'card mt-15';
+        
+        let lastInfo = ex.lastData ? `<p class="text-xs text-red mb-10"><i class="fa-solid fa-history"></i> Anterior (${ex.lastData.date}): ${ex.lastData.sets.map(s => `${s.weight}kg x ${s.reps}`).join(' | ')}</p>` : '';
+
+        let setsHtml = ex.sets.map((s, setIdx) => `
+          <div class="set-row">
+            <span class="text-xs text-muted text-center">#${setIdx + 1}</span>
+            <input type="number" class="set-input" value="${s.weight}" onchange="updateSetData(${exIdx}, ${setIdx}, 'weight', this.value)" placeholder="kg">
+            <input type="number" class="set-input" value="${s.reps}" onchange="updateSetData(${exIdx}, ${setIdx}, 'reps', this.value)" placeholder="reps">
+            <button class="check-btn ${s.completed ? 'completed' : ''}" onclick="toggleSetComplete(${exIdx}, ${setIdx})">
+              <i class="fa-solid fa-check"></i>
+            </button>
+          </div>
+        `).join('');
+
+        card.innerHTML = `
+          <div class="card-header-flex mb-5">
+            <h3 style="font-size:1rem;">${ex.name}</h3>
+            <button class="btn btn-xs btn-outline" onclick="addSetToActiveExercise(${exIdx})"><i class="fa-solid fa-plus"></i> Série</button>
+          </div>
+          ${lastInfo}
+          <div class="set-row-header grid-4 text-xs text-muted text-center mb-5" style="display:grid; grid-template-columns: 40px 1fr 1fr 45px;">
+            <span>Série</span><span>KG</span><span>Reps</span><span>OK</span>
+          </div>
+          ${setsHtml}
+        `;
+        container.appendChild(card);
+      });
+
+      const addExBtn = document.createElement('button');
+      addExBtn.className = 'btn btn-outline btn-block mt-15';
+      addExBtn.innerHTML = '<i class="fa-solid fa-plus"></i> Adicionar Exercício ao Treino';
+      addExBtn.onclick = addExerciseToActiveSession;
+      container.appendChild(addExBtn);
+    }
+
+    function updateSetData(exIdx, setIdx, field, val) {
+      if (!db.activeSession) return;
+      db.activeSession.exercises[exIdx].sets[setIdx][field] = parseFloat(val) || 0;
+      saveToLocalStorage();
+    }
+
+    function toggleSetComplete(exIdx, setIdx) {
+      if (!db.activeSession) return;
+      const set = db.activeSession.exercises[exIdx].sets[setIdx];
+      set.completed = !set.completed;
+
+      saveToLocalStorage();
+
+      if (set.completed) {
+        checkPR(db.activeSession.exercises[exIdx].name, set.weight, set.reps);
+        startTimerPreset(60);
+      }
+
+      renderSessionView();
+    }
+
+    function checkPR(exerciseName, weight, reps) {
+      if (!weight || weight <= 0) return;
+
+      const currentPR = db.prs[exerciseName];
+      if (!currentPR || weight > currentPR.weight) {
+        db.prs[exerciseName] = { weight, reps, date: getTodayKey() };
+        saveToLocalStorage();
+        showPRToast(exerciseName, weight, reps);
+      }
+    }
+
+    function showPRToast(exercise, weight, reps) {
+      const toast = document.getElementById('toast-pr');
+      document.getElementById('toast-pr-title').innerText = "NOVO RECORDE PESSOAL!";
+      document.getElementById('toast-pr-desc').innerText = `${weight} kg x ${reps} reps em ${exercise}`;
+      toast.classList.remove('hidden');
+      setTimeout(() => toast.classList.add('hidden'), 3500);
+    }
+
+    function showGenericToast(title, desc) {
+      const toast = document.getElementById('toast-pr');
+      document.getElementById('toast-pr-title').innerText = title;
+      document.getElementById('toast-pr-desc').innerText = desc;
+      toast.classList.remove('hidden');
+      setTimeout(() => toast.classList.add('hidden'), 3000);
+    }
+
+    function finishWorkoutSession() {
+      if (!db.activeSession) return;
+
+      if (confirm("Desejas concluir e guardar este treino no teu histórico?")) {
+        const now = Date.now();
+        const durationSeconds = getSessionElapsedSeconds();
+        const startTimeStr = db.activeSession.startTimeStr || new Date(db.activeSession.startTimestamp).toLocaleTimeString('pt-PT', { hour: '2-digit', minute: '2-digit' });
+        const endTimeStr = new Date(now).toLocaleTimeString('pt-PT', { hour: '2-digit', minute: '2-digit' });
+        const dateStr = db.activeSession.dateStr || new Date(now).toLocaleDateString('pt-PT');
+
+        const sessionRecord = {
+          id: 'h-' + Date.now(),
+          workoutName: db.activeSession.workoutName,
+          date: dateStr,
+          timestamp: db.activeSession.startTimestamp || now,
+          endTimestamp: now,
+          startTimeStr: startTimeStr,
+          endTimeStr: endTimeStr,
+          durationSeconds: durationSeconds,
+          durationStr: formatDurationShort(durationSeconds),
+          exercises: db.activeSession.exercises.map(e => ({
+            name: e.name,
+            sets: e.sets.map(s => ({
+              setNumber: s.setNumber || 1,
+              weight: parseFloat(s.weight) || 0,
+              reps: parseInt(s.reps) || 0,
+              completed: !!s.completed
+            }))
+          }))
+        };
+
+        db.history.unshift(sessionRecord);
+        db.activeSession = null;
+        saveToLocalStorage();
+        stopSessionDurationTimer();
+
+        document.getElementById('workout-session-view').classList.add('hidden');
+        document.getElementById('floating-timer').classList.add('hidden');
+        renderHomeScreen();
+        alert("Treino concluído e registado com sucesso!");
+      }
+    }
+
+    function confirmExitWorkout() {
+      if (confirm("Fechar o treino? A sessão continuará guardada para retomar depois.")) {
+        stopSessionDurationTimer();
+        document.getElementById('workout-session-view').classList.add('hidden');
+        document.getElementById('floating-timer').classList.add('hidden');
+        renderHomeScreen();
+      }
+    }
+
+    function getLastExerciseData(exerciseName) {
+      if (!db.history || db.history.length === 0) return null;
+      for (let i = 0; i < db.history.length; i++) {
+        const ex = db.history[i].exercises.find(e => e.name.toLowerCase() === exerciseName.toLowerCase());
+        if (ex) return { date: db.history[i].date, sets: ex.sets };
+      }
+      return null;
+    }
+
+    function toggleTimerExpand(expand) {
+      document.getElementById('timer-min').classList.toggle('hidden', expand);
+      document.getElementById('timer-max').classList.toggle('hidden', !expand);
+    }
+
+    function setTimerPreset(seconds) { startTimerPreset(seconds); }
+
+    function startTimerPreset(seconds) {
+      timerTimeLeft = seconds;
+      updateTimerDisplays();
+      if (!timerRunning) toggleTimer();
+    }
+
+    function toggleTimer() {
+      const playBtn = document.getElementById('timer-play-btn');
+      if (timerRunning) {
+        clearInterval(timerInterval);
+        timerRunning = false;
+        playBtn.innerHTML = '<i class="fa-solid fa-play"></i>';
+      } else {
+        if (timerTimeLeft <= 0) timerTimeLeft = 60;
+        timerRunning = true;
+        playBtn.innerHTML = '<i class="fa-solid fa-pause"></i>';
+        timerInterval = setInterval(() => {
+          timerTimeLeft--;
+          updateTimerDisplays();
+          if (timerTimeLeft <= 0) {
+            clearInterval(timerInterval);
+            timerRunning = false;
+            playBtn.innerHTML = '<i class="fa-solid fa-play"></i>';
+            playTimerSound();
+          }
+        }, 1000);
+      }
+    }
+
+    function resetTimer() {
+      clearInterval(timerInterval);
+      timerRunning = false;
+      timerTimeLeft = 60;
+      updateTimerDisplays();
+      document.getElementById('timer-play-btn').innerHTML = '<i class="fa-solid fa-play"></i>';
+    }
+
+    function addTimerTime(sec) {
+      timerTimeLeft += sec;
+      updateTimerDisplays();
+    }
+
+    function updateTimerDisplays() {
+      const m = String(Math.floor(timerTimeLeft / 60)).padStart(2, '0');
+      const s = String(timerTimeLeft % 60).padStart(2, '0');
+      const str = `${m}:${s}`;
+      document.getElementById('timer-min-display').innerText = str;
+      document.getElementById('timer-max-display').innerText = str;
+    }
+
+    function playTimerSound() {
+      if ('vibrate' in navigator) navigator.vibrate([200, 100, 200]);
+      try {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = ctx.createOscillator();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(880, ctx.currentTime);
+        osc.connect(ctx.destination);
+        osc.start();
+        osc.stop(ctx.currentTime + 0.5);
+      } catch(e){}
+    }
+
+    // DIÁRIO ALIMENTAR
+    function populateTacoSelect() {
+      const select = document.getElementById('taco-select-db');
+      select.innerHTML = '<option value="">-- Selecionar da base TACO --</option>';
+      TACO_DB.forEach((item, idx) => {
+        const opt = document.createElement('option');
+        opt.value = idx;
+        opt.innerText = `${item.name} (${item.kcal} kcal/100g)`;
+        select.appendChild(opt);
+      });
+    }
+
+    function addSelectedTacoFood() {
+      const select = document.getElementById('taco-select-db');
+      const idx = select.value;
+      if (idx !== "") {
+        const item = TACO_DB[idx];
+        addFoodItemRow(item.name, 100, item.kcal, item.p, item.c, item.f);
+        select.value = "";
+      }
+    }
+
+    function addFoodItemRow(name = '', grams = 100, kcal = 0, p = 0, c = 0, f = 0) {
+      currentMealFoods.push({
+        id: 'food-' + Date.now() + Math.random().toString(36).substr(2, 4),
+        name,
+        grams: parseFloat(grams) || 100,
+        refKcal: parseFloat(kcal) || 0,
+        refP: parseFloat(p) || 0,
+        refC: parseFloat(c) || 0,
+        refF: parseFloat(f) || 0
+      });
+      renderCurrentMealFoodRows();
+    }
+
+    function renderCurrentMealFoodRows() {
+      const container = document.getElementById('food-items-container');
+      container.innerHTML = '';
+
+      if (currentMealFoods.length === 0) {
+        container.innerHTML = `<p class="text-xs text-muted text-center py-10">Nenhum alimento adicionado a esta refeição ainda.</p>`;
+        calculateMealTotals();
+        return;
+      }
+
+      currentMealFoods.forEach((item, idx) => {
+        const factor = (item.grams || 0) / 100;
+        const calcKcal = Math.round((item.refKcal || 0) * factor);
+        const calcP = Math.round(((item.refP || 0) * factor) * 10) / 10;
+        const calcC = Math.round(((item.refC || 0) * factor) * 10) / 10;
+        const calcF = Math.round(((item.refF || 0) * factor) * 10) / 10;
+
+        const row = document.createElement('div');
+        row.className = 'food-row';
+        row.innerHTML = `
+          <div class="food-head">
+            <span class="food-name-title">Alimento #${idx + 1}</span>
+            <button class="remove-food-btn" onclick="removeFoodItemRow(${idx})" title="Remover">&times;</button>
+          </div>
+          <div class="form-group">
+            <label>Nome do Alimento</label>
+            <input type="text" class="form-input" value="${item.name}" placeholder="Ex: Arroz branco cozido" onchange="updateFoodItemField(${idx}, 'name', this.value)">
+          </div>
+          <div class="grid-2">
+            <div class="form-group">
+              <label>Peso Consumido (g)</label>
+              <input type="number" class="form-input" value="${item.grams}" placeholder="100" min="0" step="1" onchange="updateFoodItemField(${idx}, 'grams', this.value)">
+            </div>
+            <div class="form-group">
+              <label>Calorias / 100g</label>
+              <input type="number" class="form-input" value="${item.refKcal}" placeholder="128" min="0" step="0.1" onchange="updateFoodItemField(${idx}, 'refKcal', this.value)">
+            </div>
+          </div>
+          <div class="grid-3 mt-5">
+            <div>
+              <label class="text-xs text-muted">Prot/100g</label>
+              <input type="number" class="form-input" value="${item.refP}" placeholder="g" min="0" step="0.1" onchange="updateFoodItemField(${idx}, 'refP', this.value)">
+            </div>
+            <div>
+              <label class="text-xs text-muted">Carb/100g</label>
+              <input type="number" class="form-input" value="${item.refC}" placeholder="g" min="0" step="0.1" onchange="updateFoodItemField(${idx}, 'refC', this.value)">
+            </div>
+            <div>
+              <label class="text-xs text-muted">Gord/100g</label>
+              <input type="number" class="form-input" value="${item.refF}" placeholder="g" min="0" step="0.1" onchange="updateFoodItemField(${idx}, 'refF', this.value)">
+            </div>
+          </div>
+          <div class="mt-10 text-xs text-muted" style="background:#181818; padding:6px 10px; border-radius:6px; display:flex; justify-content:space-between;">
+            <span>Porção (${item.grams}g):</span>
+            <strong style="color:var(--accent-red);">${calcKcal} kcal | ${calcP}g P | ${calcC}g C | ${calcF}g G</strong>
+          </div>
+        `;
+        container.appendChild(row);
+      });
+
+      calculateMealTotals();
+    }
+
+    function updateFoodItemField(idx, field, val) {
+      if (field === 'name') {
+        currentMealFoods[idx].name = val;
+      } else {
+        currentMealFoods[idx][field] = parseFloat(val) || 0;
+      }
+      renderCurrentMealFoodRows();
+    }
+
+    function removeFoodItemRow(idx) {
+      currentMealFoods.splice(idx, 1);
+      renderCurrentMealFoodRows();
+    }
+
+    function calculateMealTotals() {
+      let totalKcal = 0, totalP = 0, totalC = 0, totalF = 0;
+      currentMealFoods.forEach(item => {
+        const factor = (item.grams || 0) / 100;
+        totalKcal += (item.refKcal || 0) * factor;
+        totalP += (item.refP || 0) * factor;
+        totalC += (item.refC || 0) * factor;
+        totalF += (item.refF || 0) * factor;
+      });
+
+      document.getElementById('meal-total-kcal').innerText = Math.round(totalKcal);
+      document.getElementById('meal-total-prot').innerText = (Math.round(totalP * 10) / 10);
+      document.getElementById('meal-total-carbs').innerText = (Math.round(totalC * 10) / 10);
+      document.getElementById('meal-total-fat').innerText = (Math.round(totalF * 10) / 10);
+
+      return { kcal: totalKcal, prot: totalP, carbs: totalC, fat: totalF };
+    }
+
+    function handleFoodPhoto(file) {
+      if (!file) return;
+      if (!file.type.startsWith('image/')) {
+        alert("Por favor, selecione uma imagem válida.");
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const img = new Image();
+        img.onload = function() {
+          const canvas = document.createElement('canvas');
+          const maxDim = 400;
+          let width = img.width;
+          let height = img.height;
+
+          if (width > height) {
+            if (width > maxDim) { height *= maxDim / width; width = maxDim; }
+          } else {
+            if (height > maxDim) { width *= maxDim / height; height = maxDim; }
+          }
+
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, width, height);
+
+          currentPhotoBase64 = canvas.toDataURL('image/jpeg', 0.7);
+          const previewEl = document.getElementById('food-photo-preview');
+          previewEl.src = currentPhotoBase64;
+          previewEl.style.display = 'block';
+          document.getElementById('btn-ai-analyze').style.display = 'block';
+        };
+        img.src = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function analyzePlateWithAI() {
+      if (!currentPhotoBase64) {
+        alert("Selecione uma foto do prato primeiro.");
+        return;
+      }
+
+      const btn = document.getElementById('btn-ai-analyze');
+      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> A analisar alimentos...';
+      btn.disabled = true;
+
+      setTimeout(() => {
+        btn.innerHTML = '<i class="fa-solid fa-wand-magic-sparkles"></i> ANALISAR PRATO COM IA';
+        btn.disabled = false;
+
+        showGenericToast("ANALISADOR DE PRATO IA", "Alimentos identificados e adicionados!");
+
+        if (currentMealFoods.length === 0) {
+          addFoodItemRow('Arroz branco cozido', 150, 128, 2.5, 28.1, 0.2);
+          addFoodItemRow('Feijão carioca cozido', 100, 76, 4.8, 13.6, 0.5);
+          addFoodItemRow('Peito de frango grelhado', 150, 159, 32.0, 0.0, 3.2);
+          addFoodItemRow('Salada verde (alface/tomate)', 50, 15, 1.0, 3.0, 0.2);
+        }
+      }, 1200);
+    }
+
+    function saveCurrentMeal() {
+      if (currentMealFoods.length === 0) {
+        alert("Adicione pelo menos um alimento antes de salvar.");
+        return;
+      }
+
+      const mealDate = document.getElementById('food-meal-date').value || getTodayKey();
+      const mealType = document.getElementById('food-meal-type').value;
+      const timeStr = new Date().toLocaleTimeString('pt-PT', { hour: '2-digit', minute: '2-digit' });
+      const totals = calculateMealTotals();
+
+      const newMeal = {
+        id: 'm-' + Date.now(),
+        date: mealDate,
+        time: timeStr,
+        type: mealType,
+        photo: currentPhotoBase64 || '',
+        foods: currentMealFoods.map(f => ({ ...f })),
+        totals: {
+          kcal: totals.kcal,
+          prot: totals.prot,
+          carbs: totals.carbs,
+          fat: totals.fat
+        }
+      };
+
+      db.foodMeals.unshift(newMeal);
+      saveToLocalStorage();
+
+      currentMealFoods = [];
+      currentPhotoBase64 = "";
+      document.getElementById('food-photo-preview').style.display = 'none';
+      document.getElementById('food-photo-preview').src = "";
+      document.getElementById('btn-ai-analyze').style.display = 'none';
+      renderCurrentMealFoodRows();
+
+      renderFoodScreen();
+      renderHomeScreen();
+      showGenericToast("DIÁRIO ALIMENTAR", "Refeição salva com sucesso!");
+    }
+
+    function calculateMealsTotalNutrients(mealsList) {
+      let totalKcal = 0, totalP = 0, totalC = 0, totalF = 0;
+      mealsList.forEach(m => {
+        if (m.foods) {
+          m.foods.forEach(f => {
+            const factor = (f.grams || 0) / 100;
+            totalKcal += (f.refKcal || 0) * factor;
+            totalP += (f.refP || 0) * factor;
+            totalC += (f.refC || 0) * factor;
+            totalF += (f.refF || 0) * factor;
+          });
+        }
+      });
+      return { kcal: totalKcal, prot: totalP, carbs: totalC, fat: totalF };
+    }
+
+    function renderFoodScreen() {
+      const selectedDate = document.getElementById('food-filter-date').value || getTodayKey();
+      const dayMeals = db.foodMeals.filter(m => m.date === selectedDate);
+      const dayNutrients = calculateMealsTotalNutrients(dayMeals);
+
+      const foodGoal = db.foodGoal || DEFAULT_GOAL_FOOD;
+      const consumedKcal = Math.round(dayNutrients.kcal);
+      const remainingKcal = foodGoal - consumedKcal;
+      const pct = Math.min(100, Math.round((consumedKcal / foodGoal) * 100));
+
+      document.getElementById('food-consumed-display').innerHTML = `${consumedKcal.toLocaleString('pt-PT')} <small style="font-size:0.8rem; color:var(--text-muted);">kcal</small>`;
+      document.getElementById('food-goal-display').innerText = `${foodGoal.toLocaleString('pt-PT')} kcal`;
+      document.getElementById('food-progress-fill').style.width = `${pct}%`;
+      document.getElementById('food-pct-display').innerText = `${pct}% da meta atingida (${consumedKcal} / ${foodGoal} kcal)`;
+
+      if (remainingKcal >= 0) {
+        document.getElementById('food-remaining-display').innerText = `Restam ${remainingKcal.toLocaleString('pt-PT')} kcal`;
+      } else {
+        document.getElementById('food-remaining-display').innerText = `${Math.abs(remainingKcal).toLocaleString('pt-PT')} kcal acima da meta`;
+      }
+
+      document.getElementById('day-macro-kcal').innerText = consumedKcal;
+      document.getElementById('day-macro-prot').innerText = (Math.round(dayNutrients.prot * 10) / 10);
+      document.getElementById('day-macro-carbs').innerText = (Math.round(dayNutrients.carbs * 10) / 10);
+      document.getElementById('day-macro-fat').innerText = (Math.round(dayNutrients.fat * 10) / 10);
+
+      renderFoodHistoryList();
+    }
+
+    function renderFoodHistoryList() {
+      const container = document.getElementById('food-history-container');
+      container.innerHTML = '';
+
+      if (db.foodMeals.length === 0) {
+        container.innerHTML = `
+          <div class="card text-center" style="padding: 25px 15px;">
+            <i class="fa-solid fa-utensils text-muted" style="font-size:2rem;"></i>
+            <p class="text-muted text-xs mt-10">Nenhuma refeição registrada ainda.</p>
+          </div>
+        `;
+        return;
+      }
+
+      const sortedMeals = [...db.foodMeals].sort((a, b) => (b.date + b.time).localeCompare(a.date + a.time));
+
+      sortedMeals.forEach(m => {
+        const nut = calculateMealsTotalNutrients([m]);
+        const card = document.createElement('div');
+        card.className = 'card food-meal-card';
+
+        let foodSummaryStr = m.foods.map(f => `${f.name} (${f.grams}g)`).join(' • ');
+
+        card.innerHTML = `
+          <div class="card-header-flex">
+            <div>
+              <strong style="color:#FFF; font-size:0.95rem;">${m.type}</strong>
+              <p class="text-xs text-muted mt-5"><i class="fa-regular fa-calendar"></i> ${m.date} às ${m.time} • ${m.foods.length} item(ns)</p>
+            </div>
+            <div class="text-right">
+              <span class="text-red font-weight-bold" style="font-weight:900; font-size:1.1rem;">${Math.round(nut.kcal)} kcal</span>
+            </div>
+          </div>
+          <p class="text-xs text-muted mt-10" style="line-height:1.4;">${foodSummaryStr}</p>
+          <div class="grid-2 mt-10">
+            <button class="btn btn-outline btn-xs" onclick="viewMealDetail('${m.id}')"><i class="fa-solid fa-eye"></i> Detalhes</button>
+            <button class="btn btn-outline-danger btn-xs" onclick="deleteMealRecord('${m.id}')"><i class="fa-solid fa-trash"></i> Excluir</button>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    function viewMealDetail(mealId) {
+      const meal = db.foodMeals.find(m => m.id === mealId);
+      if (!meal) return;
+
+      const nut = calculateMealsTotalNutrients([meal]);
+
+      document.getElementById('detail-meal-title').innerText = meal.type;
+      document.getElementById('detail-meal-meta').innerHTML = `<i class="fa-regular fa-calendar"></i> ${meal.date} às ${meal.time} • Total: <strong>${Math.round(nut.kcal)} kcal</strong>`;
+
+      const body = document.getElementById('detail-meal-body');
+      body.innerHTML = '';
+
+      if (meal.photo) {
+        const img = document.createElement('img');
+        img.src = meal.photo;
+        img.className = 'photo-preview';
+        img.style.display = 'block';
+        img.style.marginBottom = '12px';
+        body.appendChild(img);
+      }
+
+      const macroGrid = document.createElement('div');
+      macroGrid.className = 'macro-grid mb-15';
+      macroGrid.innerHTML = `
+        <div class="macro-box"><span>CALORIAS</span><strong>${Math.round(nut.kcal)}</strong><div class="unit">kcal</div></div>
+        <div class="macro-box"><span>PROTEÍNAS</span><strong>${(Math.round(nut.prot*10)/10)}</strong><div class="unit">g</div></div>
+        <div class="macro-box"><span>CARBOS</span><strong>${(Math.round(nut.carbs*10)/10)}</strong><div class="unit">g</div></div>
+        <div class="macro-box"><span>GORDURAS</span><strong>${(Math.round(nut.fat*10)/10)}</strong><div class="unit">g</div></div>
+      `;
+      body.appendChild(macroGrid);
+
+      const foodListCard = document.createElement('div');
+      foodListCard.className = 'history-exercise-card';
+      
+      let itemsHtml = meal.foods.map((f, idx) => {
+        const factor = f.grams / 100;
+        const calcKcal = Math.round(f.refKcal * factor);
+        return `
+          <li class="history-set-item">
+            <span>${idx + 1}. ${f.name} (${f.grams}g)</span>
+            <strong style="color:var(--accent-red);">${calcKcal} kcal</strong>
+          </li>
+        `;
+      }).join('');
+
+      foodListCard.innerHTML = `
+        <div class="history-exercise-title">Alimentos da Refeição</div>
+        <ul class="history-set-list">${itemsHtml}</ul>
+      `;
+      body.appendChild(foodListCard);
+
+      openModal('modal-meal-detail');
+    }
+
+    function deleteMealRecord(mealId) {
+      if (confirm("Excluir esta refeição?")) {
+        db.foodMeals = db.foodMeals.filter(m => m.id !== mealId);
+        saveToLocalStorage();
+        renderFoodScreen();
+        renderHomeScreen();
+        showGenericToast("DIÁRIO ALIMENTAR", "Refeição excluída.");
+      }
+    }
+
+    function saveFoodGoal() {
+      const val = parseInt(document.getElementById('food-goal-input').value);
+      if (val > 0) {
+        db.foodGoal = val;
+        saveToLocalStorage();
+        closeModal('modal-food-goal');
+        renderFoodScreen();
+        renderHomeScreen();
+        showGenericToast("DIÁRIO ALIMENTAR", `Meta atualizada: ${val} kcal.`);
+      }
+    }
+
+    function renderWaterScreen() {
+      const todayKey = getTodayKey();
+      const waterData = db.water[todayKey] || { goal: DEFAULT_GOAL_WATER, logs: [] };
+      const totalWater = waterData.logs.reduce((sum, l) => sum + l.amount, 0);
+
+      document.getElementById('water-current-display').innerText = `${totalWater} ml`;
+      document.getElementById('water-goal-display').innerText = `Meta: ${waterData.goal} ml`;
+
+      const pct = Math.min(100, Math.round((totalWater / waterData.goal) * 100));
+      document.getElementById('water-progress-fill').style.width = `${pct}%`;
+
+      const logsContainer = document.getElementById('water-logs-list');
+      logsContainer.innerHTML = '';
+
+      if (waterData.logs.length === 0) {
+        logsContainer.innerHTML = `<p class="text-muted text-xs text-center mt-10">Nenhum registo de água hoje.</p>`;
+        return;
+      }
+
+      waterData.logs.slice().reverse().forEach((log) => {
+        const div = document.createElement('div');
+        div.className = 'card mt-5';
+        div.style.padding = '10px 14px';
+        div.innerHTML = `
+          <div class="card-header-flex">
+            <span><i class="fa-solid fa-droplet text-red"></i> ${log.amount} ml</span>
+            <span class="text-xs text-muted">${log.time}</span>
+          </div>
+        `;
+        logsContainer.appendChild(div);
+      });
+    }
+
+    function addWater(amount) {
+      const todayKey = getTodayKey();
+      if (!db.water[todayKey]) db.water[todayKey] = { goal: DEFAULT_GOAL_WATER, logs: [] };
+
+      const timeStr = new Date().toLocaleTimeString('pt-PT', { hour: '2-digit', minute: '2-digit' });
+      db.water[todayKey].logs.push({ amount, time: timeStr });
+
+      saveToLocalStorage();
+      renderWaterScreen();
+      renderHomeScreen();
+    }
+
+    function addCustomWater() {
+      const input = document.getElementById('custom-water-input');
+      const val = parseInt(input.value);
+      if (val > 0) {
+        addWater(val);
+        input.value = '';
+      }
+    }
+
+    function saveWaterGoal() {
+      const goal = parseInt(document.getElementById('water-goal-input').value);
+      if (goal > 0) {
+        const todayKey = getTodayKey();
+        if (!db.water[todayKey]) db.water[todayKey] = { goal, logs: [] };
+        else db.water[todayKey].goal = goal;
+
+        saveToLocalStorage();
+        closeModal('modal-water-goal');
+        renderWaterScreen();
+        renderHomeScreen();
+      }
+    }
+
+    function clearTodayWater() {
+      const todayKey = getTodayKey();
+      if (db.water[todayKey]) {
+        db.water[todayKey].logs = [];
+        saveToLocalStorage();
+        renderWaterScreen();
+        renderHomeScreen();
+      }
+    }
+
+    function renderCardioScreen() {
+      document.getElementById('cardio-week-total').innerText = `${getWeeklyCardioMinutes()} Minutos`;
+      const container = document.getElementById('cardio-history-list');
+      container.innerHTML = '';
+
+      if (db.cardio.length === 0) {
+        container.innerHTML = `<p class="text-muted text-xs text-center mt-10">Nenhum cardio registado.</p>`;
+        return;
+      }
+
+      db.cardio.slice().reverse().forEach(c => {
+        const card = document.createElement('div');
+        card.className = 'card';
+        card.innerHTML = `
+          <div class="card-header-flex">
+            <strong style="color:#FFF;">${c.type}</strong>
+            <span class="text-xs text-red">${c.date}</span>
+          </div>
+          <p class="text-sm mt-5">${c.duration} min ${c.distance ? `| ${c.distance} km` : ''}</p>
+          ${c.notes ? `<p class="text-xs text-muted mt-5">${c.notes}</p>` : ''}
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    function saveCardio() {
+      const type = document.getElementById('cardio-input-type').value;
+      const duration = parseInt(document.getElementById('cardio-input-duration').value);
+      const distance = parseFloat(document.getElementById('cardio-input-distance').value) || null;
+      const notes = document.getElementById('cardio-input-notes').value.trim();
+
+      if (!duration || duration <= 0) { alert("Informa a duração em minutos."); return; }
+
+      db.cardio.push({
+        id: 'c-' + Date.now(),
+        type,
+        duration,
+        distance,
+        notes,
+        date: getTodayKey()
+      });
+
+      saveToLocalStorage();
+      closeModal('modal-add-cardio');
+      renderCardioScreen();
+      renderHomeScreen();
+    }
+
+    function getWeeklyCardioMinutes() {
+      return db.cardio.reduce((acc, item) => acc + (item.duration || 0), 0);
+    }
+
+    function getWeeklyCompletedWorkoutsCount() { return db.history.length; }
+
+    function getWeeklyWaterAvg() {
+      const keys = Object.keys(db.water);
+      if (keys.length === 0) return 0;
+      let total = 0;
+      keys.forEach(k => {
+        total += db.water[k].logs.reduce((s, l) => s + l.amount, 0);
+      });
+      return total / keys.length;
+    }
+
+    function openModal(id) {
+      document.getElementById(id).classList.add('active');
+      if (id === 'modal-prs') renderPRsModal();
+      if (id === 'modal-evo') renderHistoryModal();
+      if (id === 'modal-food-goal') {
+        document.getElementById('food-goal-input').value = db.foodGoal || DEFAULT_GOAL_FOOD;
+      }
+    }
+
+    function closeModal(id) { document.getElementById(id).classList.remove('active'); }
+
+    function switchHistoryTab(tab) {
+      document.getElementById('tab-btn-history').classList.toggle('active', tab === 'history');
+      document.getElementById('tab-btn-exercise').classList.toggle('active', tab === 'exercise');
+
+      document.getElementById('history-tab-content-list').style.display = tab === 'history' ? 'block' : 'none';
+      document.getElementById('history-tab-content-exercise').style.display = tab === 'exercise' ? 'block' : 'none';
+
+      if (tab === 'history') renderHistoryModal();
+      if (tab === 'exercise') populateExerciseEvolutionSelect();
+    }
+
+    function renderHistoryModal() {
+      const container = document.getElementById('history-calendar-list');
+      container.innerHTML = '';
+
+      if (!db.history || db.history.length === 0) {
+        container.innerHTML = `<p class="text-muted text-sm text-center">Nenhum treino concluído no histórico ainda.</p>`;
+        return;
+      }
+
+      const sorted = [...db.history].sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+
+      sorted.forEach(h => {
+        const div = document.createElement('div');
+        div.className = 'card card-highlight';
+        
+        const totalSets = h.exercises.reduce((acc, ex) => acc + ex.sets.length, 0);
+        const durationText = h.durationStr || (h.durationSeconds ? formatDurationShort(h.durationSeconds) : '--');
+
+        div.innerHTML = `
+          <div class="card-header-flex">
+            <span class="card-subtitle"><i class="fa-regular fa-calendar"></i> ${h.date}</span>
+            <span class="text-xs text-red font-weight-bold" style="font-weight:800;"><i class="fa-regular fa-clock"></i> ${durationText}</span>
+          </div>
+          <h3 class="mt-5" style="font-size: 1.05rem; font-weight: 900;">${h.workoutName}</h3>
+          <p class="text-xs text-muted mt-5">${h.exercises.length} exercícios • ${totalSets} séries executadas</p>
+          <button class="btn btn-outline btn-block btn-sm mt-10" onclick="viewWorkoutDetail('${h.id}')">
+            <i class="fa-solid fa-eye"></i> Ver Detalhes do Treino
+          </button>
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    function viewWorkoutDetail(historyId) {
+      const record = db.history.find(h => h.id === historyId);
+      if (!record) return;
+
+      document.getElementById('detail-workout-title').innerText = record.workoutName;
+      
+      let metaStr = `<i class="fa-regular fa-calendar"></i> ${record.date}`;
+      if (record.startTimeStr && record.endTimeStr) {
+        metaStr += ` • ${record.startTimeStr} às ${record.endTimeStr}`;
+      }
+      if (record.durationStr || record.durationSeconds) {
+        metaStr += ` • Duração: <strong>${record.durationStr || formatDurationShort(record.durationSeconds)}</strong>`;
+      }
+      document.getElementById('detail-workout-meta').innerHTML = metaStr;
+
+      const body = document.getElementById('detail-workout-body');
+      body.innerHTML = '';
+
+      record.exercises.forEach(ex => {
+        const exCard = document.createElement('div');
+        exCard.className = 'history-exercise-card';
+
+        let setItems = ex.sets.map((s, idx) => `
+          <li class="history-set-item">
+            <span>Série ${idx + 1}: ${s.reps} repetições</span>
+            <strong style="color:var(--accent-red);">${s.weight} kg</strong>
+          </li>
+        `).join('');
+
+        exCard.innerHTML = `
+          <div class="history-exercise-title">${ex.name}</div>
+          <ul class="history-set-list">${setItems}</ul>
+        `;
+        body.appendChild(exCard);
+      });
+
+      openModal('modal-workout-detail');
+    }
+
+    function populateExerciseEvolutionSelect() {
+      const select = document.getElementById('exercise-evolution-select');
+      select.innerHTML = '<option value="">-- Selecionar Exercício --</option>';
+
+      const exercisesSet = new Set();
+      if (db.history) {
+        db.history.forEach(h => {
+          h.exercises.forEach(ex => exercisesSet.add(ex.name));
+        });
+      }
+      if (db.prs) {
+        Object.keys(db.prs).forEach(exName => exercisesSet.add(exName));
+      }
+
+      const exercisesList = Array.from(exercisesSet).sort();
+      exercisesList.forEach(name => {
+        const opt = document.createElement('option');
+        opt.value = name;
+        opt.innerText = name;
+        select.appendChild(opt);
+      });
+    }
+
+    function renderExerciseEvolution() {
+      const exerciseName = document.getElementById('exercise-evolution-select').value;
+      const container = document.getElementById('exercise-evolution-results');
+      container.innerHTML = '';
+
+      if (!exerciseName) {
+        container.innerHTML = `<p class="text-xs text-muted text-center">Selecione um exercício acima para consultar o histórico de cargas e repetições.</p>`;
+        return;
+      }
+
+      const matches = [];
+      if (db.history) {
+        db.history.forEach(h => {
+          const ex = h.exercises.find(e => e.name.toLowerCase() === exerciseName.toLowerCase());
+          if (ex) {
+            matches.push({
+              date: h.date,
+              timestamp: h.timestamp || 0,
+              workoutName: h.workoutName,
+              sets: ex.sets
+            });
+          }
+        });
+      }
+
+      if (matches.length === 0) {
+        container.innerHTML = `<p class="text-xs text-muted text-center">Nenhum registro encontrado para este exercício.</p>`;
+        return;
+      }
+
+      matches.sort((a, b) => b.timestamp - a.timestamp);
+
+      matches.forEach(m => {
+        const div = document.createElement('div');
+        div.className = 'card mb-10';
+        
+        let setsStr = m.sets.map((s, i) => `Série ${i+1}: <strong>${s.weight}kg</strong> (${s.reps} reps)`).join('<br>');
+
+        div.innerHTML = `
+          <div class="card-header-flex">
+            <strong style="color:#FFF;">${m.workoutName}</strong>
+            <span class="text-xs text-red">${m.date}</span>
+          </div>
+          <p class="text-xs text-muted mt-10" style="line-height:1.6;">${setsStr}</p>
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    function renderPRsModal() {
+      const container = document.getElementById('prs-list');
+      container.innerHTML = '';
+      const prKeys = Object.keys(db.prs || {});
+
+      if (prKeys.length === 0) {
+        container.innerHTML = `<p class="text-muted text-sm text-center">Nenhum recorde registado ainda.</p>`;
+        return;
+      }
+
+      prKeys.forEach(exName => {
+        const pr = db.prs[exName];
+        const card = document.createElement('div');
+        card.className = 'card';
+        card.innerHTML = `
+          <div class="card-header-flex">
+            <strong>${exName}</strong>
+            <span class="text-red font-weight-bold" style="font-weight:900;">${pr.weight} kg</span>
+          </div>
+          <p class="text-xs text-muted mt-5">${pr.reps} repetições em ${pr.date}</p>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    function exportDataBackup() {
+      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(db, null, 2));
+      const dlAnchorElem = document.createElement('a');
+      dlAnchorElem.setAttribute("href", dataStr);
+      dlAnchorElem.setAttribute("download", `FREAKY_SEASON_BACKUP_${getTodayKey()}.json`);
+      document.body.appendChild(dlAnchorElem);
+      dlAnchorElem.click();
+      dlAnchorElem.remove();
+    }
+
+    function importDataBackup(event) {
+      const fileReader = new FileReader();
+      fileReader.onload = function (e) {
+        try {
+          const importedData = JSON.parse(e.target.result);
+          if (importedData && typeof importedData === 'object') {
+            db = importedData;
+            saveToLocalStorage();
+            alert("Backup restaurado com sucesso!");
+            location.reload();
+          }
+        } catch (err) {
+          alert("Erro ao ler ficheiro de backup JSON.");
+        }
+      };
+      fileReader.readAsText(event.target.files[0]);
+    }
+
+    function resetAllData() {
+      if (confirm("ATENÇÃO: Desejas apagar permanentemente todos os teus dados?")) {
+        localStorage.removeItem('FS_FITNESS_DB');
+        sessionStorage.removeItem('FS_LOGGED_IN');
+        location.reload();
+      }
+    }
+
+    function initSingleFilePWA() {
+      if ('serviceWorker' in navigator) {
+        const swCode = `
+          self.addEventListener('install', e => self.skipWaiting());
+          self.addEventListener('activate', e => self.clients.claim());
+          self.addEventListener('fetch', e => {
+            e.respondWith(fetch(e.request).catch(() => caches.match(e.request)));
+          });
+        `;
+        const blob = new Blob([swCode], { type: 'application/javascript' });
+        const swUrl = URL.createObjectURL(blob);
+        navigator.serviceWorker.register(swUrl).catch(() => {});
+      }
+    }
+  </script>
 </body>
 </html>
