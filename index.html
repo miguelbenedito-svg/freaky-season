@@ -204,6 +204,7 @@
     .mb-5 { margin-bottom: 5px; }
     .mb-10 { margin-bottom: 10px; }
     .mb-15 { margin-bottom: 15px; }
+    .mr-5 { margin-right: 5px; }
 
     .text-red { color: var(--accent-red); }
     .text-muted { color: var(--text-muted); }
@@ -754,7 +755,7 @@
       <div class="section-title-bar">
         <h2>DIVISÃO DE TREINOS</h2>
         <div>
-          <button class="btn btn-sm btn-outline mr-5" onclick="openModal('modal-evo')"><i class="fa-solid fa-clock-rotate-left"></i> Histórico</button>
+          <button class="btn btn-sm btn-outline mr-5" onclick="loadSampleWorkouts()" title="Restaurar Treino Exemplo"><i class="fa-solid fa-rotate-right"></i> Modelo PPL</button>
           <button class="btn btn-sm btn-primary" onclick="openCreateWorkoutModal()"><i class="fa-solid fa-plus"></i> Novo</button>
         </div>
       </div>
@@ -1237,6 +1238,90 @@
     const DEFAULT_GOAL_WATER = 3000;
     const DEFAULT_GOAL_FOOD = 2200;
 
+    function getDefaultWorkouts() {
+      return [
+        {
+          id: "w-push-mon",
+          name: "PUSH (Peito, Ombro e Tríceps)",
+          day: "Segunda-feira",
+          muscles: "Peito, Ombro, Tríceps",
+          exercises: [
+            { id: "ex-101", name: "Supino Reto Máquina", sets: 3, targetReps: 8, targetWeight: 32 },
+            { id: "ex-102", name: "Peck Deck", sets: 3, targetReps: 8, targetWeight: 80 },
+            { id: "ex-103", name: "Supino Inclinado Halter", sets: 3, targetReps: 8, targetWeight: 20 },
+            { id: "ex-104", name: "Elevação Frontal Polia Corda", sets: 3, targetReps: 8, targetWeight: 20 },
+            { id: "ex-105", name: "Tríceps Polia Corda", sets: 3, targetReps: 8, targetWeight: 35 },
+            { id: "ex-106", name: "Tríceps Francês Polia", sets: 3, targetReps: 8, targetWeight: 25 }
+          ]
+        },
+        {
+          id: "w-pull-tue",
+          name: "PULL (Costas e Bíceps)",
+          day: "Terça-feira",
+          muscles: "Costas, Bíceps",
+          exercises: [
+            { id: "ex-201", name: "Barra Fixa (Aquecimento)", sets: 1, targetReps: 5, targetWeight: 0 },
+            { id: "ex-202", name: "Puxada Alta Máquina", sets: 3, targetReps: 8, targetWeight: 85 },
+            { id: "ex-203", name: "Remada Máquina", sets: 3, targetReps: 8, targetWeight: 50 },
+            { id: "ex-204", name: "Peck Deck Invertido", sets: 3, targetReps: 8, targetWeight: 30 },
+            { id: "ex-205", name: "Rosca Polia c/ Barra", sets: 3, targetReps: 8, targetWeight: 40 },
+            { id: "ex-206", name: "Bíceps Scott Máquina (+Drop 7kg)", sets: 3, targetReps: 6, targetWeight: 25 },
+            { id: "ex-207", name: "Rosca Bíceps Banco 45°", sets: 3, targetReps: 6, targetWeight: 12 }
+          ]
+        },
+        {
+          id: "w-legs-wed",
+          name: "LEGS (Perna Completa - Pesado)",
+          day: "Quarta-feira",
+          muscles: "Quadríceps, Posterior, Panturrilha",
+          exercises: [
+            { id: "ex-301", name: "Cadeira Extensora", sets: 3, targetReps: 8, targetWeight: 45 },
+            { id: "ex-302", name: "Agachamento Máquina", sets: 3, targetReps: 8, targetWeight: 90 },
+            { id: "ex-303", name: "Leg Press 45°", sets: 3, targetReps: 8, targetWeight: 210 },
+            { id: "ex-304", name: "Agachamento Hack", sets: 3, targetReps: 8, targetWeight: 90 },
+            { id: "ex-305", name: "Cadeira Flexora", sets: 3, targetReps: 6, targetWeight: 25 },
+            { id: "ex-306", name: "Stiff com Barra/Halter", sets: 3, targetReps: 8, targetWeight: 50 }
+          ]
+        },
+        {
+          id: "w-iso-thu",
+          name: "ISOLADOS & CARDIO",
+          day: "Quinta-feira",
+          muscles: "Ombros, Abdômen",
+          exercises: [
+            { id: "ex-401", name: "Abdômen na Polia", sets: 3, targetReps: 12, targetWeight: 50 },
+            { id: "ex-402", name: "Elevação Lateral Halter", sets: 3, targetReps: 12, targetWeight: 10 },
+            { id: "ex-403", name: "Desenvolvimento Ombro Halter", sets: 3, targetReps: 8, targetWeight: 12 }
+          ]
+        },
+        {
+          id: "w-upper-fri",
+          name: "UPPER BODY (Membros Superiores)",
+          day: "Sexta-feira",
+          muscles: "Costas, Peito, Bíceps, Tríceps",
+          exercises: [
+            { id: "ex-501", name: "Puxada Invertida", sets: 3, targetReps: 8, targetWeight: 75 },
+            { id: "ex-502", name: "Puxada Triângulo", sets: 3, targetReps: 8, targetWeight: 60 },
+            { id: "ex-503", name: "Bíceps c/ Barra W", sets: 3, targetReps: 8, targetWeight: 14 },
+            { id: "ex-504", name: "Bíceps Martelo", sets: 3, targetReps: 8, targetWeight: 12 },
+            { id: "ex-505", name: "Crossover Polia Baixa", sets: 3, targetReps: 6, targetWeight: 15 },
+            { id: "ex-506", name: "Crossover Polia Alta", sets: 3, targetReps: 6, targetWeight: 15 },
+            { id: "ex-507", name: "Tríceps Coice", sets: 3, targetReps: 6, targetWeight: 15 },
+            { id: "ex-508", name: "Tríceps Testa", sets: 3, targetReps: 6, targetWeight: 20 }
+          ]
+        },
+        {
+          id: "w-cardio-sat",
+          name: "CARDIO CORRIDA NA RUA",
+          day: "Sábado",
+          muscles: "Cardio & Resistência",
+          exercises: [
+            { id: "ex-601", name: "Corrida na Rua", sets: 1, targetReps: 30, targetWeight: 0 }
+          ]
+        }
+      ];
+    }
+
     const TACO_DB = [
       { name: "Arroz branco cozido", kcal: 128, p: 2.5, c: 28.1, f: 0.2 },
       { name: "Arroz integral cozido", kcal: 124, p: 2.6, c: 25.8, f: 1.0 },
@@ -1504,7 +1589,7 @@
         try {
           db = JSON.parse(data);
           if (!db.history) db.history = [];
-          if (!db.workouts) db.workouts = [];
+          if (!db.workouts || db.workouts.length === 0) db.workouts = getDefaultWorkouts();
           if (!db.water) db.water = {};
           if (!db.cardio) db.cardio = [];
           if (!db.prs) db.prs = {};
@@ -1513,9 +1598,21 @@
           if (!db.users) db.users = db.user ? [db.user] : [];
         } catch (e) {
           console.error("Erro ao carregar dados:", e);
+          db.workouts = getDefaultWorkouts();
         }
       } else {
+        db.workouts = getDefaultWorkouts();
         if (!db.users) db.users = [];
+      }
+    }
+
+    function loadSampleWorkouts() {
+      if (confirm("Deseja carregar/restaurar o treino de exemplo PPL + Upper/Lower?")) {
+        db.workouts = getDefaultWorkouts();
+        saveToLocalStorage();
+        renderWorkoutsList();
+        renderHomeScreen();
+        showGenericToast("TREINO RESTAURADO", "Planilha PPL + Upper/Lower carregada!");
       }
     }
 
@@ -1597,7 +1694,7 @@
 
       if (todayWorkout) {
         titleEl.innerText = todayWorkout.name;
-        descEl.innerText = `${todayWorkout.muscles} (${todayWorkout.exercises.length} exercícios)`;
+        descEl.innerText = `${todayWorkout.muscles} (${todayWorkout.exercises ? todayWorkout.exercises.length : 0} exercícios)`;
         startBtn.style.display = 'inline-flex';
         startBtn.onclick = () => startWorkoutSession(todayWorkout.id);
       } else {
@@ -1660,12 +1757,15 @@
       const container = document.getElementById('workouts-list');
       container.innerHTML = '';
 
-      if (db.workouts.length === 0) {
+      if (!db.workouts || db.workouts.length === 0) {
         container.innerHTML = `
           <div class="card text-center" style="padding: 30px 15px;">
             <i class="fa-solid fa-dumbbell text-muted" style="font-size:2.5rem;"></i>
             <p class="text-muted mt-10">Nenhum treino registado.</p>
-            <button class="btn btn-primary btn-sm mt-15" onclick="openCreateWorkoutModal()">Criar Primeiro Treino</button>
+            <div class="grid-2 mt-15">
+              <button class="btn btn-primary btn-sm" onclick="openCreateWorkoutModal()">Criar Treino</button>
+              <button class="btn btn-secondary btn-sm" onclick="loadSampleWorkouts()">Carregar Modelo PPL</button>
+            </div>
           </div>
         `;
         return;
