@@ -20,6 +20,8 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <!-- EmailJS SDK -->
   <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+  <!-- Chart.js para Gráficos de Tonelagem -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
   <style>
     :root {
@@ -28,6 +30,8 @@
       --card-border: #222222;
       --accent-red: #FF1A1A;
       --accent-red-hover: #D60000;
+      --accent-cyan: #00E5FF;
+      --accent-green: #00E676;
       --text-main: #FFFFFF;
       --text-muted: #888888;
       --input-bg: #1C1C1C;
@@ -85,7 +89,7 @@
 
     .header-actions {
       display: flex;
-      gap: 10px;
+      gap: 8px;
     }
 
     .auth-overlay {
@@ -165,6 +169,7 @@
       font-size: 0.9rem;
       border: none;
       cursor: pointer;
+      text-decoration: none;
       transition: background 0.15s ease, transform 0.1s ease;
     }
     .btn:active { transform: scale(0.98); }
@@ -175,6 +180,8 @@
     .btn-secondary { background: #262626; color: #FFF; }
     .btn-outline { background: transparent; border: 1px solid #333; color: #FFF; }
     .btn-outline-danger { background: transparent; border: 1px solid var(--accent-red); color: var(--accent-red); }
+    .btn-yt { background: #FF0000; color: #FFF; padding: 4px 10px; font-size: 0.75rem; border-radius: 6px; }
+    .btn-yt:hover { background: #CC0000; }
 
     .btn-block { width: 100%; }
     .btn-sm { padding: 8px 12px; font-size: 0.8rem; }
@@ -207,6 +214,8 @@
     .mr-5 { margin-right: 5px; }
 
     .text-red { color: var(--accent-red); }
+    .text-green { color: var(--accent-green); }
+    .text-cyan { color: var(--accent-cyan); }
     .text-muted { color: var(--text-muted); }
     .text-xs { font-size: 0.75rem; }
     .text-sm { font-size: 0.85rem; }
@@ -486,24 +495,71 @@
 
     .modal-tab-bar {
       display: flex;
-      border-bottom: 1px solid #222;
+      background: #000;
+      border-radius: 10px;
+      padding: 4px;
       margin-bottom: 15px;
     }
     .modal-tab-btn {
       flex: 1;
-      padding: 10px;
+      padding: 8px;
       background: transparent;
       border: none;
       color: #888;
-      font-weight: 700;
+      font-weight: 800;
       font-size: 0.85rem;
-      border-bottom: 2px solid transparent;
+      border-radius: 8px;
       cursor: pointer;
+      text-align: center;
     }
     .modal-tab-btn.active {
-      color: var(--accent-red);
-      border-bottom-color: var(--accent-red);
+      background: #1D2B3A;
+      color: var(--accent-cyan);
     }
+
+    .tonelagem-subtabs {
+      display: flex;
+      gap: 6px;
+      overflow-x: auto;
+      margin-bottom: 15px;
+      padding-bottom: 4px;
+    }
+    .tonelagem-pill-btn {
+      background: #181818;
+      border: 1px solid #282828;
+      color: #888;
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+    .tonelagem-pill-btn.active {
+      background: var(--accent-cyan);
+      color: #000;
+      border-color: var(--accent-cyan);
+    }
+
+    .tonelagem-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 3px 8px;
+      border-radius: 6px;
+      font-size: 0.7rem;
+      font-weight: 800;
+    }
+    .badge-green { background: rgba(0, 230, 118, 0.15); color: var(--accent-green); border: 1px solid rgba(0, 230, 118, 0.3); }
+    .badge-red { background: rgba(255, 26, 26, 0.15); color: var(--accent-red); border: 1px solid rgba(255, 26, 26, 0.3); }
+
+    .tonelagem-compare-bar {
+      height: 8px;
+      border-radius: 4px;
+      margin-top: 4px;
+    }
+    .bar-current { background: var(--accent-cyan); }
+    .bar-last { background: #444; }
 
     .form-group { margin-bottom: 12px; }
     .form-group label { display: block; font-size: 0.75rem; color: var(--text-muted); margin-bottom: 4px; font-weight: 700; }
@@ -530,6 +586,9 @@
       font-weight: 800;
       color: #FFF;
       margin-bottom: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
     }
     .history-set-list { list-style: none; padding-left: 0; }
     .history-set-item {
@@ -673,6 +732,7 @@
       <img src="logo.jpg?v=2" alt="FREAKY SEASON" class="app-logo" onerror="this.style.display='none'; document.getElementById('logo-text').style.display='block';">
       <h1 id="logo-text" class="logo-fallback" style="display:none;">FREAKY <span>SEASON</span></h1>
       <div class="header-actions">
+        <button class="icon-btn" onclick="openModal('modal-tonelagem')" title="Tonelagem & Progresso"><i class="fa-solid fa-chart-line" style="color: var(--accent-cyan);"></i></button>
         <button class="icon-btn" onclick="openModal('modal-prs')" title="Recordes Pessoais"><i class="fa-solid fa-trophy"></i></button>
         <button class="icon-btn" onclick="openModal('modal-evo')" title="Histórico e Evolução"><i class="fa-solid fa-clock-rotate-left"></i></button>
         <button class="icon-btn" onclick="openModal('modal-settings')" title="Configurações"><i class="fa-solid fa-gear"></i></button>
@@ -724,6 +784,17 @@
           <span class="card-subtitle">CARDIO SEMANAL</span>
           <h3 id="home-cardio-val">0 min</h3>
           <p class="text-xs text-muted mt-5">Esta semana</p>
+        </div>
+      </div>
+
+      <div class="card mt-15" onclick="openModal('modal-tonelagem')" style="cursor:pointer; border-left: 4px solid var(--accent-cyan);">
+        <div class="card-header-flex">
+          <span class="card-subtitle" style="color: var(--accent-cyan);">TONELAGEM E EVOLUÇÃO</span>
+          <i class="fa-solid fa-chart-line text-cyan"></i>
+        </div>
+        <div class="mt-10">
+          <h3 style="font-size: 1.1rem;" id="home-tonelagem-val">0 kg levantados</h3>
+          <p class="text-xs text-muted mt-5" id="home-tonelagem-sub">Aceder aos gráficos detalhados por exercício</p>
         </div>
       </div>
 
@@ -991,7 +1062,68 @@
     </button>
   </nav>
 
-  <!-- MODAIS -->
+  <!-- MODAL DE TONELAGEM E PROGRESSO -->
+  <div id="modal-tonelagem" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <div>
+          <h3 style="font-size: 1.1rem; font-weight: 900;"><i class="fa-solid fa-chart-line text-cyan"></i> Tonelagem & Progresso</h3>
+          <p class="text-xs text-muted">Acompanhamento do volume de treino</p>
+        </div>
+        <button class="btn-close" onclick="closeModal('modal-tonelagem')">&times;</button>
+      </div>
+      <div class="modal-body">
+        
+        <!-- SELETOR GERAL / ESPECÍFICO -->
+        <div class="modal-tab-bar">
+          <button class="modal-tab-btn active" id="tonelagem-tab-geral" onclick="switchTonelagemView('geral')">Geral</button>
+          <button class="modal-tab-btn" id="tonelagem-tab-especifico" onclick="switchTonelagemView('especifico')">Específico</button>
+        </div>
+
+        <!-- ABA GERAL -->
+        <div id="tonelagem-view-geral">
+          <div class="card-header-flex mb-10" style="font-size: 0.75rem;">
+            <span class="text-muted"><i class="fa-solid fa-circle" style="color: var(--accent-cyan); font-size: 0.6rem;"></i> Este treino</span>
+            <span class="text-muted"><i class="fa-solid fa-circle" style="color: #555; font-size: 0.6rem;"></i> Último treino</span>
+          </div>
+          <div id="tonelagem-geral-list"></div>
+        </div>
+
+        <!-- ABA ESPECÍFICO -->
+        <div id="tonelagem-view-especifico" style="display: none;">
+          <div class="form-group mb-10">
+            <label>Exercício</label>
+            <select id="tonelagem-exercise-select" class="form-input" onchange="renderTonelagemEspecifico()">
+              <option value="">-- Selecionar Exercício --</option>
+            </select>
+          </div>
+
+          <div class="tonelagem-subtabs mt-10">
+            <button class="tonelagem-pill-btn active" id="pill-tonelagem" onclick="switchTonelagemSubTab('tonelagem')">Tonelagem</button>
+            <button class="tonelagem-pill-btn" id="pill-reps" onclick="switchTonelagemSubTab('reps')">Repetições</button>
+            <button class="tonelagem-pill-btn" id="pill-maxweight" onclick="switchTonelagemSubTab('maxweight')">Carga máx.</button>
+            <button class="tonelagem-pill-btn" id="pill-1rm" onclick="switchTonelagemSubTab('1rm')">1RM</button>
+          </div>
+
+          <div class="card card-highlight mt-10 mb-15">
+            <span class="card-subtitle" id="tonelagem-metric-label">Tonelagem</span>
+            <div style="display:flex; justify-content:space-between; align-items:baseline;" class="mt-5">
+              <h2 style="font-size:2rem; font-weight:900;" id="tonelagem-metric-val">0 kg</h2>
+              <div id="tonelagem-metric-badge" class="tonelagem-badge badge-green">--</div>
+            </div>
+          </div>
+
+          <!-- GRÁFICO -->
+          <div style="position: relative; width: 100%; height: 220px;">
+            <canvas id="tonelagemChart"></canvas>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- OUTROS MODAIS -->
   <div id="modal-add-workout" class="modal">
     <div class="modal-content">
       <div class="modal-header">
@@ -1238,6 +1370,11 @@
     const DEFAULT_GOAL_WATER = 3000;
     const DEFAULT_GOAL_FOOD = 2200;
 
+    function getYouTubeUrl(exerciseName) {
+      const query = encodeURIComponent(`como executar ${exerciseName}`);
+      return `https://www.youtube.com/results?search_query=${query}`;
+    }
+
     function getDefaultWorkouts() {
       return [
         {
@@ -1377,6 +1514,8 @@
     let timerInterval = null;
     let timerTimeLeft = 0;
     let timerRunning = false;
+    let tonelagemChartInstance = null;
+    let tonelagemCurrentSubTab = 'tonelagem';
 
     document.addEventListener('DOMContentLoaded', () => {
       loadFromLocalStorage();
@@ -1723,6 +1862,11 @@
       const weeklyCardioMin = getWeeklyCardioMinutes();
       document.getElementById('home-cardio-val').innerText = `${weeklyCardioMin} min`;
 
+      // Tonelagem no Início
+      const totalTonnageLastWorkout = getLastWorkoutTotalTonnage();
+      document.getElementById('home-tonelagem-val').innerText = `${totalTonnageLastWorkout.toLocaleString('pt-PT')} kg levantados`;
+      document.getElementById('home-tonelagem-sub').innerText = db.history.length > 0 ? `Volume total do último treino registrado` : `Nenhum treino no histórico ainda`;
+
       document.getElementById('sum-completed-workouts').innerText = getWeeklyCompletedWorkoutsCount();
       document.getElementById('sum-water-avg').innerText = `${(getWeeklyWaterAvg()/1000).toFixed(1)}L`;
       document.getElementById('sum-cardio-total').innerText = `${weeklyCardioMin}m`;
@@ -1744,6 +1888,24 @@
       } else {
         prHighlightEl.innerHTML = `<p class="text-muted text-sm">Nenhum recorde registado ainda. Cadastra o teu primeiro treino!</p>`;
       }
+    }
+
+    function getLastWorkoutTotalTonnage() {
+      if (!db.history || db.history.length === 0) return 0;
+      const lastSession = db.history[0];
+      let total = 0;
+      if (lastSession.exercises) {
+        lastSession.exercises.forEach(ex => {
+          if (ex.sets) {
+            ex.sets.forEach(s => {
+              if (s.completed || s.completed === undefined) {
+                total += (s.weight || 0) * (s.reps || 0);
+              }
+            });
+          }
+        });
+      }
+      return total;
     }
 
     function startScheduledWorkout() {
@@ -1774,6 +1936,21 @@
       db.workouts.forEach(w => {
         const card = document.createElement('div');
         card.className = 'card';
+        
+        let exPreviewHtml = '';
+        if (w.exercises && w.exercises.length > 0) {
+          exPreviewHtml = `<div class="mt-10 pt-10" style="border-top:1px solid #222;">`;
+          w.exercises.forEach(ex => {
+            exPreviewHtml += `
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;" class="text-xs">
+                <span><i class="fa-solid fa-angle-right text-red"></i> ${ex.name}</span>
+                <a href="${getYouTubeUrl(ex.name)}" target="_blank" class="btn btn-yt btn-xs"><i class="fa-brands fa-youtube"></i> Ver Execução</a>
+              </div>
+            `;
+          });
+          exPreviewHtml += `</div>`;
+        }
+
         card.innerHTML = `
           <div class="card-header-flex">
             <span class="card-subtitle">${w.day.toUpperCase()}</span>
@@ -1785,6 +1962,7 @@
           <h3 class="mt-5">${w.name}</h3>
           <p class="text-xs text-muted mt-5">${w.muscles || 'Sem descrição'}</p>
           <p class="text-xs mt-10"><i class="fa-solid fa-list-check"></i> ${w.exercises ? w.exercises.length : 0} Exercícios</p>
+          ${exPreviewHtml}
           <button class="btn btn-primary btn-block btn-sm mt-15" onclick="startWorkoutSession('${w.id}')">
             <i class="fa-solid fa-play"></i> Iniciar Treino
           </button>
@@ -2060,7 +2238,10 @@
         card.innerHTML = `
           <div class="card-header-flex mb-5">
             <h3 style="font-size:1rem;">${ex.name}</h3>
-            <button class="btn btn-xs btn-outline" onclick="addSetToActiveExercise(${exIdx})"><i class="fa-solid fa-plus"></i> Série</button>
+            <div style="display:flex; gap:6px; align-items:center;">
+              <a href="${getYouTubeUrl(ex.name)}" target="_blank" class="btn btn-yt btn-xs"><i class="fa-brands fa-youtube"></i> Como Executar</a>
+              <button class="btn btn-xs btn-outline" onclick="addSetToActiveExercise(${exIdx})"><i class="fa-solid fa-plus"></i> Série</button>
+            </div>
           </div>
           ${lastInfo}
           <div class="set-row-header grid-4 text-xs text-muted text-center mb-5" style="display:grid; grid-template-columns: 40px 1fr 1fr 45px;">
@@ -2801,12 +2982,253 @@
       document.getElementById(id).classList.add('active');
       if (id === 'modal-prs') renderPRsModal();
       if (id === 'modal-evo') renderHistoryModal();
+      if (id === 'modal-tonelagem') initTonelagemModal();
       if (id === 'modal-food-goal') {
         document.getElementById('food-goal-input').value = db.foodGoal || DEFAULT_GOAL_FOOD;
       }
     }
 
     function closeModal(id) { document.getElementById(id).classList.remove('active'); }
+
+    // --- FUNÇÕES DE TONELAGEM & PROGRESSO ---
+    function initTonelagemModal() {
+      switchTonelagemView('geral');
+      populateTonelagemExerciseSelect();
+    }
+
+    function switchTonelagemView(view) {
+      document.getElementById('tonelagem-tab-geral').classList.toggle('active', view === 'geral');
+      document.getElementById('tonelagem-tab-especifico').classList.toggle('active', view === 'especifico');
+
+      document.getElementById('tonelagem-view-geral').style.display = view === 'geral' ? 'block' : 'none';
+      document.getElementById('tonelagem-view-especifico').style.display = view === 'especifico' ? 'block' : 'none';
+
+      if (view === 'geral') renderTonelagemGeral();
+      if (view === 'especifico') renderTonelagemEspecifico();
+    }
+
+    function renderTonelagemGeral() {
+      const container = document.getElementById('tonelagem-geral-list');
+      container.innerHTML = '';
+
+      if (!db.history || db.history.length === 0) {
+        container.innerHTML = `<p class="text-xs text-muted text-center py-20">Nenhum treino concluído no histórico ainda para calcular a tonelagem.</p>`;
+        return;
+      }
+
+      const currentWorkout = db.history[0];
+      const previousWorkout = db.history.length > 1 ? db.history[1] : null;
+
+      currentWorkout.exercises.forEach(ex => {
+        let currTonnage = 0;
+        ex.sets.forEach(s => { currTonnage += (parseFloat(s.weight) || 0) * (parseInt(s.reps) || 0); });
+
+        let prevTonnage = 0;
+        if (previousWorkout) {
+          const prevEx = previousWorkout.exercises.find(e => e.name.toLowerCase() === ex.name.toLowerCase());
+          if (prevEx) {
+            prevEx.sets.forEach(s => { prevTonnage += (parseFloat(s.weight) || 0) * (parseInt(s.reps) || 0); });
+          }
+        }
+
+        const delta = currTonnage - prevTonnage;
+        const pct = prevTonnage > 0 ? Math.round((delta / prevTonnage) * 100) : 0;
+        const isPos = delta >= 0;
+
+        const maxVal = Math.max(currTonnage, prevTonnage, 1);
+        const currBarWidth = Math.min(100, Math.round((currTonnage / maxVal) * 100));
+        const prevBarWidth = Math.min(100, Math.round((prevTonnage / maxVal) * 100));
+
+        const card = document.createElement('div');
+        card.className = 'card mb-10';
+        card.innerHTML = `
+          <div class="card-header-flex">
+            <strong style="font-size:0.85rem; color:#FFF;">${ex.name.toUpperCase()}</strong>
+            <span class="tonelagem-badge ${isPos ? 'badge-green' : 'badge-red'}">
+              ${isPos ? '▲ +' : '▼ '}${delta} kg (${isPos ? '+' : ''}${pct}%)
+            </span>
+          </div>
+
+          <!-- BARRA ESTE TREINO -->
+          <div class="mt-10" style="display:flex; justify-content:space-between; font-size:0.75rem;">
+            <div class="progress-bar-bg tonelagem-compare-bar" style="width: 75%;">
+              <div class="progress-bar-fill bar-current" style="width: ${currBarWidth}%;"></div>
+            </div>
+            <strong style="color:#FFF;">${currTonnage}kg</strong>
+          </div>
+
+          <!-- BARRA ÚLTIMO TREINO -->
+          <div class="mt-5" style="display:flex; justify-content:space-between; font-size:0.75rem;">
+            <div class="progress-bar-bg tonelagem-compare-bar" style="width: 75%;">
+              <div class="progress-bar-fill bar-last" style="width: ${prevBarWidth}%;"></div>
+            </div>
+            <span class="text-muted">${prevTonnage}kg</span>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    function populateTonelagemExerciseSelect() {
+      const select = document.getElementById('tonelagem-exercise-select');
+      select.innerHTML = '<option value="">-- Selecionar Exercício --</option>';
+
+      const exercisesSet = new Set();
+      if (db.history) {
+        db.history.forEach(h => {
+          h.exercises.forEach(ex => exercisesSet.add(ex.name));
+        });
+      }
+
+      Array.from(exercisesSet).sort().forEach(name => {
+        const opt = document.createElement('option');
+        opt.value = name;
+        opt.innerText = name;
+        select.appendChild(opt);
+      });
+
+      if (exercisesSet.size > 0) {
+        select.selectedIndex = 1;
+      }
+    }
+
+    function switchTonelagemSubTab(sub) {
+      tonelagemCurrentSubTab = sub;
+      ['pill-tonelagem', 'pill-reps', 'pill-maxweight', 'pill-1rm'].forEach(id => {
+        document.getElementById(id).classList.remove('active');
+      });
+
+      if (sub === 'tonelagem') document.getElementById('pill-tonelagem').classList.add('active');
+      if (sub === 'reps') document.getElementById('pill-reps').classList.add('active');
+      if (sub === 'maxweight') document.getElementById('pill-maxweight').classList.add('active');
+      if (sub === '1rm') document.getElementById('pill-1rm').classList.add('active');
+
+      renderTonelagemEspecifico();
+    }
+
+    function renderTonelagemEspecifico() {
+      const selectedEx = document.getElementById('tonelagem-exercise-select').value;
+      const labelEl = document.getElementById('tonelagem-metric-label');
+      const valEl = document.getElementById('tonelagem-metric-val');
+      const badgeEl = document.getElementById('tonelagem-metric-badge');
+
+      if (!selectedEx) {
+        labelEl.innerText = "Nenhum exercício selecionado";
+        valEl.innerText = "0";
+        badgeEl.innerText = "--";
+        if (tonelagemChartInstance) tonelagemChartInstance.destroy();
+        return;
+      }
+
+      const exerciseData = [];
+      db.history.slice().reverse().forEach(h => {
+        const ex = h.exercises.find(e => e.name.toLowerCase() === selectedEx.toLowerCase());
+        if (ex) {
+          let tonelagem = 0;
+          let totalReps = 0;
+          let maxWeight = 0;
+          let max1RM = 0;
+
+          ex.sets.forEach(s => {
+            const w = parseFloat(s.weight) || 0;
+            const r = parseInt(s.reps) || 0;
+            tonelagem += w * r;
+            totalReps += r;
+            if (w > maxWeight) maxWeight = w;
+            const epley1RM = Math.round(w * (1 + r / 30));
+            if (epley1RM > max1RM) max1RM = epley1RM;
+          });
+
+          exerciseData.push({
+            date: h.date,
+            tonelagem,
+            reps: totalReps,
+            maxweight: maxWeight,
+            rm1: max1RM
+          });
+        }
+      });
+
+      if (exerciseData.length === 0) {
+        labelEl.innerText = selectedEx;
+        valEl.innerText = "Sem dados";
+        badgeEl.innerText = "--";
+        if (tonelagemChartInstance) tonelagemChartInstance.destroy();
+        return;
+      }
+
+      const latest = exerciseData[exerciseData.length - 1];
+      const first = exerciseData[0];
+
+      let currentVal = 0;
+      let diffVal = 0;
+      let unit = "";
+
+      if (tonelagemCurrentSubTab === 'tonelagem') {
+        labelEl.innerText = "Tonelagem";
+        currentVal = latest.tonelagem;
+        diffVal = latest.tonelagem - first.tonelagem;
+        unit = "kg";
+      } else if (tonelagemCurrentSubTab === 'reps') {
+        labelEl.innerText = "Repetições";
+        currentVal = latest.reps;
+        diffVal = latest.reps - first.reps;
+        unit = "reps";
+      } else if (tonelagemCurrentSubTab === 'maxweight') {
+        labelEl.innerText = "Carga máx.";
+        currentVal = latest.maxweight;
+        diffVal = latest.maxweight - first.maxweight;
+        unit = "kg";
+      } else if (tonelagemCurrentSubTab === '1rm') {
+        labelEl.innerText = "1 Rep Máxima";
+        currentVal = latest.rm1;
+        diffVal = latest.rm1 - first.rm1;
+        unit = "kg";
+      }
+
+      valEl.innerText = `${currentVal} ${unit}`;
+      const isPos = diffVal >= 0;
+      badgeEl.className = `tonelagem-badge ${isPos ? 'badge-green' : 'badge-red'}`;
+      badgeEl.innerText = `${isPos ? '▲ +' : '▼ '}${diffVal} ${unit} nos últimos 30 dias`;
+
+      // Renderizar Gráfico
+      const labels = exerciseData.map(d => d.date);
+      const datasetData = exerciseData.map(d => {
+        if (tonelagemCurrentSubTab === 'tonelagem') return d.tonelagem;
+        if (tonelagemCurrentSubTab === 'reps') return d.reps;
+        if (tonelagemCurrentSubTab === 'maxweight') return d.maxweight;
+        if (tonelagemCurrentSubTab === '1rm') return d.rm1;
+      });
+
+      const ctx = document.getElementById('tonelagemChart').getContext('2d');
+      if (tonelagemChartInstance) tonelagemChartInstance.destroy();
+
+      tonelagemChartInstance = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: labels,
+          datasets: [{
+            label: labelEl.innerText,
+            data: datasetData,
+            borderColor: '#00E5FF',
+            backgroundColor: 'rgba(0, 229, 255, 0.1)',
+            fill: true,
+            tension: 0.3,
+            pointBackgroundColor: '#00E5FF',
+            pointRadius: 4
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { display: false } },
+          scales: {
+            x: { grid: { color: '#222' }, ticks: { color: '#888', font: { size: 10 } } },
+            y: { grid: { color: '#222' }, ticks: { color: '#888', font: { size: 10 } } }
+          }
+        }
+      });
+    }
 
     function switchHistoryTab(tab) {
       document.getElementById('tab-btn-history').classList.toggle('active', tab === 'history');
@@ -2882,7 +3304,10 @@
         `).join('');
 
         exCard.innerHTML = `
-          <div class="history-exercise-title">${ex.name}</div>
+          <div class="history-exercise-title">
+            <span>${ex.name}</span>
+            <a href="${getYouTubeUrl(ex.name)}" target="_blank" class="btn btn-yt btn-xs"><i class="fa-brands fa-youtube"></i> Execução</a>
+          </div>
           <ul class="history-set-list">${setItems}</ul>
         `;
         body.appendChild(exCard);
@@ -2957,6 +3382,9 @@
             <strong style="color:#FFF;">${m.workoutName}</strong>
             <span class="text-xs text-red">${m.date}</span>
           </div>
+          <div class="mt-5">
+            <a href="${getYouTubeUrl(exerciseName)}" target="_blank" class="btn btn-yt btn-xs"><i class="fa-brands fa-youtube"></i> Ver Execução no YouTube</a>
+          </div>
           <p class="text-xs text-muted mt-10" style="line-height:1.6;">${setsStr}</p>
         `;
         container.appendChild(div);
@@ -2982,7 +3410,10 @@
             <strong>${exName}</strong>
             <span class="text-red font-weight-bold" style="font-weight:900;">${pr.weight} kg</span>
           </div>
-          <p class="text-xs text-muted mt-5">${pr.reps} repetições em ${pr.date}</p>
+          <div class="card-header-flex mt-5">
+            <span class="text-xs text-muted">${pr.reps} repetições em ${pr.date}</span>
+            <a href="${getYouTubeUrl(exName)}" target="_blank" class="btn btn-yt btn-xs"><i class="fa-brands fa-youtube"></i> Execução</a>
+          </div>
         `;
         container.appendChild(card);
       });
