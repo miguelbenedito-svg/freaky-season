@@ -211,7 +211,6 @@
     .mb-5 { margin-bottom: 5px; }
     .mb-10 { margin-bottom: 10px; }
     .mb-15 { margin-bottom: 15px; }
-    .mr-5 { margin-right: 5px; }
 
     .text-red { color: var(--accent-red); }
     .text-green { color: var(--accent-green); }
@@ -366,11 +365,12 @@
     }
     .check-btn.completed { background: var(--accent-red); color: #FFF; border-color: var(--accent-red); }
 
+    /* ESTILOS DO CRONÔMETRO FLUTUANTE */
     .floating-timer {
       position: fixed;
       bottom: 70px;
       right: 16px;
-      z-index: 150;
+      z-index: 250;
     }
     .floating-timer.hidden { display: none; }
 
@@ -392,12 +392,13 @@
       border: 1px solid #333;
       border-radius: 12px;
       padding: 14px;
-      width: 240px;
+      width: 270px;
       box-shadow: 0 6px 20px rgba(0,0,0,0.8);
     }
     .timer-header { display: flex; justify-content: space-between; font-size: 0.75rem; font-weight: 800; margin-bottom: 8px; }
-    .timer-display { font-size: 2rem; font-weight: 900; text-align: center; margin: 10px 0; color: var(--accent-red); }
-    .timer-presets button { background: #222; border: 1px solid #333; color: #FFF; padding: 6px; border-radius: 4px; font-size: 0.75rem; cursor: pointer; }
+    .timer-display { font-size: 2.2rem; font-weight: 900; text-align: center; margin: 8px 0; color: var(--accent-red); font-family: monospace; }
+    .timer-presets button { background: #222; border: 1px solid #333; color: #FFF; padding: 6px 4px; border-radius: 4px; font-size: 0.75rem; cursor: pointer; font-weight: 700; }
+    .timer-presets button:hover { background: #333; }
 
     .photo-box {
       border: 1px dashed #444;
@@ -461,12 +462,6 @@
     }
     .macro-box strong { font-size: 0.95rem; color: #FFF; word-break: break-all; }
     .macro-box .unit { font-size: 0.65rem; color: #AAA; }
-
-    .food-meal-card {
-      padding: 12px;
-      border-bottom: 1px solid #222;
-    }
-    .food-meal-card:last-child { border-bottom: 0; }
 
     .modal {
       display: none;
@@ -573,33 +568,6 @@
       font-size: 0.9rem;
     }
     .form-group-inline { display: flex; gap: 8px; }
-
-    .history-exercise-card {
-      background: #181818;
-      border: 1px solid #262626;
-      border-radius: 8px;
-      padding: 12px;
-      margin-bottom: 10px;
-    }
-    .history-exercise-title {
-      font-size: 0.95rem;
-      font-weight: 800;
-      color: #FFF;
-      margin-bottom: 8px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-    .history-set-list { list-style: none; padding-left: 0; }
-    .history-set-item {
-      font-size: 0.85rem;
-      color: #CCC;
-      padding: 4px 0;
-      border-bottom: 1px dashed #282828;
-      display: flex;
-      justify-content: space-between;
-    }
-    .history-set-item:last-child { border-bottom: none; }
 
     .toast-pr {
       position: fixed;
@@ -999,7 +967,16 @@
         <button class="btn-back" onclick="confirmExitWorkout()"><i class="fa-solid fa-arrow-left"></i></button>
         <div class="session-title-wrap text-center">
           <h2 id="session-workout-name" style="font-size:0.95rem;">Nome do Treino</h2>
-          <span id="session-workout-muscles" class="text-xs text-muted">Músculos</span>
+          <div style="display:flex; align-items:center; justify-content:center; gap:6px;" class="mt-5">
+            <span class="text-xs text-muted"><i class="fa-solid fa-stopwatch"></i> Descanso Automático:</span>
+            <select id="session-default-rest" class="form-input" style="width: auto; padding: 2px 6px; font-size: 0.75rem; height: auto;">
+              <option value="30">30s</option>
+              <option value="60">1 min</option>
+              <option value="90" selected>1m 30s</option>
+              <option value="120">2 min</option>
+              <option value="180">3 min</option>
+            </select>
+          </div>
         </div>
         <div class="session-timer-badge">
           <i class="fa-regular fa-clock"></i>
@@ -1012,24 +989,38 @@
 
   </main>
 
-  <!-- CRONÓMETRO DE DESCANSO -->
+  <!-- CRONÓMETRO DE DESCANSO FLUTUANTE -->
   <div id="floating-timer" class="floating-timer hidden">
     <div class="timer-minimized" id="timer-min" onclick="toggleTimerExpand(true)">
       <i class="fa-solid fa-stopwatch text-red"></i>
-      <span id="timer-min-display">00:00</span>
+      <span id="timer-min-display">01:30</span>
     </div>
     <div class="timer-expanded hidden" id="timer-max">
       <div class="timer-header">
         <span>DESCANSO ENTRE SÉRIES</span>
         <button class="btn-close" onclick="toggleTimerExpand(false)"><i class="fa-solid fa-xmark"></i></button>
       </div>
-      <div class="timer-display" id="timer-max-display">01:00</div>
+      <div class="timer-display" id="timer-max-display">01:30</div>
+      
+      <!-- ATALHOS DE TEMPO RÁPIDOS -->
       <div class="timer-presets grid-4">
         <button onclick="setTimerPreset(30)">30s</button>
-        <button onclick="setTimerPreset(60)">60s</button>
-        <button onclick="setTimerPreset(90)">90s</button>
-        <button onclick="setTimerPreset(120)">120s</button>
+        <button onclick="setTimerPreset(60)">1m</button>
+        <button onclick="setTimerPreset(90)">1m30s</button>
+        <button onclick="setTimerPreset(120)">2m</button>
       </div>
+
+      <!-- ENTRADA PERSONALIZADA DE MINUTOS E SEGUNDOS -->
+      <div class="mt-10 pt-10" style="border-top: 1px dashed #282828;">
+        <span class="text-xs text-muted mb-5" style="display:block;">Tempo Personalizado:</span>
+        <div class="form-group-inline" style="align-items:center;">
+          <input type="number" id="timer-custom-min" placeholder="Min" min="0" max="59" class="form-input" style="text-align:center; padding:6px; font-weight:bold;" value="1">
+          <span style="color:#888;">:</span>
+          <input type="number" id="timer-custom-sec" placeholder="Seg" min="0" max="59" class="form-input" style="text-align:center; padding:6px; font-weight:bold;" value="30">
+          <button class="btn btn-xs btn-primary" onclick="setCustomTimerFromInput()">OK</button>
+        </div>
+      </div>
+
       <div class="timer-controls grid-3 mt-10">
         <button class="btn btn-sm btn-secondary" onclick="resetTimer()"><i class="fa-solid fa-rotate-right"></i></button>
         <button class="btn btn-sm btn-primary" id="timer-play-btn" onclick="toggleTimer()"><i class="fa-solid fa-play"></i></button>
@@ -1512,7 +1503,7 @@
     let currentPhotoBase64 = "";
     let sessionDurationInterval = null;
     let timerInterval = null;
-    let timerTimeLeft = 0;
+    let timerTimeLeft = 90; // Padrão 1m 30s
     let timerRunning = false;
     let tonelagemChartInstance = null;
     let tonelagemCurrentSubTab = 'tonelagem';
@@ -2212,7 +2203,6 @@
       if (!db.activeSession) return;
 
       document.getElementById('session-workout-name').innerText = db.activeSession.workoutName;
-      document.getElementById('session-workout-muscles').innerText = db.activeSession.muscles || 'Sem descrição';
       updateSessionDurationDisplay();
 
       const container = document.getElementById('session-exercises-container');
@@ -2239,7 +2229,7 @@
           <div class="card-header-flex mb-5">
             <h3 style="font-size:1rem;">${ex.name}</h3>
             <div style="display:flex; gap:6px; align-items:center;">
-              <a href="${getYouTubeUrl(ex.name)}" target="_blank" class="btn btn-yt btn-xs"><i class="fa-brands fa-youtube"></i> Como Executar</a>
+              <a href="${getYouTubeUrl(ex.name)}" target="_blank" class="btn btn-yt btn-xs"><i class="fa-brands fa-youtube"></i> Execução</a>
               <button class="btn btn-xs btn-outline" onclick="addSetToActiveExercise(${exIdx})"><i class="fa-solid fa-plus"></i> Série</button>
             </div>
           </div>
@@ -2274,7 +2264,10 @@
 
       if (set.completed) {
         checkPR(db.activeSession.exercises[exIdx].name, set.weight, set.reps);
-        startTimerPreset(60);
+        
+        // Iniciar cronômetro automático com o tempo selecionado no cabeçalho
+        const selectedRestSec = parseInt(document.getElementById('session-default-rest').value) || 90;
+        startTimerPreset(selectedRestSec);
       }
 
       renderSessionView();
@@ -2368,12 +2361,22 @@
       return null;
     }
 
+    // --- FUNÇÕES DO CRONÔMETRO DE DESCANSO ---
     function toggleTimerExpand(expand) {
       document.getElementById('timer-min').classList.toggle('hidden', expand);
       document.getElementById('timer-max').classList.toggle('hidden', !expand);
     }
 
     function setTimerPreset(seconds) { startTimerPreset(seconds); }
+
+    function setCustomTimerFromInput() {
+      const mins = parseInt(document.getElementById('timer-custom-min').value) || 0;
+      const secs = parseInt(document.getElementById('timer-custom-sec').value) || 0;
+      const totalSec = (mins * 60) + secs;
+      if (totalSec > 0) {
+        startTimerPreset(totalSec);
+      }
+    }
 
     function startTimerPreset(seconds) {
       timerTimeLeft = seconds;
@@ -2388,7 +2391,7 @@
         timerRunning = false;
         playBtn.innerHTML = '<i class="fa-solid fa-play"></i>';
       } else {
-        if (timerTimeLeft <= 0) timerTimeLeft = 60;
+        if (timerTimeLeft <= 0) timerTimeLeft = 90;
         timerRunning = true;
         playBtn.innerHTML = '<i class="fa-solid fa-pause"></i>';
         timerInterval = setInterval(() => {
@@ -2407,7 +2410,8 @@
     function resetTimer() {
       clearInterval(timerInterval);
       timerRunning = false;
-      timerTimeLeft = 60;
+      const selectedRestSec = parseInt(document.getElementById('session-default-rest')?.value) || 90;
+      timerTimeLeft = selectedRestSec;
       updateTimerDisplays();
       document.getElementById('timer-play-btn').innerHTML = '<i class="fa-solid fa-play"></i>';
     }
@@ -2426,7 +2430,7 @@
     }
 
     function playTimerSound() {
-      if ('vibrate' in navigator) navigator.vibrate([200, 100, 200]);
+      if ('vibrate' in navigator) navigator.vibrate([300, 150, 300, 150, 300]);
       try {
         const ctx = new (window.AudioContext || window.webkitAudioContext)();
         const osc = ctx.createOscillator();
@@ -2434,7 +2438,7 @@
         osc.frequency.setValueAtTime(880, ctx.currentTime);
         osc.connect(ctx.destination);
         osc.start();
-        osc.stop(ctx.currentTime + 0.5);
+        osc.stop(ctx.currentTime + 0.6);
       } catch(e){}
     }
 
